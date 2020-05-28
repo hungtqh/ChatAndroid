@@ -1,0 +1,173 @@
+<resources>
+    <string name="app_name">Agripoa</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Menus -->
+    <string name="is_not_invalid_email">Is not valid email</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="projects">Projects</string>
+    <string name="registration">Registration</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_experts">Experts</string>
+    <string name="menu_inventory">Inventory</string>
+    <string name="menu_chat">Chat</string>
+    <string name="menu_explore">Explore</string>
+    <string name="menu_market">Market</string>
+    <string name="menu_market_place">Market Place</string>
+    <string name="menu_buy_sell_goods">Buy or Sell Goods</string>
+    <!-- Actions -->
+
+    <string name="firstname">First Name</string>
+    <string name="middlename">Middle Name</string>
+    <string name="lastname">Last Name</string>
+    <string name="gender">Gender</string>
+    <string name="age">Age</string>
+    <string name="email">Email</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+
+
+    <string name="experts_sub_title">Contact with our experts</string>
+
+    <!-- Configurations -->
+
+    <string name="farmers">Farmers</string>
+
+    <!-- Login -->
+    <string name="logout">Logout</string>
+    <string name="required">required</string>
+    <string name="login_password">Password</string>
+
+    <!--Registration -->
+    <string name="registration_fullname">Full Name</string>
+    <string name="registration_email">Email</string>
+    <string name="password_do_not_match">Password do not match</string>
+    <string name="registration_phonenumber">Phonenumber</string>
+    <string name="registration_password">Password</string>
+    <string name="registration_confirm_password">Confirm Password</string>
+    <string name="registration_register">Register</string>
+    <string name="registration_login">Login</string>
+    <string name="registration_registered">Already Registered?</string>
+    <string name="create_account">Create Account</string>
+    <string name="please_wait">Please wait ...</string>
+
+    <!-- Reset Password-->
+    <string name="enter_otp">Enter OTP</string>
+    <string name="reset_email">Enter your Email</string>
+    <string name="reset_email_send">Send</string>
+    <string name="account_recovery">Account Recovery</string>
+
+    <!-- 2019-12-02-->
+    <string name="insights">Insights</string>
+    <string name="security">Security</string>
+    <string name="privacy">Privacy</string>
+    <string name="account">Account</string>
+    <string name="helpfeedback">Help &amp; Feedback</string>
+    <string name="about">About</string>
+
+    <string name="deals">Deals</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save">Save</string>
+    <string name="reply">Reply</string>
+    <string name="dismiss">Dismiss</string>
+    <!-- Edmund 3-12-2019 -->
+
+    <!-- Livestock Category -->
+
+    <!-- Farmer Category -->
+
+    <!-- 03-12-2019-->
+    <!-- Edit Profile -->
+
+    <!--Change Password -->
+    <string name="change_password_old_password">Old Password</string>
+    <string name="change_password_new_password">New Password</string>
+    <string name="change_password_button">Change Password</string>
+
+    <!-- 2019-12-06 -->
+    <string name="change_password">Change password</string>
+
+    <string name="action_send">Send</string>
+    <string name="prompt_message">Message</string>
+
+    <string name="connect">Connected</string>
+    <string name="disconnect">Disconnected, Please check your internet connection</string>
+    <string name="error_connect">Failed to connect</string>
+
+    <!-- messages -->
+    <string name="message_welcome">Welcome to Socket.IO Chat –</string>
+    <plurals name="message_participants">
+        <item quantity="one">there\'s %d participant</item>
+        <item quantity="other">there are %d participants</item>
+    </plurals>
+    <string name="message_user_joined">%s joined</string>
+    <string name="message_user_left">%s left</string>
+    <string name="user_action_typing">is typing</string>
+
+    <string name="timeline">Timeline</string>
+    <string name="notifications">Notification</string>
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
+        \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
+    </string>
+
+    <string name="middle_lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin</string>
+    <string name="medium_lorem_ipsum">Quisque imperdiet nunc at massa dictum volutpat. Etiam id orci ipsum. Integer id ex dignissim</string>
+
+    <string name="sign_in">Sign in</string>
+    <string name="username">Username</string>
+
+    <!-- Strings related to login -->
+
+    <string name="friends">Friends</string>
+    <string name="experts">Experts</string>
+    <string name="groups">Groups</string>
+    <string name="hint_word">Word...</string>
+    <string name="empty_not_saved">Word not saved because it is empty.</string>
+    <string name="friend">Friend</string>
+    <string name="feeback">Feedback</string>
+
+
+    <string name="quickstart_message">Click the SUBSCRIBE TO WEATHER button below to subscribe to the
+        weather topic. Messages sent to the weather topic will be received. The LOG TOKEN button logs the
+        InstanceID token to logcat.</string>
+    <string name="subscribe_to_weather">Subscribe To Weather</string>
+    <string name="log_token">Log Token</string>
+
+    <string name="msg_subscribed">Subscribed to weather topic</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+
+    <string name="notification_channel_news_id" translatable="false">news</string>
+    <string name="notification_channel_events_id" translatable="false">events</string>
+    <!--
+        This is the name that users will see when interacting with this channel.
+        It should describe the category of notifications that will be sent through this channel
+     -->
+    <!-- [START fcm_default_icon_string] -->
+    <string name="default_notification_channel_name" translatable="true">Message notifications</string>
+    <string name="notification_channel_news" translatable="false">News notifications</string>
+    <string name="notification_channel_events" translatable="false">Events notifications</string>
+    <!-- [END fcm_default_icon_string] -->
+    <string name="msg_subscribe_failed">Failed to subscribe to weather topic</string>
+    <string name="fcm_message">Agripoa Message</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBi6McvWPNR1NV-M6kVLRfH9uKPtUWcyJQ
+    </string>
+
+    <string name="step_of">Step %1$d of %2$d</string>
+    <string name="section_format">Section : %1$d</string>
+
+    <string name="about_text">The best android implementation of material UI components. This app implemented based on Google Design Guidelines.
+    </string>
+
+    <string name="version_unknown">Unknown</string>
+    <string name="app_version">Version</string>
+    <string name="default_notification_channel_id">Default</string>
+    <string name="webview_loading">Load Content... </string>
+
+</resources>

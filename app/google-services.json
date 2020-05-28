@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "814139086934",
+    "firebase_url": "https://agripoa-farmers.firebaseio.com",
+    "project_id": "agripoa-farmers",
+    "storage_bucket": "agripoa-farmers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814139086934:android:6bacb563e9a6142da383f7",
+        "android_client_info": {
+          "package_name": "com.chatandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "814139086934-9rpsas454s7d8lt5mo8d237srdlvtjf6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chatandroid",
+            "certificate_hash": "28b100a1bb55d1960d271e4ddb9e79a44249332d"
+          }
+        },
+        {
+          "client_id": "814139086934-vg2buskbmsmk20kq4v2tutelqe8hp79o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANhmBdmUdYqMch4peQ12nhptEjYcn3KfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "814139086934-vg2buskbmsmk20kq4v2tutelqe8hp79o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
