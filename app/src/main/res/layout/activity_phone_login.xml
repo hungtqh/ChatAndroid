@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.group9.chats.PhoneLoginActivity">
+    tools:context=".chats.PhoneLoginActivity">
 
     <EditText
         android:id="@+id/phone_nnumber_input"

@@ -63,7 +63,6 @@
                 app:tabIndicatorColor="@color/defaultWhite"
                 app:tabIndicatorHeight="3dp"
                 app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/deep_orange_500"
                 app:tabTextAppearance="@style/TextAppearance.Subhead.Bold"
                 app:tabTextColor="@color/defaultWhite" />
 
@@ -74,7 +73,6 @@
 
     <androidx.viewpager.widget.ViewPager
         android:layout_below="@+id/top"
-        android:layout_above="@id/bottom_navigation"
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
