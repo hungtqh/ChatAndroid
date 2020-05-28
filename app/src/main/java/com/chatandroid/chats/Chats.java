@@ -33,7 +33,7 @@ public class Chats extends Authenticate {
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Communications");
+        getSupportActionBar().setTitle("Chat");
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
     }
 

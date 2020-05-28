@@ -48,14 +48,6 @@ public class ConfigurationActivity extends Authenticate
         getSupportActionBar().setTitle("Account Settings");
         Tools.setSystemBarColor(this, R.color.grey_5);
         Tools.setSystemBarLight(this);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        if(bottomNavigationView != null){
-            for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
-                bottomNavigationView.getMenu().getItem(i).setChecked(false);
-            }
-            bottomNavigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
-        }
     }
 
 

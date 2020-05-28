@@ -20,7 +20,6 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_below="@+id/toolbar_layout"
-        android:layout_above="@+id/bottom_navigation"
         android:id="@+id/nested_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -330,17 +329,4 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_alignParentBottom="true"
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        app:labelVisibilityMode="unlabeled"
-        android:layout_height="wrap_content"
-        android:background="@color/mdtp_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_navigation_main"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android" />
 </RelativeLayout>
