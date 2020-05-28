@@ -97,62 +97,6 @@ public class Authenticate extends AppCompatActivity {
 //                }
 //            });
 //        }
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
-        if(bottomNavigationView != null){
-            bottomNavigationView.setLabelVisibilityMode(LabelVisibilityMode.LABEL_VISIBILITY_LABELED);
-            //bottomNavigationView.setItemIconSize(52);
-            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                    if (item.getItemId() == R.id.navigation_home) {
-                        Intent intent = new Intent(Authenticate.this, MainActivity.class);
-                        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-                        overridePendingTransition(0, 0);
-                        startActivity(intent);
-                        overridePendingTransition(0, 0);
-                        return true;
-                    }
-
-
-                    if (item.getItemId() == R.id.navigation_chats) {
-                        Intent intent = new Intent(Authenticate.this, Chats.class);
-                        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-                        overridePendingTransition(0, 0);
-                        startActivity(intent);
-                        overridePendingTransition(0, 0);
-                        return true;
-                    }
-//
-//
-//                    if (item.getItemId() == R.id.navigation_explore) {
-//                        Intent intent = new Intent(Lockminds.this, LmExplore.class);
-//                        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-//                        startActivity(intent);
-//                        return true;
-//                    }
-//
-//                    if (item.getItemId() == R.id.navigation_experts) {
-//                        Intent intent = new Intent(Lockminds.this, LmExpertsCategoryCard.class);
-//                        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-//                        startActivity(intent);
-//                        return true;
-//                    }
-//
-//                    if (item.getItemId() == R.id.navigation_market) {
-//                        Intent intent = new Intent(Lockminds.this, LmMarketCategoryCard.class);
-//                        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-//                        startActivity(intent);
-//                        return true;
-//                    }
-
-                    return false;
-                }
-            });
-        }
-
     }
 
     @Override

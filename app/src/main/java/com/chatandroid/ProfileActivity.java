@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.chatandroid.chats.Chats;
 import com.chatandroid.databinding.ActivityProfileBinding;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.database.DataSnapshot;
@@ -15,18 +16,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
-public class ProfileActivity extends Authenticate
-{
+public class ProfileActivity extends Authenticate {
     private DatabaseReference UserRef;
 
     private ActivityProfileBinding binding;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding =  ActivityProfileBinding.inflate(getLayoutInflater());
+        binding = ActivityProfileBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
         primaryMenu(savedInstanceState);
@@ -55,21 +54,19 @@ public class ProfileActivity extends Authenticate
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
     }
 
-    private void RetrieveUserInfo()
-    {
+    private void RetrieveUserInfo() {
         UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                String firtname = (dataSnapshot.child("firstname").exists()) ? dataSnapshot.child("firstname").getValue().toString(): "";
-                String lastname = (dataSnapshot.child("lastname").exists()) ?  dataSnapshot.child("lastname").getValue().toString() : "";
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String firtname = (dataSnapshot.child("firstname").exists()) ? dataSnapshot.child("firstname").getValue().toString() : "";
+                String lastname = (dataSnapshot.child("lastname").exists()) ? dataSnapshot.child("lastname").getValue().toString() : "";
                 String name = firtname + " " + lastname;
-                String username = (dataSnapshot.child("username").exists()) ?  dataSnapshot.child("username").getValue().toString() : "";
+                String username = (dataSnapshot.child("username").exists()) ? dataSnapshot.child("username").getValue().toString() : "";
 
                 binding.profileName.setText(name);
-                binding.username.setText(mAuth.getCurrentUser().getEmail());
-
-
+                if (mAuth.getCurrentUser() != null) {
+                    binding.username.setText(mAuth.getCurrentUser().getEmail());
+                }
             }
 
             @Override

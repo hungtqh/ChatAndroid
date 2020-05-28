@@ -223,7 +223,9 @@ public class ProfileEditActivity extends Authenticate
                 }
 
                 binding.profileName.setText(name);
-                binding.username.setText(mAuth.getCurrentUser().getEmail());
+                if (mAuth.getCurrentUser() != null) {
+                    binding.username.setText(mAuth.getCurrentUser().getEmail());
+                }
                 binding.usernameEdit.setText(username);
                 binding.firstname.setText(firtname);
                 binding.lastname.setText(lastname);
