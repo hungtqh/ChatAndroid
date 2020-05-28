@@ -286,6 +286,7 @@ public class Authenticate extends AppCompatActivity {
                         if(drawerItem.getIdentifier() == R.string.logout){
                             mAuth.signOut();
                             Intent intent = new Intent(Authenticate.this, LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             overridePendingTransition(0, 0);
                             startActivity(intent);
                             overridePendingTransition(0, 0);
