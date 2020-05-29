@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name="com.chatandroid.LoginActivity">
+        <activity android:name="com.chatandroid.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +31,7 @@
         </activity>
 
         <service
-            android:name="com.chatandroid.notifications.MyFirebaseMessaging"
+            android:name="com.chatandroid.notification.MyFirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -39,28 +39,26 @@
             </intent-filter>
         </service>
 
-        <activity android:name="com.chatandroid.RegisterActivity" />
+        <activity android:name="com.chatandroid.activity.RegisterActivity" />
 
-        <activity android:name="com.chatandroid.MainActivity" />
+        <activity android:name="com.chatandroid.activity.MainActivity" />
 
         <!-- Settings -->
-        <activity android:name="com.chatandroid.SettingsActivity" />
+        <activity android:name="com.chatandroid.activity.SettingsActivity" />
 
-        <activity android:name="com.chatandroid.ConfigurationActivity" />
+        <activity android:name="com.chatandroid.chat.activity.FindFriendsActivity" />
 
-        <activity android:name="com.chatandroid.chats.FindFriendsActivity" />
+        <activity android:name="com.chatandroid.chat.activity.ProfileViewActivity" />
 
-        <activity android:name="com.chatandroid.chats.ProfileViewActivity" />
+        <activity android:name="com.chatandroid.chat.Chats" />
 
-        <activity android:name="com.chatandroid.chats.Chats" />
+        <activity android:name="com.chatandroid.chat.activity.ChatActivity" />
 
-        <activity android:name="com.chatandroid.chats.ChatActivity" />
+        <activity android:name="com.chatandroid.chat.activity.GroupChatActivity" />
 
-        <activity android:name="com.chatandroid.chats.GroupChatActivity" />
+        <activity android:name="com.chatandroid.activity.ProfileActivity" />
 
-        <activity android:name="com.chatandroid.ProfileActivity" />
-
-        <activity android:name="com.chatandroid.ProfileEditActivity" />
+        <activity android:name="com.chatandroid.activity.ProfileEditActivity" />
 
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

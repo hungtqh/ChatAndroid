@@ -8,15 +8,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.chatandroid.chats.Chats;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomnavigation.LabelVisibilityMode;
+import com.chatandroid.activity.LoginActivity;
+import com.chatandroid.activity.ProfileActivity;
+import com.chatandroid.activity.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -35,8 +34,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-
-import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 
 public class Authenticate extends AppCompatActivity {
 
@@ -62,13 +59,12 @@ public class Authenticate extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (currentUserID == null)
-        {
+        if (currentUserID == null) {
             SendUserToLoginActivity();
         }
 
         Button lmHumbug = findViewById(R.id.lmHumbug);
-        if(lmHumbug != null){
+        if (lmHumbug != null) {
             lmHumbug.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -77,26 +73,6 @@ public class Authenticate extends AppCompatActivity {
                 }
             });
         }
-
-//        Button menu = findViewById(R.id.right_menu);
-//        if(menu != null){
-//            menu.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    secondaryMenus.openDrawer();
-//                }
-//            });
-//        }
-//
-//        Button goBack = findViewById(R.id.go_back);
-//        if(goBack != null){
-//            goBack.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    onBackPressed();
-//                }
-//            });
-//        }
     }
 
     @Override
@@ -106,13 +82,13 @@ public class Authenticate extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         updateUserStatus("online");
     }
 
     @Override
-    public  void  onPause(){
+    public void onPause() {
         super.onPause();
         updateUserStatus("offline");
     }
@@ -125,7 +101,7 @@ public class Authenticate extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //add the values which need to be saved from the drawer to the bundle
-        if(result != null){
+        if (result != null) {
             outState = result.saveInstanceState(outState);
         }
 
@@ -151,8 +127,7 @@ public class Authenticate extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
         //getMenuInflater().inflate(R.menu.options_menu, menu);
@@ -160,7 +135,7 @@ public class Authenticate extends AppCompatActivity {
         return true;
     }
 
-    protected void primaryMenu(Bundle instance){
+    protected void primaryMenu(Bundle instance) {
         SecondaryDrawerItem account = new SecondaryDrawerItem().withName(R.string.menu_profile).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_profile).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withName(R.string.action_settings).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.action_settings).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_settings)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
         SecondaryDrawerItem logout = new SecondaryDrawerItem().withName(R.string.logout).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.logout).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_lock_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
@@ -206,28 +181,19 @@ public class Authenticate extends AppCompatActivity {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
 
-                        if(drawerItem.getIdentifier() == R.string.dashboard){
-                            Intent intent = new Intent(Authenticate.this, MainActivity.class);
-                            overridePendingTransition(0, 0);
-                            startActivity(intent);
-                            overridePendingTransition(0, 0);
-                        }
-
-                        if(drawerItem.getIdentifier() == R.string.action_settings){
+                        if (drawerItem.getIdentifier() == R.string.action_settings) {
                             Intent intent = new Intent(Authenticate.this, SettingsActivity.class);
                             startActivity(intent);
                         }
 
-                        if(drawerItem.getIdentifier() == R.string.menu_profile){
+                        if (drawerItem.getIdentifier() == R.string.menu_profile) {
                             Intent intent = new Intent(Authenticate.this, ProfileActivity.class);
                             overridePendingTransition(0, 0);
                             startActivity(intent);
                             overridePendingTransition(0, 0);
                         }
 
-
-
-                        if(drawerItem.getIdentifier() == R.string.logout){
+                        if (drawerItem.getIdentifier() == R.string.logout) {
                             mAuth.signOut();
                             Intent intent = new Intent(Authenticate.this, LoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -236,7 +202,6 @@ public class Authenticate extends AppCompatActivity {
                             overridePendingTransition(0, 0);
                             finish();
                         }
-
 
                         if (drawerItem != null) {
 
@@ -257,13 +222,7 @@ public class Authenticate extends AppCompatActivity {
                         return false;
                     }
                 })
-                .withOnDrawerItemLongClickListener(new Drawer.OnDrawerItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(View view, int position, IDrawerItem drawerItem) {
-
-                        return false;
-                    }
-                })
+                .withOnDrawerItemLongClickListener((view, position, drawerItem) -> false)
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
                     public void onDrawerOpened(View drawerView) {
@@ -284,7 +243,7 @@ public class Authenticate extends AppCompatActivity {
 
     }
 
-    protected void  rightMenuAccounts(Bundle instance){
+    protected void rightMenuAccounts(Bundle instance) {
         PrimaryDrawerItem home = new PrimaryDrawerItem().withName(R.string.account).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.account).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
         SecondaryDrawerItem privacy = new SecondaryDrawerItem().withName(R.string.privacy).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.privacy).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_security_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
         SecondaryDrawerItem security = new SecondaryDrawerItem().withName(R.string.security).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.security).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_lock_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
@@ -297,62 +256,13 @@ public class Authenticate extends AppCompatActivity {
                         privacy,
                         security
 
-                ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-
-
-//                if(drawerItem.getIdentifier() == R.string.account){
-//                    Intent intent = new Intent(Lockminds.this, LmAccount.class);
-//                    intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivity(intent);
-//                }
-//
-//                if(drawerItem.getIdentifier() == R.string.security){
-//                    Intent intent = new Intent(Lockminds.this, LmChangePassword.class);
-//                    intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivity(intent);
-//                }
-                        return false;
-                    }
-                })
+                ).withOnDrawerItemClickListener((view, position, drawerItem) -> false)
                 .withDrawerGravity(Gravity.END)
                 .append(drawerReference());
     }
 
-    protected void  rightMenuChats(Bundle instance){
-        PrimaryDrawerItem home = new PrimaryDrawerItem().withName(R.string.menu_home).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_home).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_home_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
-        secondaryMenus = new DrawerBuilder()
-                .withActivity(this)
-                .withDisplayBelowStatusBar(true)
-                .withSavedInstance(instance)
-                .addDrawerItems(
-                        home
-
-                ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-
-                        if(drawerItem.getIdentifier() == R.string.menu_home){
-                            Intent intent = new Intent(Authenticate.this, MainActivity.class);
-                            intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-                            startActivity(intent);
-                        }
-
-                        return false;
-                    }
-                })
-                .withDrawerGravity(Gravity.END)
-                .append(drawerReference());
-    }
-
-    public Drawer drawerReference(){
-        return  result;
-    }
-
-    private void VerifyUserExistance() {
-
-
+    public Drawer drawerReference() {
+        return result;
     }
 
     private void SendUserToLoginActivity() {
@@ -386,10 +296,6 @@ public class Authenticate extends AppCompatActivity {
 
         RootRef.child("Users").child(currentUserID).child("userState")
                 .updateChildren(onlineStateMap);
-
     }
-
-
-
 }
 

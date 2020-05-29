@@ -145,7 +145,7 @@
                 android:clickable="true"
                 android:padding="12dp"
                 android:tint="#0382FE"
-                app:srcCompat="@drawable/ic_mic" />
+                app:srcCompat="@drawable/ic_send" />
 
         </LinearLayout>
 

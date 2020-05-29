@@ -47,32 +47,6 @@
         <item>Susan Lee</item>
     </string-array>
 
-    <string-array name="strings_short">
-        <item>Proin Eleifend Libero</item>
-        <item>Placerat nec elit</item>
-        <item>Fringilla ornare finibus</item>
-        <item>Convallis nec mollis</item>
-        <item>Vestibulum turpis nec</item>
-        <item>Sed malesuada volutpat</item>
-        <item>Leo ut semper vulputate</item>
-        <item>Maecenas a lorem in</item>
-        <item>Tincidunt est eros</item>
-        <item>Amet est sollicitudin</item>
-    </string-array>
-
-    <string-array name="strings_medium">
-        <item>Proin commodo porttitor felis. Integer auctor nulla faucibus tempus. In at viverra tellus.</item>
-        <item>Cras at lobortis velit. In eu turpis euismod dolor feugiat placerat gravida a ante. Duis consequat massa.</item>
-        <item>Praesent eleifend ipsum sapien, vel molestie nibh blandit et. Duis accumsan dignissim velit.</item>
-        <item>Aliquam in risus nibh. Pellentesque lacinia nisi ac est porta, nec eros luctus. Phasellus dictum ornare.</item>
-        <item>In rutrum turpis felis. Ut sodales libero non nibh convallis, ac vehicula tellus laoreet.</item>
-        <item>Etiam faucibus ante tortor, nec eros lacinia ut. Proin facilisis cursus enim, at congue lorem iaculis ut.</item>
-        <item>Duis sodales ligula non scelerisque molestie. In hac habitasse platea dictumst. Donec tempor nibh.</item>
-        <item>Quisque ac ante et purus auctor iaculis at sed erat. Duis vestibulum elit et mollis.</item>
-        <item>Maecenas quis posuere leo. Duis ut tortor vitae nisi commodo dictum. Quisque ac ante et purus auctor.</item>
-        <item>Proin commodo porttitor felis. Integer auctor nulla tincidunt faucibus tempus. In at viverra tellus.</item>
-    </string-array>
-
     <string-array name="general_date">
         <item>05 Dec 2015</item>
         <item>22 Apr 2013</item>
@@ -110,27 +84,6 @@
         <item>Middle European Time</item>
         <item>Malaysia Time</item>
         <item>Western European Time</item>
-    </string-array>
-
-    <string-array name="states">
-        <item>State</item>
-        <item>AL</item>
-        <item>AK</item>
-        <item>AR</item>
-        <item>CA</item>
-        <item>FL</item>
-        <item>GA</item>
-        <item>IL</item>
-        <item>IN</item>
-        <item>MA</item>
-        <item>MI</item>
-        <item>NE</item>
-        <item>NE</item>
-        <item>NY</item>
-        <item>OH</item>
-        <item>TX</item>
-        <item>VA</item>
-        <item>WA</item>
     </string-array>
 
     <string-array name="month">
