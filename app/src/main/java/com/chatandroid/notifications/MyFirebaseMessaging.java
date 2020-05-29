@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.chatandroid.R;
 import com.chatandroid.chats.ChatActivity;
-import com.chatandroid.utils.AgripoaPreference;
+import com.chatandroid.utils.AppPreference;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,13 +32,13 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        String sented = remoteMessage.getData().get("sented");
+        String sent = remoteMessage.getData().get("sented");
         String user = remoteMessage.getData().get("user");
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        AgripoaPreference preference = new AgripoaPreference(MyFirebaseMessaging.this);
+        AppPreference preference = new AppPreference(MyFirebaseMessaging.this);
         if (preference.getCurrentChatingUser() == null || !preference.getCurrentChatingUser().equals(user)) {
             if (firebaseUser != null) {
-                if (firebaseUser.getUid() != null && sented.equals(firebaseUser.getUid())) {
+                if (firebaseUser.getUid() != null && sent.equals(firebaseUser.getUid())) {
                     sendNotification(remoteMessage);
                 }
             }

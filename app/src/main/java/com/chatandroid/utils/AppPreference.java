@@ -3,7 +3,7 @@ package com.chatandroid.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class AgripoaPreference {
+public class AppPreference {
 
     // Shared Preferences
     SharedPreferences pref;
@@ -25,7 +25,7 @@ public class AgripoaPreference {
 
 
     // Constructor
-    public AgripoaPreference(Context context){
+    public AppPreference(Context context){
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();

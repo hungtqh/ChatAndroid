@@ -29,7 +29,7 @@ import com.chatandroid.notifications.APIService;
 import com.chatandroid.notifications.Client;
 import com.chatandroid.notifications.MyResponse;
 import com.chatandroid.notifications.Sender;
-import com.chatandroid.utils.AgripoaPreference;
+import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Config;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -56,7 +56,7 @@ public class ChatActivity extends Authenticate
 {
     private String messageReceiverID, messageSenderID;
     private ActionBar actionBar;
-    private AgripoaPreference preference;
+    private AppPreference preference;
 
     private final List<Messages> messagesList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
@@ -89,7 +89,7 @@ public class ChatActivity extends Authenticate
         messageSenderID = currentUserID;
         messageReceiverID = getIntent().getExtras().get("receiver_uid").toString();
         token = getIntent().getExtras().get("receiver_token").toString();
-        preference = new AgripoaPreference(ChatActivity.this);
+        preference = new AppPreference(ChatActivity.this);
 
         IntializeControllers();
 
