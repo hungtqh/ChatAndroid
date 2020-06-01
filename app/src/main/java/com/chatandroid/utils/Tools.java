@@ -342,29 +342,6 @@ public class Tools {
         }
     }
 
-
-    public static String getVersionName(Context ctx) {
-        try {
-            PackageManager manager = ctx.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(ctx.getPackageName(), 0);
-            return ctx.getString(R.string.app_version) + " " + info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return ctx.getString(R.string.version_unknown);
-        }
-    }
-
-    public static String getVersionNamePlain(Context ctx) {
-        try {
-            PackageManager manager = ctx.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(ctx.getPackageName(), 0);
-            return info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return ctx.getString(R.string.version_unknown);
-        }
-    }
-
-
-
     public static String getDeviceID(Context context) {
         String deviceID = Build.SERIAL;
         if (deviceID == null || deviceID.trim().isEmpty() || deviceID.equals("unknown")) {

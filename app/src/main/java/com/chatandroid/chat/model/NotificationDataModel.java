@@ -7,7 +7,7 @@ public class NotificationDataModel {
     private int icon;
     private String title;
     private String body;
-    private String sented;
+    private String sent;
 
     public String getDevice() {
         return device;
@@ -22,13 +22,13 @@ public class NotificationDataModel {
     public NotificationDataModel() {
     }
 
-    public NotificationDataModel(String user, int icon, String title, String body, String sented, String device) {
+    public NotificationDataModel(String user, int icon, String title, String body, String sent, String device) {
         this.user = user;
         this.icon = icon;
         this.device = device;
         this.title = title;
         this.body = body;
-        this.sented = sented;
+        this.sent = sent;
     }
 
 
@@ -65,11 +65,11 @@ public class NotificationDataModel {
         this.body = body;
     }
 
-    public String getSented() {
-        return sented;
+    public String getSent() {
+        return sent;
     }
 
-    public void setSented(String sented) {
-        this.sented = sented;
+    public void setSent(String sent) {
+        this.sent = sent;
     }
 }

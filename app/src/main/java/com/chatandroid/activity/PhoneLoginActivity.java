@@ -160,7 +160,7 @@ public class PhoneLoginActivity extends AppCompatActivity
                         {
                             loadingBar.dismiss();
                             Toast.makeText(PhoneLoginActivity.this, "Congratulations, you're logged in successfully...", Toast.LENGTH_SHORT).show();
-                            SendUserToMainActivity();
+                            SendUserToChatActivity();
                         }
                         else
                         {
@@ -174,10 +174,8 @@ public class PhoneLoginActivity extends AppCompatActivity
 
 
 
-    private void SendUserToMainActivity()
+    private void SendUserToChatActivity()
     {
-        Intent mainIntent = new Intent(PhoneLoginActivity.this, MainActivity.class);
-        startActivity(mainIntent);
-        finish();
+
     }
 }

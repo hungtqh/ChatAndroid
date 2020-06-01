@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null)
         {
-            SendUserToMainActivity();
+            SendUserToChatActivity();
         }
     }
 
@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity
                                             {
                                                 if (task.isSuccessful())
                                                 {
-                                                    SendUserToMainActivity();
+                                                    SendUserToChatActivity();
                                                     Toast.makeText(LoginActivity.this, "Logged in Successful...", Toast.LENGTH_SHORT).show();
                                                     loadingBar.dismiss();
                                                 }
@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity
 
 
 
-    private void SendUserToMainActivity()
+    private void SendUserToChatActivity()
     {
         Intent mainIntent = new Intent(LoginActivity.this, Chats.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -15,7 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.chatandroid.activity.LoginActivity;
 import com.chatandroid.activity.ProfileActivity;
-import com.chatandroid.activity.SettingsActivity;
+import com.chatandroid.activity.SettingActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -182,7 +182,7 @@ public class Authenticate extends AppCompatActivity {
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
 
                         if (drawerItem.getIdentifier() == R.string.action_settings) {
-                            Intent intent = new Intent(Authenticate.this, SettingsActivity.class);
+                            Intent intent = new Intent(Authenticate.this, SettingActivity.class);
                             startActivity(intent);
                         }
 
@@ -243,28 +243,6 @@ public class Authenticate extends AppCompatActivity {
 
     }
 
-    protected void rightMenuAccounts(Bundle instance) {
-        PrimaryDrawerItem home = new PrimaryDrawerItem().withName(R.string.account).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.account).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
-        SecondaryDrawerItem privacy = new SecondaryDrawerItem().withName(R.string.privacy).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.privacy).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_security_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
-        SecondaryDrawerItem security = new SecondaryDrawerItem().withName(R.string.security).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.security).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_lock_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.primary));
-        secondaryMenus = new DrawerBuilder()
-                .withActivity(this)
-                .withDisplayBelowStatusBar(true)
-                .withSavedInstance(instance)
-                .addDrawerItems(
-                        home,
-                        privacy,
-                        security
-
-                ).withOnDrawerItemClickListener((view, position, drawerItem) -> false)
-                .withDrawerGravity(Gravity.END)
-                .append(drawerReference());
-    }
-
-    public Drawer drawerReference() {
-        return result;
-    }
-
     private void SendUserToLoginActivity() {
         Intent loginIntent = new Intent(Authenticate.this, LoginActivity.class);
         overridePendingTransition(0, 0);
@@ -274,7 +252,7 @@ public class Authenticate extends AppCompatActivity {
     }
 
     private void SendUserToSettingsActivity() {
-        Intent settingsIntent = new Intent(Authenticate.this, SettingsActivity.class);
+        Intent settingsIntent = new Intent(Authenticate.this, SettingActivity.class);
         startActivity(settingsIntent);
     }
 

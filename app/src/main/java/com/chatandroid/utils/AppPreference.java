@@ -18,10 +18,10 @@ public class AppPreference {
     int PRIVATE_MODE = 0;
 
     // Sharedpref file name
-    private static final String PREF_NAME = "agripoa_farmers";
+    private static final String PREF_NAME = "ptit_chatters";
 
     // All Shared Preferences Keys
-    private static final String CURRENT_CHATING_USER = "currenct_chating_user";
+    private static final String CURRENT_CHATING_USER = "current_chatting_user";
 
 
     // Constructor
@@ -35,7 +35,7 @@ public class AppPreference {
     /**
      * Current chatting user
      * */
-    public void setCurrentChatingUser(String user){
+    public void setCurrentChattingUser(String user){
 
         editor.putString(CURRENT_CHATING_USER, user);
 
@@ -43,7 +43,7 @@ public class AppPreference {
         editor.commit();
     }
 
-    public String getCurrentChatingUser(){
+    public String getCurrentChattingUser(){
         return  pref.getString(CURRENT_CHATING_USER,null);
     }
 

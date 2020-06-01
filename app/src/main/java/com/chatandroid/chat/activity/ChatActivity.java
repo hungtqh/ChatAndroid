@@ -113,13 +113,13 @@ public class ChatActivity extends Authenticate
     @Override
     public void  onResume(){
         super.onResume();
-        preference.setCurrentChatingUser(messageReceiverID);
+        preference.setCurrentChattingUser(messageReceiverID);
     }
 
     @Override
     public  void  onPause(){
         super.onPause();
-        preference.setCurrentChatingUser("none");
+        preference.setCurrentChattingUser("none");
     }
 
     private void IntializeControllers()

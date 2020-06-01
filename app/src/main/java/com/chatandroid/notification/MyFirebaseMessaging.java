@@ -32,11 +32,11 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        String sent = remoteMessage.getData().get("sented");
+        String sent = remoteMessage.getData().get("sent");
         String user = remoteMessage.getData().get("user");
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         AppPreference preference = new AppPreference(MyFirebaseMessaging.this);
-        if (preference.getCurrentChatingUser() == null || !preference.getCurrentChatingUser().equals(user)) {
+        if (preference.getCurrentChattingUser() == null || !preference.getCurrentChattingUser().equals(user)) {
             if (firebaseUser != null) {
                 if (firebaseUser.getUid() != null && sent.equals(firebaseUser.getUid())) {
                     sendNotification(remoteMessage);

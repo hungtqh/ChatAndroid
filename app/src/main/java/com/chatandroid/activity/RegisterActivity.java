@@ -29,7 +29,7 @@ public class RegisterActivity extends AppCompatActivity
     private Button CreateAccountButton;
     private EditText UserEmail, UserPassword;
     private TextView AlreadyHaveAccountLink;
-    
+
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
 
@@ -44,8 +44,8 @@ public class RegisterActivity extends AppCompatActivity
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        
-        
+
+
         mAuth = FirebaseAuth.getInstance();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity
     {
         String email = binding.email.getText().toString();
         String password = binding.password.getText().toString();
-        
+
         if (TextUtils.isEmpty(email))
         {
             Toast.makeText(this, "Please enter email...", Toast.LENGTH_SHORT).show();
@@ -110,11 +110,11 @@ public class RegisterActivity extends AppCompatActivity
                                 RootRef.child("Users").child(currentUserID).child("device_token")
                                         .setValue(deviceToken);
 
-                                SendUserToMainActivity();
+                                SendUserToChatActivity();
                                 Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();
                             }
-                            else 
+                            else
                             {
                                 String message = task.getException().getMessage();
                                 Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -143,12 +143,9 @@ public class RegisterActivity extends AppCompatActivity
     }
 
 
-    private void SendUserToMainActivity()
+    private void SendUserToChatActivity()
     {
-        Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(mainIntent);
-        finish();
+
     }
 
 }
