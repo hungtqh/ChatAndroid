@@ -38,7 +38,7 @@ public class ContactsFragment extends Fragment {
     private View ContactsView;
     private RecyclerView myContactsList;
 
-    private DatabaseReference ContacsRef, UsersRef;
+    private DatabaseReference UsersRef;
     private FirebaseAuth mAuth;
     private String currentUserID;
 

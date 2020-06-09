@@ -59,15 +59,26 @@ public class ProfileActivity extends Authenticate {
         UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String firtname = (dataSnapshot.child("firstname").exists()) ? dataSnapshot.child("firstname").getValue().toString() : "";
-                String lastname = (dataSnapshot.child("lastname").exists()) ? dataSnapshot.child("lastname").getValue().toString() : "";
+                String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
+                String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
-                String username = (dataSnapshot.child("username").exists()) ? dataSnapshot.child("username").getValue().toString() : "";
+                String username = Tools.getRefValue(dataSnapshot.child("username"));
+                String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
+                String location = Tools.getRefValue(dataSnapshot.child("location"));
+                String gender = Tools.getRefValue(dataSnapshot.child("gender"));
+                String dateOfBirth = Tools.getRefValue(dataSnapshot.child("dateOfBirth"));
 
                 binding.profileName.setText(name);
+                binding.nickname.setText(username);
+                binding.location.setText(location);
+                binding.phone.setText(phone);
+                binding.gender.setText(gender);
+                binding.dateOfBirth.setText(dateOfBirth);
+
                 if (mAuth.getCurrentUser() != null) {
                     binding.username.setText(mAuth.getCurrentUser().getEmail());
                 }
+
             }
 
             @Override

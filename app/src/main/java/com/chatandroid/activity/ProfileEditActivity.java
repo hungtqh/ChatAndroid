@@ -2,10 +2,12 @@ package com.chatandroid.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,12 +39,14 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class ProfileEditActivity extends Authenticate {
+public class ProfileEditActivity extends Authenticate implements DatePickerDialog.OnDateSetListener {
     private DatabaseReference UserRef;
 
     private ActivityProfileEditBinding binding;
@@ -60,6 +64,7 @@ public class ProfileEditActivity extends Authenticate {
         binding = ActivityProfileEditBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
         primaryMenu(savedInstanceState);
         UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
         UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("profile_pictures");
@@ -77,12 +82,40 @@ public class ProfileEditActivity extends Authenticate {
 
         binding.updateProfile.setOnClickListener(v -> updateProfile());
 
+        binding.dateOfBirth.setOnClickListener(v -> {
+            showDatePicker();
+        });
+
         binding.image.setOnClickListener(view1 -> {
             Intent galleryIntent = new Intent();
             galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
             galleryIntent.setType("image/*");
             startActivityForResult(galleryIntent, GalleryPick);
         });
+    }
+
+    private void showDatePicker() {
+        Calendar calendar;
+        DatePickerDialog datePickerDialog;
+        int Year, Month, Day;
+
+        calendar = Calendar.getInstance();
+
+        Year = calendar.get(Calendar.YEAR);
+        Month = calendar.get(Calendar.MONTH);
+        Day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        datePickerDialog = DatePickerDialog.newInstance(ProfileEditActivity.this, Year, Month, Day);
+
+        datePickerDialog.setThemeDark(false);
+
+        datePickerDialog.showYearPickerFirst(false);
+
+        datePickerDialog.setAccentColor(Color.parseColor("#0072BA"));
+
+        datePickerDialog.setTitle("Select Date From DatePickerDialog");
+
+        datePickerDialog.show(getSupportFragmentManager(), "DatePickerDialog");
     }
 
 
@@ -176,9 +209,9 @@ public class ProfileEditActivity extends Authenticate {
                 String name = firtname + " " + lastname;
                 String username = Tools.getRefValue(dataSnapshot.child("username"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
-                String latitude = Tools.getRefValue(dataSnapshot.child("latitude"));
-                String longitude = Tools.getRefValue(dataSnapshot.child("longitude"));
                 String phonenumber = Tools.getRefValue(dataSnapshot.child("phonenumber"));
+                String gender = Tools.getRefValue(dataSnapshot.child("gender"));
+                String dateOfBirth = Tools.getRefValue(dataSnapshot.child("dateOfBirth"));
 
                 if (dataSnapshot.child("image").exists()) {
                     String userImage = dataSnapshot.child("image").getValue().toString();
@@ -187,16 +220,38 @@ public class ProfileEditActivity extends Authenticate {
                 }
 
                 binding.profileName.setText(name);
+
+                if (gender.equals("Male")) {
+                    binding.male.setChecked(true);
+                } else {
+                    binding.female.setChecked(true);
+                }
+
+                if (binding.dateOfBirth.getText().toString().isEmpty()) {
+                    binding.dateOfBirth.setText(dateOfBirth);
+                }
+
                 if (mAuth.getCurrentUser() != null) {
                     binding.username.setText(mAuth.getCurrentUser().getEmail());
                 }
-                binding.usernameEdit.setText(username);
-                binding.firstname.setText(firtname);
-                binding.lastname.setText(lastname);
-                binding.longitude.setText(longitude);
-                binding.latitude.setText(latitude);
-                binding.phonenumber.setText(phonenumber);
-                if (!location.isEmpty()) {
+
+                if (binding.usernameEdit.getText().toString().isEmpty()) {
+                    binding.usernameEdit.setText(username);
+                }
+
+                if (binding.firstname.getText().toString().isEmpty()) {
+                    binding.firstname.setText(firtname);
+                }
+
+                if (binding.lastname.getText().toString().isEmpty()) {
+                    binding.lastname.setText(lastname);
+                }
+
+                if (binding.phonenumber.getText().toString().isEmpty()) {
+                    binding.phonenumber.setText(phonenumber);
+                }
+
+                if (binding.location.getText().toString().isEmpty()) {
                     binding.location.setText(location);
                 }
 
@@ -214,6 +269,12 @@ public class ProfileEditActivity extends Authenticate {
         String firstname = binding.firstname.getText().toString();
         String lastname = binding.lastname.getText().toString();
         String username = binding.usernameEdit.getText().toString();
+        String location = binding.location.getText().toString();
+        String phoneNumber = binding.phonenumber.getText().toString();
+
+        int checkedGender = binding.gender.getCheckedRadioButtonId();
+        String gender = (checkedGender == R.id.male) ? "Male" : "Female";
+        String dateOfBirth = binding.dateOfBirth.getText().toString();
 
         if (TextUtils.isEmpty(lastname)) {
             Toast.makeText(this, "Please write your first name.", Toast.LENGTH_SHORT).show();
@@ -229,8 +290,10 @@ public class ProfileEditActivity extends Authenticate {
             profileMap.put("firstname", firstname);
             profileMap.put("lastname", lastname);
             profileMap.put("username", username);
-            profileMap.put("location", binding.location.getText().toString());
-            profileMap.put("phonenumber", binding.phonenumber.getText().toString());
+            profileMap.put("gender", gender);
+            profileMap.put("dateOfBirth", dateOfBirth);
+            profileMap.put("location", location);
+            profileMap.put("phonenumber", phoneNumber);
             RootRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -250,5 +313,12 @@ public class ProfileEditActivity extends Authenticate {
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
         Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields).build(this);
         startActivityForResult(intent, request_code);
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        monthOfYear++;
+        String date = dayOfMonth + "-" + monthOfYear + "-" + year;
+        binding.dateOfBirth.setText(date);
     }
 }

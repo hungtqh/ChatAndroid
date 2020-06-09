@@ -33,7 +33,6 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class ChatsFragment extends Fragment {
 
-    final private String TAG = "kelly ChatsFragment";
     public DatabaseReference RootRef;
 
     private View PrivateChatsView;
@@ -106,8 +105,10 @@ public class ChatsFragment extends Fragment {
                         holder.username.setText(username);
                         holder.name.setText(name);
                         holder.device_token.setText(Tools.getRefValue(dataSnapshot.child("device_token")));
-                        lastMessage(currentUserID,holder.username,username,holder.mCount,holder.mTime);
 
+                        if (mAuth.getCurrentUser() != null) {
+                            lastMessage(currentUserID,holder.username,username,holder.mCount,holder.mTime);
+                        }
                     }
 
                     @Override
@@ -144,7 +145,7 @@ public class ChatsFragment extends Fragment {
 
     private void lastMessage(String user, TextView lastMessageView, String username, TextView mCount, TextView mTime){
         mAuth = FirebaseAuth.getInstance();
-        String currentUserID = mAuth.getCurrentUser().getUid();
+        currentUserID = mAuth.getCurrentUser().getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
         RootRef.child("Messages").child(currentUserID).child(user)
                 .addChildEventListener(new ChildEventListener() {

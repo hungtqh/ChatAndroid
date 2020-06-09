@@ -65,10 +65,16 @@ public class ProfileViewActivity extends Authenticate {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
+                String location = Tools.getRefValue(dataSnapshot.child("location"));
+                String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String name = firtname + " " + lastname;
                 String username = Tools.getRefValue(dataSnapshot.child("username"));
+
                 binding.profileName.setText(name);
                 binding.username.setText(mAuth.getCurrentUser().getEmail());
+                binding.nickname.setText(username);
+                binding.location.setText(location);
+                binding.phone.setText(phone);
                 toolbar.setTitle(name);
 
                 ManageChatRequests();

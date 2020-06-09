@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -14,18 +13,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include
-            layout="@layout/app_bar_layout" >
-        </include>
+        <include layout="@layout/app_bar_layout"></include>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:layout_below="@+id/toolbar_layout"
-        android:layout_above="@+id/bottom_navigation"
         android:id="@+id/nested_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation"
+        android:layout_below="@+id/toolbar_layout"
         android:clipToPadding="false"
         android:scrollbars="none"
         android:scrollingCache="true"
@@ -78,8 +75,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/spacing_mlarge"
-                android:padding="@dimen/spacing_mlarge">
+                android:padding="@dimen/spacing_mlarge"
+                android:paddingBottom="@dimen/spacing_mlarge">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -131,6 +128,25 @@
                         android:padding="0dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_xxlarge"
+                    android:layout_marginTop="@dimen/spacing_large"
+                    android:textColorHint="@color/app_bar"
+                    app:boxStrokeColor="@color/app_bar">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/dateOfBirth"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:focusableInTouchMode="false"
+                        android:hint="Date Of Birth"
+                        android:padding="0dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -150,6 +166,55 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:text="Gender"
+                        android:textColor="@color/app_bar"
+                        android:textSize="17sp" />
+
+                    <RadioGroup
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="2"
+                        android:id="@+id/gender"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/male"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="20dp"
+                            android:buttonTint="@color/app_bar"
+                            android:checked="true"
+                            android:text="Male"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                            android:textColor="@color/grey_80" />
+
+                        <RadioButton
+                            android:id="@+id/female"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/app_bar"
+                            android:text="Female"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                            android:textColor="@color/grey_80" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="@dimen/spacing_xxlarge"
                     android:layout_marginTop="@dimen/spacing_large"
                     android:gravity="center_vertical"
@@ -163,12 +228,12 @@
                         app:srcCompat="@drawable/ic_location" />
 
                     <LinearLayout
-                        android:layout_marginStart="10dp"
-                        android:paddingStart="6dp"
-                        android:paddingEnd="6dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="6dp">
 
                         <TextView
                             android:id="@+id/location"
@@ -179,7 +244,7 @@
                             android:maxLines="1"
                             android:minHeight="@dimen/spacing_xmlarge"
                             android:singleLine="true"
-                            android:text="Location"
+                            android:hint="Location"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                             android:textColor="@color/grey_80" />
 
@@ -199,24 +264,13 @@
                     android:layout_marginLeft="-4dp"
                     android:layout_marginTop="@dimen/spacing_large"
                     android:layout_marginRight="-4dp"
-                    android:backgroundTint="@color/app_bar"
                     android:background="@drawable/btn_rounded_green_300"
+                    android:backgroundTint="@color/app_bar"
                     android:text="@string/UPDATE"
                     android:textAllCaps="false"
                     android:textColor="@color/mdtp_white" />
 
             </LinearLayout>
-
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/latitude"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-            <TextView
-                android:visibility="gone"
-                android:id="@+id/longitude"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

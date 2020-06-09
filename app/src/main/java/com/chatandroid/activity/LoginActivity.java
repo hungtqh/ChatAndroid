@@ -202,7 +202,7 @@ public class LoginActivity extends AppCompatActivity
                     return;
                 }
                 mBottomSheetDialog.cancel();
-                loadingBar.setTitle("Agripoa | Account Recovery");
+                loadingBar.setTitle("PTIT Chat | Account Recovery");
                 loadingBar.setMessage("Please wait....");
                 loadingBar.setCanceledOnTouchOutside(true);
                 loadingBar.show();
