@@ -7,14 +7,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
 
 import com.chatandroid.Authenticate;
 import com.chatandroid.R;
-import com.chatandroid.chat.adapter.SettingsFragmentsAdapter;
 import com.chatandroid.databinding.ActivitySettingBinding;
 import com.chatandroid.utils.Tools;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 

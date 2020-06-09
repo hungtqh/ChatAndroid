@@ -62,7 +62,7 @@
                 app:tabIndicatorColor="@color/defaultWhite"
                 app:tabIndicatorHeight="3dp"
                 app:tabMode="fixed"
-                app:tabTextAppearance="@style/TextAppearance.Subhead.Bold"
+                app:tabTextAppearance="@style/CustomTabTextAppearance"
                 app:tabTextColor="@color/defaultWhite" />
 
 

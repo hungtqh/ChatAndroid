@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chatandroid.R;
 import com.chatandroid.chat.activity.FindFriendsActivity;
 import com.chatandroid.chat.activity.ProfileViewActivity;
+import com.chatandroid.chat.adapter.ContactsViewHolder;
 import com.chatandroid.chat.model.Contacts;
 import com.chatandroid.utils.Tools;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -83,10 +84,10 @@ public class FriendsFragment extends Fragment
                         .build();
 
 
-        final FirebaseRecyclerAdapter<Contacts, ContactsFragment.ContactsViewHolder> adapter
-                = new FirebaseRecyclerAdapter<Contacts, ContactsFragment.ContactsViewHolder>(options) {
+        final FirebaseRecyclerAdapter<Contacts, ContactsViewHolder> adapter
+                = new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull final ContactsFragment.ContactsViewHolder holder, int position, @NonNull Contacts model)
+            protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, int position, @NonNull Contacts model)
             {
 
                     final String userID = getRef(position).getKey();
@@ -131,10 +132,10 @@ public class FriendsFragment extends Fragment
 
             @NonNull
             @Override
-            public ContactsFragment.ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
+            public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
             {
                 View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.users_display_layout, viewGroup, false);
-                ContactsFragment.ContactsViewHolder viewHolder = new ContactsFragment.ContactsViewHolder(view);
+                ContactsViewHolder viewHolder = new ContactsViewHolder(view);
                 return viewHolder;
             }
         };

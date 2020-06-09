@@ -3,8 +3,7 @@ package com.chatandroid.chat.model;
 public class Contacts {
     public String firstname, lastname, status, image, username;
 
-    public Contacts()
-    {
+    public Contacts() {
 
     }
 

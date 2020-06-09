@@ -3,6 +3,7 @@ package com.chatandroid.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -15,7 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends Authenticate {
     private DatabaseReference UserRef;
@@ -62,6 +64,7 @@ public class ProfileActivity extends Authenticate {
                 String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
+                String userImage = Tools.getRefValue(dataSnapshot.child("image"));
                 String username = Tools.getRefValue(dataSnapshot.child("username"));
                 String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
@@ -74,6 +77,12 @@ public class ProfileActivity extends Authenticate {
                 binding.phone.setText(phone);
                 binding.gender.setText(gender);
                 binding.dateOfBirth.setText(dateOfBirth);
+
+                CircularImageView userProfileImage = binding.image;
+
+                if (!userImage.isEmpty()) {
+                    Picasso.get().load(userImage).placeholder(R.drawable.photo_male_8).into(userProfileImage);
+                }
 
                 if (mAuth.getCurrentUser() != null) {
                     binding.username.setText(mAuth.getCurrentUser().getEmail());

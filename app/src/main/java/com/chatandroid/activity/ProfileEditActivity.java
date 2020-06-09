@@ -163,10 +163,10 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                         if (task.isSuccessful()) {
                             Toast.makeText(ProfileEditActivity.this, "Profile Image uploaded Successfully...", Toast.LENGTH_SHORT).show();
 
-                            final String downloaedUrl = task.getResult().getMetadata().getName().toString();
+                            final String downloadedUrl = task.getResult().getMetadata().getName().toString();
 
                             RootRef.child("Users").child(currentUserID).child("image")
-                                    .setValue(downloaedUrl)
+                                    .setValue(downloadedUrl)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
