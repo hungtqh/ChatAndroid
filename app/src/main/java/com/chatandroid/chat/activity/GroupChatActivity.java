@@ -1,5 +1,10 @@
 package com.chatandroid.chat.activity;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -7,10 +12,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.chatandroid.Authenticate;
 import com.chatandroid.R;
+import com.chatandroid.chat.adapter.GroupMessageAdapter;
+import com.chatandroid.chat.model.GroupMessage;
 import com.chatandroid.databinding.ActivityGroupChatBinding;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,21 +29,40 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
-public class GroupChatActivity extends AppCompatActivity {
+public class GroupChatActivity extends Authenticate {
     private Toolbar mToolbar;
-    private ImageView SendMessageButton;
+    private ImageView sendMessageButton;
+    private ImageView sendFileButton;
     private EditText userMessageInput;
     private ActivityGroupChatBinding binding;
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference GroupNameRef, GroupMessageKeyRef;
+    private RecyclerView userMessagesList;
+    private LinearLayoutManager linearLayoutManager;
+    private GroupMessageAdapter messageAdapter;
 
-    private String currentGroupName, currentUserID, currentDate, currentTime;
+    private String checker = "";
+
+    private FirebaseAuth mAuth;
+
+    private ProgressDialog loadingBar;
+
+    private Uri fileUri;
+
+    private final List<GroupMessage> messagesList = new ArrayList<>();
+
+    private DatabaseReference usersRef, groupNameRef, groupMessageKeyRef;
+
+    private String currentGroupName, currentUserID, currentUsername, currentDate, currentTime;
 
 
     @Override
@@ -45,43 +74,40 @@ public class GroupChatActivity extends AppCompatActivity {
         setContentView(view);
 
         currentGroupName = getIntent().getExtras().get("groupName").toString();
-        Toast.makeText(GroupChatActivity.this, currentGroupName, Toast.LENGTH_SHORT).show();
 
+        groupNameRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName);
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
-        GroupNameRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentGroupName);
 
-        InitializeFields();
+        initializeFields();
 
-        SendMessageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SaveMessageInfoToDatabase();
+        getUserInfo();
 
-                userMessageInput.setText("");
-            }
+        (binding.lytBack).setOnClickListener(v -> onBackPressed());
+
+        sendMessageButton.setOnClickListener(view1 -> {
+            saveTextMessageInfoToDatabase();
+
+            userMessageInput.setText("");
         });
-    }
 
+        sendFileButton.setOnClickListener(view2 -> {
+            sendFile();
+        });
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        GroupNameRef.addChildEventListener(new ChildEventListener() {
+        groupNameRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot.exists()) {
-                    DisplayMessages(dataSnapshot);
-                }
+                GroupMessage message = dataSnapshot.getValue(GroupMessage.class);
+                messagesList.add(message);
+                messageAdapter.notifyDataSetChanged();
+                userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot.exists()) {
-                    DisplayMessages(dataSnapshot);
-                }
             }
 
             @Override
@@ -101,49 +127,192 @@ public class GroupChatActivity extends AppCompatActivity {
         });
     }
 
+    private void sendFile() {
+        CharSequence[] options = new CharSequence[]{
+                "Images",
+                "PDF Files",
+                "MS Word Files"
+        };
 
-    private void InitializeFields() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
+        builder.setTitle("Select file to send");
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    checker = "image";
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*");
+                    startActivityForResult(intent.createChooser(intent, "Select Image"), 1);
+                }
+
+                if (which == 1) {
+                    checker = "pdf";
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent.createChooser(intent, "Select PDF File"), 1);
+                }
+
+                if (which == 2) {
+                    checker = "docx";
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                    startActivityForResult(intent.createChooser(intent, "Select MS Word File"), 1);
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    private void initializeFields() {
         mToolbar = binding.toolbar;
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(currentGroupName);
 
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
 
-        SendMessageButton = binding.btnSend;
+        loadingBar = new ProgressDialog(this);
+
+        messageAdapter = new GroupMessageAdapter(GroupChatActivity.this, messagesList);
+        userMessagesList = binding.recyclerView;
+        linearLayoutManager = new LinearLayoutManager(this);
+        userMessagesList.setLayoutManager(linearLayoutManager);
+        userMessagesList.setAdapter(messageAdapter);
+
+        sendMessageButton = binding.btnSend;
+        sendFileButton = binding.btnSendFile;
+
         userMessageInput = binding.textContent;
     }
 
-    private void SaveMessageInfoToDatabase() {
+    private void getUserInfo() {
+        usersRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
+                    String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
+                    currentUsername = firtname + " " + lastname;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void saveTextMessageInfoToDatabase() {
         String message = userMessageInput.getText().toString();
-        String messageKey = GroupNameRef.push().getKey();
+        String messageKey = groupNameRef.push().getKey();
+        String type = "text";
 
         if (TextUtils.isEmpty(message)) {
             Toast.makeText(this, "Please write message first...", Toast.LENGTH_SHORT).show();
         } else {
-            Calendar calForDate = Calendar.getInstance();
-            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            currentDate = currentDateFormat.format(calForDate.getTime());
-
-            Calendar calForTime = Calendar.getInstance();
-            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-            currentTime = currentTimeFormat.format(calForTime.getTime());
-
-            HashMap<String, Object> groupMessageKey = new HashMap<>();
-            GroupNameRef.updateChildren(groupMessageKey);
-
-            GroupMessageKeyRef = GroupNameRef.child(messageKey);
-
-            HashMap<String, Object> messageInfoMap = new HashMap<>();
-            messageInfoMap.put("uid", currentUserID);
-            messageInfoMap.put("message", message);
-            messageInfoMap.put("date", currentDate);
-            messageInfoMap.put("time", currentTime);
-            GroupMessageKeyRef.updateChildren(messageInfoMap);
+            saveMessage(message, messageKey, type);
         }
     }
 
+    private void saveMessage(String message, String messageKey, String type) {
+        Calendar calForDate = Calendar.getInstance();
+        SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        currentDate = currentDateFormat.format(calForDate.getTime());
 
-    private void DisplayMessages(DataSnapshot dataSnapshot) {
+        Calendar calForTime = Calendar.getInstance();
+        SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
+        currentTime = currentTimeFormat.format(calForTime.getTime());
 
+        HashMap<String, Object> groupMessageKey = new HashMap<>();
+        groupNameRef.updateChildren(groupMessageKey);
+
+        groupMessageKeyRef = groupNameRef.child(messageKey);
+
+        HashMap<String, Object> messageInfoMap = new HashMap<>();
+        messageInfoMap.put("name", currentUsername);
+        messageInfoMap.put("message", message);
+        messageInfoMap.put("date", currentDate);
+        messageInfoMap.put("time", currentTime);
+        messageInfoMap.put("from", currentUserID);
+        messageInfoMap.put("type", type);
+
+        groupMessageKeyRef.updateChildren(messageInfoMap);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            loadingBar.setTitle("Sending Image");
+            loadingBar.setMessage("Sending your image message...");
+            loadingBar.setCanceledOnTouchOutside(false);
+            loadingBar.show();
+
+            fileUri = data.getData();
+            if (checker.equals("image")) {
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Group Files");
+
+                String messageKey = groupNameRef.push().getKey();
+
+                StorageReference filePath = storageReference.child(messageKey + ".jpg");
+
+                filePath.putFile(fileUri).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadedUrl = uri.toString();
+
+                            saveMessage(downloadedUrl, messageKey, checker);
+                            Toast.makeText(GroupChatActivity.this, "Image sent!", Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+                        });
+                    } else {
+                        String message = task.getException().toString();
+                        Toast.makeText(GroupChatActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else if (!checker.equals("image")) {
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Group Document Files");
+
+                String messageKey = groupNameRef.push().getKey();
+
+                StorageReference filePath = storageReference.child(messageKey + "." + checker);
+
+                filePath.putFile(fileUri).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadedUrl = uri.toString();
+
+                            saveMessage(downloadedUrl, messageKey, checker);
+                            Toast.makeText(GroupChatActivity.this, "File sent!", Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+                        });
+                    } else {
+                        String message = task.getException().toString();
+                        Toast.makeText(GroupChatActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnProgressListener(taskSnapshot -> {
+                    double p = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    loadingBar.setMessage((int) p + "% Uploaded...");
+                });
+            } else {
+                Toast.makeText(this, "Nothing Selected.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

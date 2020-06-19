@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.chatandroid.R;
 import com.chatandroid.chat.activity.ChatActivity;
+import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.utils.AppPreference;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,28 +35,36 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         String sent = remoteMessage.getData().get("sent");
         String user = remoteMessage.getData().get("user");
+        String intent = remoteMessage.getData().get("intent");
+
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         AppPreference preference = new AppPreference(MyFirebaseMessaging.this);
         if (preference.getCurrentChattingUser() == null || !preference.getCurrentChattingUser().equals(user)) {
             if (firebaseUser != null) {
                 if (firebaseUser.getUid() != null && sent.equals(firebaseUser.getUid())) {
-                    sendNotification(remoteMessage);
+                    sendNotification(remoteMessage, intent);
                 }
             }
         }
     }
 
-    private void sendNotification(RemoteMessage remoteMessage) {
+    private void sendNotification(RemoteMessage remoteMessage, String intentName) {
         String channelId = getString(R.string.default_notification_channel_id);
         String user = remoteMessage.getData().get("user");
-        String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
         String device = remoteMessage.getData().get("device");
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, ChatActivity.class);
+        Intent intent = new Intent();
+
+        if (intentName.equals("ChatActivity")) {
+            intent = new Intent(this, ChatActivity.class);
+        } else if (intentName.equals("ProfileViewActivity")) {
+            intent = new Intent(this, ProfileViewActivity.class);
+        }
+
         Bundle bundle = new Bundle();
         bundle.putString("receiver_uid", user);
         bundle.putString("receiver_token", device);

@@ -1,13 +1,8 @@
 package com.chatandroid.chat.model;
 
-public class Message {
-    public Boolean getSeen() {
-        return seen;
-    }
+import java.util.Objects;
 
-    public void setSeen(Boolean seen) {
-        this.seen = seen;
-    }
+public class Message {
 
     private String from, message, type, to, messageID, time, date, name;
     private Boolean seen;
@@ -25,6 +20,14 @@ public class Message {
         this.time = time;
         this.date = date;
         this.name = name;
+        this.seen = seen;
+    }
+
+    public Boolean getSeen() {
+        return seen;
+    }
+
+    public void setSeen(Boolean seen) {
         this.seen = seen;
     }
 
@@ -90,5 +93,18 @@ public class Message {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return messageID.equals(message.messageID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageID);
     }
 }

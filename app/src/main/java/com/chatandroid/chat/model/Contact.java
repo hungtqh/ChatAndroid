@@ -1,9 +1,9 @@
 package com.chatandroid.chat.model;
 
-public class Contacts {
+public class Contact {
     public String firstname, lastname, status, image, username;
 
-    public Contacts() {
+    public Contact() {
 
     }
 
@@ -15,7 +15,7 @@ public class Contacts {
         this.username = username;
     }
 
-    public Contacts(String firstname, String lastname, String username, String status, String image) {
+    public Contact(String firstname, String lastname, String username, String status, String image) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.status = status;

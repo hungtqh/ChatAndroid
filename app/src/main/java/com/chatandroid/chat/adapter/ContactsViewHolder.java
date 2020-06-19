@@ -1,18 +1,21 @@
 package com.chatandroid.chat.adapter;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatandroid.R;
+import com.google.firebase.database.DatabaseReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactsViewHolder extends RecyclerView.ViewHolder {
     public TextView name, username, statusOnline, statusOffline, uid, device_token, mTime, mCount;
     public CircleImageView profileImage;
+    public ImageView onlineGreen;
 
     public ContactsViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -24,7 +27,8 @@ public class ContactsViewHolder extends RecyclerView.ViewHolder {
         statusOffline = itemView.findViewById(R.id.status_online);
         profileImage = itemView.findViewById(R.id.profile_image);
         device_token = itemView.findViewById(R.id.device_token);
-        mTime = (TextView) itemView.findViewById(R.id.message_time);
-        mCount = (TextView) itemView.findViewById(R.id.messages_count);
+        mTime = itemView.findViewById(R.id.message_time);
+        mCount = itemView.findViewById(R.id.messages_count);
+        onlineGreen = itemView.findViewById(R.id.online_dot);
     }
 }

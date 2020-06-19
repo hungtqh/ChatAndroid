@@ -17,14 +17,6 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 
 public class SettingActivity extends Authenticate {
-    private Button UpdateAccountSettings;
-    private EditText userName, userStatus;
-    private CircularImageView userProfileImage;
-
-    private static final int GalleryPick = 1;
-    private StorageReference UserProfileImagesRef;
-    private ProgressDialog loadingBar;
-
     private Toolbar toolbar;
     private ActivitySettingBinding binding;
 
@@ -36,11 +28,11 @@ public class SettingActivity extends Authenticate {
         setContentView(view);
 
         primaryMenu(savedInstanceState);
-        InitializeFields();
+        initializeFields();
     }
 
 
-    private void InitializeFields() {
+    private void initializeFields() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Settings");

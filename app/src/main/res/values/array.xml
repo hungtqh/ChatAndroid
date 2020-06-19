@@ -22,11 +22,6 @@
         <item>Mist Mountain</item>
     </string-array>
 
-    <integer-array name="people_images">
-        <item>@drawable/photo_female_1</item>
-        <item>@drawable/photo_female_4</item>
-    </integer-array>
-
     <string-array name="people_names">
         <item>Anderson Thomas</item>
         <item>Adams Green</item>

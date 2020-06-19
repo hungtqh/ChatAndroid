@@ -4,14 +4,27 @@
     android:id="@+id/lyt_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/spacing_xlarge"
-    android:layout_marginLeft="@dimen/spacing_xlarge"
-    android:gravity="end|right"
-    android:orientation="vertical"
+    android:layout_marginEnd="@dimen/spacing_xlarge"
+    android:layout_marginRight="@dimen/spacing_xlarge"
+    android:gravity="start|left"
+    android:orientation="horizontal"
     android:paddingLeft="@dimen/spacing_middle"
-    android:paddingTop="1dp"
+    android:paddingTop="@dimen/spacing_xsmall"
     android:paddingRight="@dimen/spacing_middle"
-    android:paddingBottom="1dp">
+    android:paddingBottom="@dimen/spacing_xsmall">
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/profile_image_chat"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/profile_image"
+        app:civ_border="true"
+        app:civ_border_color="#075E54"
+        app:civ_border_width="0dp"
+        android:layout_marginRight="10dp"
+        app:civ_shadow="true"
+        android:layout_gravity="center"
+        app:civ_shadow_radius="0" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_text_message"
@@ -19,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/spacing_small"
         android:minHeight="32dp"
-        app:cardBackgroundColor="#EFFFDE"
+        app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="5dp"
         app:cardElevation="1dp"
         app:cardUseCompatPadding="false">
@@ -55,34 +68,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="#3C3C3C"
+                    android:text="02:30 AM"
+                    android:textColor="@color/grey_40"
                     android:textSize="12sp" />
 
                 <View
-                    android:id="@+id/message_time"
                     android:layout_width="@dimen/spacing_medium"
                     android:layout_height="0dp" />
-
-
-                <ImageView
-                    android:id="@+id/work_status_done"
-                    android:layout_width="@dimen/spacing_large"
-                    android:layout_height="@dimen/spacing_large"
-                    android:backgroundTint="@color/green_600"
-                    android:tint="@color/green_600"
-                    android:tintMode="multiply"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/ic_done_all" />
-
-                <ImageView
-                    android:id="@+id/work_status"
-                    android:layout_width="@dimen/spacing_large"
-                    android:layout_height="@dimen/spacing_large"
-                    android:backgroundTint="@color/defaultBlack"
-                    android:tint="@color/defaultBlack"
-                    android:tintMode="multiply"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/ic_done" />
 
             </LinearLayout>
 
@@ -98,5 +90,9 @@
         android:layout_margin="5dp"
         android:scaleType="centerCrop"
         android:visibility="gone" />
+
+    <View
+        android:layout_width="@dimen/spacing_mlarge"
+        android:layout_height="0dp" />
 
 </LinearLayout>

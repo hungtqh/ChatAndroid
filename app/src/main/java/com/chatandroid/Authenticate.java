@@ -40,14 +40,12 @@ import java.util.HashMap;
 public class Authenticate extends AppCompatActivity {
 
     public FirebaseAuth mAuth;
-    public DatabaseReference RootRef;
+    public DatabaseReference rootRef;
     public String currentUserID;
     public String mName = null;
     public String mEmail = null;
 
-    Drawer secondaryMenus;
     protected Drawer result = null;
-    protected Drawer resultAppended = null;
     private AccountHeader headerResult = null;
 
     @Override
@@ -55,32 +53,23 @@ public class Authenticate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (currentUserID == null) {
-            SendUserToLoginActivity();
+            sendUserToLoginActivity();
         }
 
         Button lmHumbug = findViewById(R.id.lmHumbug);
         if (lmHumbug != null) {
-            lmHumbug.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.material_drawer_layout);
-                    mDrawerLayout.openDrawer(Gravity.LEFT);
-                }
+            lmHumbug.setOnClickListener((View.OnClickListener) v -> {
+                DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.material_drawer_layout);
+                mDrawerLayout.openDrawer(Gravity.LEFT);
             });
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
     }
 
     @Override
@@ -108,33 +97,6 @@ public class Authenticate extends AppCompatActivity {
         }
 
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onBackPressed() {
-        //handle the back press :D close the drawer first and if the drawer is closed close the activity
-        if (result != null && result.isDrawerOpen()) {
-            result.closeDrawer();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        //getMenuInflater().inflate(R.menu.options_menu, menu);
-
-        return true;
     }
 
     protected void primaryMenu(Bundle instance) {
@@ -182,53 +144,50 @@ public class Authenticate extends AppCompatActivity {
 
                     }
                 })
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
 
-                        if (drawerItem.getIdentifier() == R.string.menu_chat) {
-                            Intent intent = new Intent(Authenticate.this, Chats.class);
-                            startActivity(intent);
-                        }
+                    if (drawerItem.getIdentifier() == R.string.menu_chat) {
+                        Intent intent = new Intent(Authenticate.this, Chats.class);
+                        startActivity(intent);
+                    }
 
-                        if (drawerItem.getIdentifier() == R.string.action_settings) {
-                            Intent intent = new Intent(Authenticate.this, SettingActivity.class);
-                            startActivity(intent);
-                        }
+                    if (drawerItem.getIdentifier() == R.string.action_settings) {
+                        Intent intent = new Intent(Authenticate.this, SettingActivity.class);
+                        startActivity(intent);
+                    }
 
-                        if (drawerItem.getIdentifier() == R.string.menu_profile) {
-                            Intent intent = new Intent(Authenticate.this, ProfileActivity.class);
-                            overridePendingTransition(0, 0);
-                            startActivity(intent);
-                            overridePendingTransition(0, 0);
-                        }
+                    if (drawerItem.getIdentifier() == R.string.menu_profile) {
+                        Intent intent = new Intent(Authenticate.this, ProfileActivity.class);
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                    }
 
-                        if (drawerItem.getIdentifier() == R.string.logout) {
-                            mAuth.signOut();
-                            Intent intent = new Intent(Authenticate.this, LoginActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            overridePendingTransition(0, 0);
-                            startActivity(intent);
-                            overridePendingTransition(0, 0);
-                            finish();
-                        }
+                    if (drawerItem.getIdentifier() == R.string.logout) {
+                        mAuth.signOut();
+                        Intent intent = new Intent(Authenticate.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                        finish();
+                    }
 
-                        if (drawerItem != null) {
+                    if (drawerItem != null) {
 
-                            if (drawerItem instanceof Badgeable) {
-                                Badgeable badgeable = (Badgeable) drawerItem;
-                                if (badgeable.getBadge() != null) {
-                                    int badge = Integer.valueOf(badgeable.getBadge().toString());
-                                    if (badge > 0) {
-                                        badgeable.withBadge(String.valueOf(badge - 1));
-                                        result.updateItem(drawerItem);
-                                    }
+                        if (drawerItem instanceof Badgeable) {
+                            Badgeable badgeable = (Badgeable) drawerItem;
+                            if (badgeable.getBadge() != null) {
+                                int badge = Integer.valueOf(badgeable.getBadge().toString());
+                                if (badge > 0) {
+                                    badgeable.withBadge(String.valueOf(badge - 1));
+                                    result.updateItem(drawerItem);
                                 }
                             }
                         }
-
-                        return false;
                     }
+
+                    return false;
                 })
                 .withOnDrawerItemLongClickListener((view, position, drawerItem) -> false)
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
@@ -251,7 +210,7 @@ public class Authenticate extends AppCompatActivity {
 
     }
 
-    private void SendUserToLoginActivity() {
+    private void sendUserToLoginActivity() {
         Intent loginIntent = new Intent(Authenticate.this, LoginActivity.class);
         overridePendingTransition(0, 0);
         startActivity(loginIntent);
@@ -259,7 +218,7 @@ public class Authenticate extends AppCompatActivity {
 
     }
 
-    private void SendUserToSettingsActivity() {
+    private void sendUserToSettingsActivity() {
         Intent settingsIntent = new Intent(Authenticate.this, SettingActivity.class);
         startActivity(settingsIntent);
     }
@@ -280,7 +239,7 @@ public class Authenticate extends AppCompatActivity {
         onlineStateMap.put("date", saveCurrentDate);
         onlineStateMap.put("status", state);
 
-        RootRef.child("Users").child(currentUserID).child("userState")
+        rootRef.child("Users").child(currentUserID).child("userState")
                 .updateChildren(onlineStateMap);
     }
 }

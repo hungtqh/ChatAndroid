@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,13 +25,11 @@ import java.util.List;
 
 
 public class FindFriendsActivity extends Authenticate {
-    private RecyclerView FindFriendsRecyclerList;
-    private DatabaseReference UsersRef;
-    private ActionBar actionBar;
+    private RecyclerView findFriendsRecyclerList;
+    private DatabaseReference usersRef;
     private ActivityFindFriendsBinding binding;
     private FriendAdapter usersAdapter;
     private List<User> mUsers;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,38 +37,26 @@ public class FindFriendsActivity extends Authenticate {
         binding = ActivityFindFriendsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setTitle("Find Friend");
+        getSupportActionBar().setTitle("Find Friend");
+
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
 
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        FindFriendsRecyclerList = (RecyclerView) findViewById(R.id.find_friends_recycler_list);
-        FindFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        findFriendsRecyclerList = findViewById(R.id.find_friends_recycler_list);
+        findFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
         mUsers = new ArrayList<>();
 
-        (binding.lytBack).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        (binding.lytBack).setOnClickListener(v -> onBackPressed());
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        UsersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUsers.clear();
@@ -89,7 +74,7 @@ public class FindFriendsActivity extends Authenticate {
                 }
 
                 usersAdapter = new FriendAdapter(FindFriendsActivity.this, mUsers);
-                FindFriendsRecyclerList.setAdapter(usersAdapter);
+                findFriendsRecyclerList.setAdapter(usersAdapter);
             }
 
             @Override

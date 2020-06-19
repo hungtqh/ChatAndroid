@@ -1,15 +1,25 @@
 package com.chatandroid.chat.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import com.chatandroid.Authenticate;
 import com.chatandroid.R;
+import com.chatandroid.chat.model.NotificationDataModel;
 import com.chatandroid.databinding.ActivityProfileViewBinding;
+import com.chatandroid.notification.APIService;
+import com.chatandroid.notification.Client;
+import com.chatandroid.notification.MyResponse;
+import com.chatandroid.notification.Sender;
+import com.chatandroid.utils.Config;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,16 +29,26 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileViewActivity extends Authenticate {
 
     private ActivityProfileViewBinding binding;
-    private String receiverUserID, senderUserID, Current_State;
-    private DatabaseReference UserRef, ChatRequestRef, ContactsRef, NotificationRef;
-    Toolbar toolbar;
-
+    private CircularImageView image;
+    private String receiverUserID, senderUserID, currentState;
+    private DatabaseReference userRef, chatRequestRef, contactsRef, notificationRef;
+    private Toolbar toolbar;
+    private APIService apiService;
+    private String token;
+    private String senderName;
+    private String imageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +58,22 @@ public class ProfileViewActivity extends Authenticate {
         setContentView(view);
         primaryMenu(savedInstanceState);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         initToolbar();
 
+        apiService = Client.getClient(Config.NOTIFICATION_URI).create(APIService.class);
         mAuth = FirebaseAuth.getInstance();
-        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        ChatRequestRef = FirebaseDatabase.getInstance().getReference().child("Friend Requests");
-        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Friends");
-        NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        chatRequestRef = FirebaseDatabase.getInstance().getReference().child("Friend Requests");
+        contactsRef = FirebaseDatabase.getInstance().getReference().child("Friends");
+        notificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
+        image = binding.image;
 
-        receiverUserID = getIntent().getExtras().get("user_uid").toString();
+        receiverUserID = getIntent().getExtras().get("receiver_uid").toString();
         senderUserID = mAuth.getCurrentUser().getUid();
 
-        RetrieveUserInfo();
+        retrieveCurrentUserName();
+        retrieveUserInfo();
     }
 
     private void initToolbar() {
@@ -59,26 +82,39 @@ public class ProfileViewActivity extends Authenticate {
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
     }
 
-    private void RetrieveUserInfo() {
-        UserRef.child(receiverUserID).addValueEventListener(new ValueEventListener() {
+    private void retrieveUserInfo() {
+        userRef.child(receiverUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
                 String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
+                String gender = Tools.getRefValue(dataSnapshot.child("gender"));
+                String dateOfBirth = Tools.getRefValue(dataSnapshot.child("dateOfBirth"));
                 String name = firtname + " " + lastname;
                 String username = Tools.getRefValue(dataSnapshot.child("username"));
+                token = Tools.getRefValue(dataSnapshot.child("device_token"));
 
                 binding.profileName.setText(name);
-                binding.username.setText(mAuth.getCurrentUser().getEmail());
+                if (mAuth.getCurrentUser() != null) {
+                    binding.username.setText(mAuth.getCurrentUser().getEmail());
+                }
                 binding.nickname.setText(username);
+                binding.gender.setText(gender);
+                binding.dateOfBirth.setText(dateOfBirth);
                 binding.location.setText(location);
                 binding.phone.setText(phone);
                 toolbar.setTitle(name);
 
-                ManageChatRequests();
+                if (dataSnapshot.child("image").exists()) {
+                    imageUrl = dataSnapshot.child("image").getValue().toString();
+                    Picasso.get().load(imageUrl).placeholder(R.mipmap.ic_launcher_round).into(image);
 
+                    binding.image.setOnClickListener(view -> startImageViewerActivity());
+                }
+
+                manageChatRequests();
             }
 
             @Override
@@ -89,9 +125,9 @@ public class ProfileViewActivity extends Authenticate {
     }
 
 
-    private void ManageChatRequests() {
+    private void manageChatRequests() {
 
-        ChatRequestRef.child(senderUserID)
+        chatRequestRef.child(senderUserID) // has sent request
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -99,47 +135,88 @@ public class ProfileViewActivity extends Authenticate {
                             String request_type = dataSnapshot.child(receiverUserID).child("request_type").getValue().toString();
 
                             if (request_type.equals("sent")) {
-                                Current_State = "request_sent";
+                                currentState = "request_sent";
                                 binding.requestFriendship.setText("Requested");
-                                binding.cancelFriendship.setEnabled(true);
-                                binding.cancelFriendship.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        CancelChatRequest();
-                                    }
-                                });
-                            } else {
-                                binding.requestFriendship.setText("Following");
+                                binding.cancelFriendship.setText("Cancel");
                                 binding.requestFriendship.setEnabled(false);
                                 binding.cancelFriendship.setEnabled(true);
-                                binding.cancelFriendship.setText("Unfollow");
-                                binding.cancelFriendship.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        CancelChatRequest();
-                                    }
+                                binding.cancelFriendship.setOnClickListener(view -> {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(ProfileViewActivity.this);
+                                    builder.setTitle(R.string.app_name);
+                                    builder.setMessage("Do you really want to cancel request?");
+                                    builder.setIcon(R.mipmap.ic_launcher_round);
+                                    builder.setPositiveButton("Yes", (dialog, id) -> {
+                                        removeChatRequest();
+                                        Toast.makeText(ProfileViewActivity.this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                    });
+                                    builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+                                    AlertDialog alert = builder.create();
+                                    alert.show();
+                                });
+                            } else { // need to accept, type receiver
+                                currentState = "request_received";
+                                binding.requestFriendship.setText("Accept Request");
+                                binding.cancelFriendship.setText("Cancel");
+                                binding.requestFriendship.setEnabled(true);
+                                binding.cancelFriendship.setEnabled(true);
+                                binding.requestFriendship.setOnClickListener(view -> acceptRequest());
+                                binding.cancelFriendship.setOnClickListener(view -> {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(ProfileViewActivity.this);
+                                    builder.setTitle(R.string.app_name);
+                                    builder.setMessage("Do you really want to cancel request?");
+                                    builder.setIcon(R.mipmap.ic_launcher_round);
+                                    builder.setPositiveButton("Yes", (dialog, id) -> {
+                                        removeChatRequest();
+                                        Toast.makeText(ProfileViewActivity.this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                    });
+                                    builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+                                    AlertDialog alert = builder.create();
+                                    alert.show();
                                 });
                             }
                         } else {
-                            ContactsRef.child(senderUserID)
+                            contactsRef.child(senderUserID)
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.hasChild(receiverUserID)) {
-                                                Current_State = "friends";
-                                                binding.requestFriendship.setText("Following");
-                                                binding.requestFriendship.setEnabled(false);
+                                                currentState = "friends";
+                                                binding.requestFriendship.setText("Send Message");
+                                                binding.requestFriendship.setEnabled(true);
                                                 binding.cancelFriendship.setEnabled(true);
                                                 binding.cancelFriendship.setText("Unfollow");
-                                                binding.cancelFriendship.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        CancelChatRequest();
-                                                    }
+
+                                                binding.requestFriendship.setOnClickListener(view -> {
+                                                    startChatActivity(receiverUserID, token);
+                                                });
+
+                                                binding.cancelFriendship.setOnClickListener(view -> {
+
+                                                    AlertDialog.Builder builder = new AlertDialog.Builder(ProfileViewActivity.this);
+                                                    builder.setTitle(R.string.app_name);
+                                                    builder.setMessage("Do you really want to unfriend?");
+                                                    builder.setIcon(R.mipmap.ic_launcher_round);
+                                                    builder.setPositiveButton("Yes", (dialog, id) -> {
+                                                        removeFriend();
+                                                        removeChatRequest();
+                                                        Toast.makeText(ProfileViewActivity.this, "Unfriend successfully!", Toast.LENGTH_SHORT).show();
+                                                        dialog.dismiss();
+                                                    });
+                                                    builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+                                                    AlertDialog alert = builder.create();
+                                                    alert.show();
                                                 });
                                             } else {
+                                                binding.requestFriendship.setText("Request");
+                                                binding.cancelFriendship.setText("Cancel");
+                                                binding.cancelFriendship.setEnabled(false);
                                                 binding.requestFriendship.setEnabled(true);
-                                                Current_State = "new";
+                                                currentState = "new";
+                                                binding.requestFriendship.setOnClickListener(view -> {
+                                                    sendChatRequest();
+                                                });
                                             }
                                         }
 
@@ -156,120 +233,169 @@ public class ProfileViewActivity extends Authenticate {
 
                     }
                 });
+    }
 
+    private void startChatActivity(String receiverUserID, String token) {
+        Intent profileIntent = new Intent(ProfileViewActivity.this, ChatActivity.class);
+        profileIntent.putExtra("receiver_uid", receiverUserID);
+        profileIntent.putExtra("receiver_token", token);
+        startActivity(profileIntent);
+    }
 
-        binding.requestFriendship.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.requestFriendship.setEnabled(false);
-
-                if (Current_State.equals("new")) {
-                    SendChatRequest();
-                }
+    private void acceptRequest() {
+        contactsRef.child(currentUserID).child(receiverUserID).child("Friend")
+                .setValue("Saved").addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                contactsRef.child(receiverUserID).child(currentUserID).child("Friend")
+                        .setValue("Saved").addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        chatRequestRef.child(currentUserID).child(receiverUserID)
+                                .removeValue()
+                                .addOnCompleteListener(task112 -> {
+                                    if (task112.isSuccessful()) {
+                                        chatRequestRef.child(receiverUserID).child(currentUserID)
+                                                .removeValue()
+                                                .addOnCompleteListener(task11 -> {
+                                                    if (task11.isSuccessful()) {
+                                                        Toast.makeText(ProfileViewActivity.this, "Request Accepted", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                });
+                    }
+                });
             }
         });
-
     }
 
 
-    private void CancelChatRequest() {
-        Log.i("kelly", "click");
+    private void removeFriend() {
 
-        ContactsRef.child(receiverUserID).child(senderUserID)
+        contactsRef.child(receiverUserID).child(senderUserID)
                 .removeValue()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            binding.requestFriendship.setEnabled(true);
-                            Current_State = "new";
-                            binding.requestFriendship.setText("Request");
-                            binding.cancelFriendship.setEnabled(false);
-                            binding.cancelFriendship.setText("Cancel");
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        binding.requestFriendship.setEnabled(true);
+                        currentState = "new";
+                        binding.requestFriendship.setText("Request");
+                        binding.cancelFriendship.setEnabled(false);
+                        binding.cancelFriendship.setText("Cancel");
                     }
                 });
 
-        ContactsRef.child(senderUserID).child(receiverUserID)
+        contactsRef.child(senderUserID).child(receiverUserID)
                 .removeValue()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            binding.requestFriendship.setEnabled(true);
-                            Current_State = "new";
-                            binding.requestFriendship.setText("Request");
-                            binding.cancelFriendship.setEnabled(false);
-                            binding.cancelFriendship.setText("Cancel");
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        binding.requestFriendship.setEnabled(true);
+                        currentState = "new";
+                        binding.requestFriendship.setText("Request");
+                        binding.cancelFriendship.setEnabled(false);
+                        binding.cancelFriendship.setText("Cancel");
+                    }
+                });
+    }
+
+    private void removeChatRequest() {
+        chatRequestRef.child(senderUserID).child(receiverUserID)
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        binding.requestFriendship.setEnabled(true);
+                        currentState = "new";
+                        binding.requestFriendship.setText("Request");
+                        binding.cancelFriendship.setEnabled(false);
+                        binding.cancelFriendship.setText("Cancel");
                     }
                 });
 
-        ChatRequestRef.child(senderUserID).child(receiverUserID)
+        chatRequestRef.child(receiverUserID).child(senderUserID)
                 .removeValue()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            ChatRequestRef.child(receiverUserID).child(senderUserID)
-                                    .removeValue()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                binding.requestFriendship.setEnabled(true);
-                                                Current_State = "new";
-                                                binding.requestFriendship.setText("Request");
-                                                binding.cancelFriendship.setEnabled(false);
-                                                binding.cancelFriendship.setText("Cancel");
-                                            }
-                                        }
-                                    });
-
-
-                        }
+                .addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        binding.requestFriendship.setEnabled(true);
+                        currentState = "new";
+                        binding.requestFriendship.setText("Request");
+                        binding.cancelFriendship.setEnabled(false);
+                        binding.cancelFriendship.setText("Cancel");
                     }
                 });
     }
 
 
-    private void SendChatRequest() {
-        ChatRequestRef.child(senderUserID).child(receiverUserID)
+    private void sendChatRequest() {
+        chatRequestRef.child(senderUserID).child(receiverUserID)
                 .child("request_type").setValue("sent")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            ChatRequestRef.child(receiverUserID).child(senderUserID)
-                                    .child("request_type").setValue("received")
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                HashMap<String, String> chatNotificationMap = new HashMap<>();
-                                                chatNotificationMap.put("from", senderUserID);
-                                                chatNotificationMap.put("type", "request");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        chatRequestRef.child(receiverUserID).child(senderUserID)
+                                .child("request_type").setValue("received")
+                                .addOnCompleteListener(task12 -> {
+                                    if (task12.isSuccessful()) {
+                                        HashMap<String, String> chatNotificationMap = new HashMap<>();
+                                        chatNotificationMap.put("from", senderUserID);
+                                        chatNotificationMap.put("type", "request");
 
-                                                NotificationRef.child(receiverUserID).push()
-                                                        .setValue(chatNotificationMap)
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                if (task.isSuccessful()) {
-                                                                    binding.requestFriendship.setEnabled(true);
-                                                                    Current_State = "request_sent";
-                                                                    binding.requestFriendship.setText("Requested");
-                                                                    binding.requestFriendship.setEnabled(false);
-                                                                    binding.cancelFriendship.setEnabled(true);
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        }
-                                    });
-                        }
+                                        notificationRef.child(receiverUserID).push()
+                                                .setValue(chatNotificationMap)
+                                                .addOnCompleteListener(task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        currentState = "request_sent";
+                                                        binding.requestFriendship.setText("Requested");
+                                                        binding.requestFriendship.setEnabled(false);
+                                                        binding.cancelFriendship.setEnabled(true);
+
+                                                        sendNotification(senderName + " sent you a friend request!", "Friend request");
+                                                        Toast.makeText(ProfileViewActivity.this, "Request Sent!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                });
                     }
                 });
     }
 
+    private void sendNotification(String message, String username) {
+        NotificationDataModel data = new NotificationDataModel(currentUserID, R.mipmap.ic_launcher_round, username, message, receiverUserID, token, "ProfileViewActivity");
+        Sender sender = new Sender(token, data);
+        apiService.sendNotification(sender)
+                .enqueue(new Callback<MyResponse>() {
+                    @Override
+                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                        if (response.code() == 200) {
+                            if (response.body().success == 1) {
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MyResponse> call, Throwable t) {
+                    }
+
+                });
+
+    }
+
+    private void retrieveCurrentUserName() {
+        userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String firstname = Tools.getRefValue(dataSnapshot.child("firstname"));
+                String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
+
+                senderName = firstname + " " + lastname;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void startImageViewerActivity() {
+        Intent intent = new Intent(ProfileViewActivity.this, ImageViewerActivity.class);
+        intent.putExtra("imageUrl", imageUrl);
+        startActivity(intent);
+    }
 }

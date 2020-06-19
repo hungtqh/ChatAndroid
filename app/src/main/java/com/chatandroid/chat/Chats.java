@@ -20,8 +20,8 @@ import com.google.android.material.tabs.TabLayout;
 
 public class Chats extends Authenticate {
 
-    private ViewPager view_pager;
-    private TabLayout tab_layout;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
 
     @Override
@@ -42,13 +42,13 @@ public class Chats extends Authenticate {
     }
 
     private void initComponent() {
-        view_pager = (ViewPager) findViewById(R.id.view_pager);
-        tab_layout = (TabLayout) findViewById(R.id.tab_layout);
-        tab_layout.setupWithViewPager(view_pager);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
 
-        setupViewPager(view_pager);
-        tab_layout.setupWithViewPager(view_pager);
-        tab_layout.setTabGravity(TabLayout.GRAVITY_FILL);
+        setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
     }
 
 

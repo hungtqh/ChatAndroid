@@ -31,153 +31,108 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-public class LoginActivity extends AppCompatActivity
-{
+public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ProgressDialog loadingBar;
-    private DatabaseReference UsersRef;
+    private DatabaseReference usersRef;
     private ActivityLoginBinding binding;
     private BottomSheetBehavior mBehavior;
     private BottomSheetDialog mBottomSheetDialog;
     private View bottom_sheet;
-    private CircularImageView logo;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
         mAuth = FirebaseAuth.getInstance();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
 
-        InitializeFields();
+        initializeFields();
 
 
-        binding.signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                SendUserToRegisterActivity();
-            }
-        });
+        binding.signUp.setOnClickListener(view1 -> sendUserToRegisterActivity());
 
-        binding.login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                AllowUserToLogin();
-            }
-        });
+        binding.login.setOnClickListener(view12 -> allowUserToLogin());
 
-        binding.forgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showBottomSheetDialog();
-            }
-        });
+        binding.forgotPassword.setOnClickListener(v -> showBottomSheetDialog());
 
     }
 
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null)
-        {
-            SendUserToChatActivity();
+        if (currentUser != null) {
+            sendUserToChatActivity();
         }
     }
 
 
-    private void AllowUserToLogin()
-    {
+    private void allowUserToLogin() {
         String email = binding.email.getText().toString();
         String password = binding.password.getText().toString();
 
-        if (TextUtils.isEmpty(email))
-        {
+        if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter email...", Toast.LENGTH_SHORT).show();
         }
-        if (TextUtils.isEmpty(password))
-        {
+        if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please enter password...", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+        } else {
             loadingBar.setTitle("Sign In");
             loadingBar.setMessage("Please wait....");
             loadingBar.setCanceledOnTouchOutside(true);
             loadingBar.show();
 
             mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task)
-                        {
-                            if (task.isSuccessful())
-                            {
-                                String currentUserId = mAuth.getCurrentUser().getUid();
-                                String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            String currentUserId = mAuth.getCurrentUser().getUid();
+                            String deviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                                UsersRef.child(currentUserId).child("device_token")
-                                        .setValue(deviceToken)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task)
-                                            {
-                                                if (task.isSuccessful())
-                                                {
-                                                    SendUserToChatActivity();
-                                                    Toast.makeText(LoginActivity.this, "Logged in Successful...", Toast.LENGTH_SHORT).show();
-                                                    loadingBar.dismiss();
-                                                }
-                                            }
-                                        });
-                            }
-                            else
-                            {
-                                String message = task.getException().toString();
-                                Toast.makeText(LoginActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
-                                loadingBar.dismiss();
-                            }
+                            usersRef.child(currentUserId).child("device_token")
+                                    .setValue(deviceToken)
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            sendUserToChatActivity();
+                                            Toast.makeText(LoginActivity.this, "Logged in Successful...", Toast.LENGTH_SHORT).show();
+                                            loadingBar.dismiss();
+                                        }
+                                    });
+                        } else {
+                            String message = task.getException().toString();
+                            Toast.makeText(LoginActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
                         }
                     });
         }
     }
 
-
-    private void InitializeFields()
-    {
+    private void initializeFields() {
         loadingBar = new ProgressDialog(this);
         bottom_sheet = findViewById(R.id.bottom_sheet);
         mBehavior = BottomSheetBehavior.from(bottom_sheet);
     }
 
-
-
-    private void SendUserToChatActivity()
-    {
+    private void sendUserToChatActivity() {
         Intent mainIntent = new Intent(LoginActivity.this, Chats.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
         finish();
     }
 
-    private void SendUserToRegisterActivity()
-    {
+    private void sendUserToRegisterActivity() {
         Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(registerIntent);
     }
 
-    private void showBottomSheetDialog () {
+    private void showBottomSheetDialog() {
         if (mBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             mBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
@@ -194,10 +149,10 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 FirebaseAuth auth = FirebaseAuth.getInstance();
-                EditText emailAddress =  view.findViewById(R.id.email);
+                EditText emailAddress = view.findViewById(R.id.email);
                 TextView results = view.findViewById(R.id.results);
                 String email = emailAddress.getText().toString();
-                if(email.isEmpty()){
+                if (email.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "You must provide email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -207,27 +162,17 @@ public class LoginActivity extends AppCompatActivity
                 loadingBar.setCanceledOnTouchOutside(true);
                 loadingBar.show();
                 auth.sendPasswordResetEmail(email)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    loadingBar.cancel();
-                                    Toast.makeText(getApplicationContext(), "Recovery Instruction sent to your email inbox", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    loadingBar.cancel();
-//                                    showBottomSheetDialog();
-//                                    results.setVisibility(View.VISIBLE);
-//                                    results.setText("We are Experiencing some issue try again later");
-                                    Toast.makeText(getApplicationContext(), "We are Experiencing some issue try again later", Toast.LENGTH_SHORT).show();
-                                }
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                loadingBar.cancel();
+                                Toast.makeText(getApplicationContext(), "Recovery Instruction sent to your email inbox", Toast.LENGTH_SHORT).show();
+                            } else {
+                                loadingBar.cancel();
+                                Toast.makeText(getApplicationContext(), "We are Experiencing some issue try again later", Toast.LENGTH_SHORT).show();
                             }
-
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        loadingBar.cancel();
-                    }
+                        }).addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loadingBar.cancel();
                 });
 
             }
@@ -240,11 +185,6 @@ public class LoginActivity extends AppCompatActivity
         }
 
         mBottomSheetDialog.show();
-        mBottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                mBottomSheetDialog = null;
-            }
-        });
+        mBottomSheetDialog.setOnDismissListener(dialog -> mBottomSheetDialog = null);
     }
 }

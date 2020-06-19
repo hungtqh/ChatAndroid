@@ -139,6 +139,7 @@
 
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">26sp</item>
         <item name="textAllCaps">true</item>
     </style>
 

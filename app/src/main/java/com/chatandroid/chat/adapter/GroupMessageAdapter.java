@@ -1,0 +1,234 @@
+package com.chatandroid.chat.adapter;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.chatandroid.R;
+import com.chatandroid.chat.activity.ImageViewerActivity;
+import com.chatandroid.chat.activity.ProfileViewActivity;
+import com.chatandroid.chat.model.GroupMessage;
+import com.chatandroid.chat.model.Message;
+import com.chatandroid.utils.Tools;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
+
+public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.MessageViewHolder> {
+    private List<GroupMessage> groupMessagesList;
+    private FirebaseAuth mAuth;
+    private DatabaseReference userRef;
+    private Context mContext;
+
+    private final int CHAT_ME = 100;
+    private final int CHAT_YOU = 200;
+
+    public GroupMessageAdapter(Context mContext, List<GroupMessage> groupMessagesList) {
+        this.groupMessagesList = groupMessagesList;
+        this.mContext = mContext;
+        mAuth = FirebaseAuth.getInstance();
+    }
+
+    public class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText, messageTime, messageDate, username;
+        CircularImageView profileImageYou;
+        CardView cardView;
+        ImageView imageMessage;
+
+        public MessageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            username = itemView.findViewById(R.id.username);
+            messageText = itemView.findViewById(R.id.text_content);
+            messageTime = itemView.findViewById(R.id.text_time);
+            messageDate = itemView.findViewById(R.id.text_date);
+            profileImageYou = itemView.findViewById(R.id.profile_image_group);
+            cardView = itemView.findViewById(R.id.card_view_group_message);
+            imageMessage = itemView.findViewById(R.id.group_image_message);
+        }
+    }
+
+
+    @NonNull
+    @Override
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        mAuth = FirebaseAuth.getInstance();
+
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
+
+        if (viewType == CHAT_ME) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_chat_me, parent, false);
+            return new MessageViewHolder(v);
+        } else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_chat_you, parent, false);
+            return new MessageViewHolder(v);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final MessageViewHolder messageViewHolder, int i) {
+        GroupMessage message = groupMessagesList.get(i);
+        String fromMessageType = message.getType();
+
+        if (getItemViewType(i) == CHAT_YOU) {
+            retrieveUserInfo(message.getFrom(), messageViewHolder);
+        }
+
+        if (fromMessageType.equals("text")) {
+            messageViewHolder.imageMessage.setVisibility(View.GONE);
+            messageViewHolder.cardView.setVisibility(View.VISIBLE);
+
+            messageViewHolder.username.setText(message.getName());
+            messageViewHolder.messageText.setText(message.getMessage());
+            messageViewHolder.messageTime.setText(message.getTime());
+            messageViewHolder.messageDate.setText(message.getDate());
+        } else if (fromMessageType.equals("image")) {
+            messageViewHolder.imageMessage.setVisibility(View.VISIBLE);
+            messageViewHolder.cardView.setVisibility(View.GONE);
+
+            Picasso.get().load(message.getMessage()).into(messageViewHolder.imageMessage);
+        } else {
+            messageViewHolder.imageMessage.setVisibility(View.VISIBLE);
+            messageViewHolder.cardView.setVisibility(View.GONE);
+
+            messageViewHolder.imageMessage.setImageResource(R.drawable.file);
+        }
+
+        // options with pdf and docx file
+        messageViewHolder.itemView.setOnClickListener(v -> {
+
+            if (fromMessageType.equals("pdf") || fromMessageType.equals("docx")) {
+                CharSequence[] options = new CharSequence[]{
+                        "Download and view this document",
+                        "Cancel"
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                builder.setTitle("Select option");
+
+                builder.setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        downloadContent(message);
+                    }
+                });
+
+                builder.show();
+            } else if (fromMessageType.equals("image")) {
+                CharSequence[] options = new CharSequence[]{
+                        "View this image",
+                        "Download this image",
+                        "Cancel"
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                builder.setTitle("Select option");
+
+                builder.setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        startImageViewerActivity(i);
+                    }
+
+                    if (which == 1) {
+                        downloadContent(message);
+                    }
+                });
+
+                builder.show();
+            }
+        });
+
+        // options with text message
+        messageViewHolder.itemView.setOnLongClickListener(v -> {
+
+            if (fromMessageType.equals("text")) {
+                CharSequence[] options = new CharSequence[]{
+                        "Copy text",
+                        "Cancel"
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                builder.setTitle("Select option");
+
+                builder.setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        Tools.copyToClipboard(mContext, message.getMessage());
+                    }
+                });
+
+                builder.show();
+            }
+
+            return true;
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return groupMessagesList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        mAuth = FirebaseAuth.getInstance();
+        return this.groupMessagesList.get(position).getFrom().equals(mAuth.getCurrentUser().getUid()) ? CHAT_ME : CHAT_YOU;
+    }
+
+    private void retrieveUserInfo(String userId, MessageViewHolder messageViewHolder) {
+        userRef.child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userImage = Tools.getRefValue(dataSnapshot.child("image"));
+
+                CircularImageView userProfileImage = messageViewHolder.profileImageYou;
+
+                if (!userImage.isEmpty()) {
+                    Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(userProfileImage);
+                }
+
+                messageViewHolder.profileImageYou.setOnClickListener(v -> {
+                    Intent intent = new Intent(mContext, ProfileViewActivity.class);
+                    intent.putExtra("receiver_uid", userId);
+                    mContext.startActivity(intent);
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void startImageViewerActivity(int position) {
+        Intent intent = new Intent(mContext, ImageViewerActivity.class);
+        intent.putExtra("imageUrl", groupMessagesList.get(position).getMessage());
+        mContext.startActivity(intent);
+    }
+
+    private void downloadContent(GroupMessage message) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(message.getMessage()));
+        mContext.startActivity(intent);
+    }
+}
+

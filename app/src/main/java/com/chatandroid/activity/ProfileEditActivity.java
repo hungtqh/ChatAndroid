@@ -6,8 +6,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +20,7 @@ import com.chatandroid.databinding.ActivityProfileEditBinding;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -47,16 +48,17 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ProfileEditActivity extends Authenticate implements DatePickerDialog.OnDateSetListener {
-    private DatabaseReference UserRef;
+    private DatabaseReference usersRef;
 
     private ActivityProfileEditBinding binding;
 
     private CircularImageView image;
-    private StorageReference UserProfileImagesRef;
+    private StorageReference userProfileImagesRef;
     private ProgressDialog loadingBar;
     private static final int GalleryPick = 1;
     private static final int REQUEST_CODE_LOCATION = 500;
 
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +68,12 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         setContentView(view);
 
         primaryMenu(savedInstanceState);
-        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("profile_pictures");
-        UserRef.keepSynced(true);
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        userProfileImagesRef = FirebaseStorage.getInstance().getReference().child("profile_pictures");
+        usersRef.keepSynced(true);
         initToolbar();
 
-        RetrieveUserInfo();
+        retrieveUserInfo();
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
@@ -135,9 +137,9 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         }
 
         if (requestCode == GalleryPick && resultCode == RESULT_OK && data != null) {
-            Uri ImageUri = data.getData();
+            imageUri = data.getData();
 
-            CropImage.activity()
+            CropImage.activity(imageUri)
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setAspectRatio(1, 1)
                     .start(this);
@@ -152,42 +154,34 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                 loadingBar.setCanceledOnTouchOutside(false);
                 loadingBar.show();
 
-                Uri resultUri = result.getUri();
+                StorageReference filePath = userProfileImagesRef.child(currentUserID + ".jpg");
+                filePath.putFile(imageUri).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(ProfileEditActivity.this, "Profile Image uploaded Successfully...", Toast.LENGTH_SHORT).show();
 
+                        filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String downloadedUrl = uri.toString();
 
-                StorageReference filePath = UserProfileImagesRef.child(currentUserID + ".jpg");
-
-                filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(ProfileEditActivity.this, "Profile Image uploaded Successfully...", Toast.LENGTH_SHORT).show();
-
-                            final String downloadedUrl = task.getResult().getMetadata().getName().toString();
-
-                            RootRef.child("Users").child(currentUserID).child("image")
-                                    .setValue(downloadedUrl)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
+                                rootRef.child("Users").child(currentUserID).child("image")
+                                        .setValue(downloadedUrl)
+                                        .addOnCompleteListener(task1 -> {
+                                            if (task1.isSuccessful()) {
                                                 Toast.makeText(ProfileEditActivity.this, "Image saved Successfully...", Toast.LENGTH_SHORT).show();
                                                 loadingBar.dismiss();
                                             }
-                                        }
-                                    });
-                        } else {
-                            String message = task.getException().toString();
-                            loadingBar.dismiss();
-                        }
+                                        });
+                            }
+                        });
+                    } else {
+                        String message = task.getException().toString();
+                        Toast.makeText(ProfileEditActivity.this, message, Toast.LENGTH_SHORT).show();
+                        loadingBar.dismiss();
                     }
-                }).addOnSuccessListener(taskSnapshot -> {
-
                 });
             }
         }
-
-
     }
 
 
@@ -199,11 +193,11 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         loadingBar = new ProgressDialog(this);
     }
 
-    private void RetrieveUserInfo() {
-        UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+    private void retrieveUserInfo() {
+        usersRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                image = (CircularImageView) binding.image;
+                image = binding.image;
                 String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
@@ -216,7 +210,6 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                 if (dataSnapshot.child("image").exists()) {
                     String userImage = dataSnapshot.child("image").getValue().toString();
                     Picasso.get().load(userImage).placeholder(R.mipmap.ic_launcher_round).into(image);
-
                 }
 
                 binding.profileName.setText(name);
@@ -294,19 +287,18 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
             profileMap.put("dateOfBirth", dateOfBirth);
             profileMap.put("location", location);
             profileMap.put("phonenumber", phoneNumber);
-            RootRef.child("Users").child(currentUserID).updateChildren(profileMap)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(ProfileEditActivity.this, "Profile Updated Successfully...", Toast.LENGTH_SHORT).show();
-                            } else {
-                                String message = task.getException().getMessage();
-                                Toast.makeText(ProfileEditActivity.this, message, Toast.LENGTH_SHORT).show();
-                            }
+            rootRef.child("Users").child(currentUserID).updateChildren(profileMap)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(ProfileEditActivity.this, "Profile Updated Successfully...", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String message = task.getException().getMessage();
+                            Toast.makeText(ProfileEditActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
                     });
         }
+
+        onBackPressed();
     }
 
     private void openAutocompleteActivity(int request_code) {

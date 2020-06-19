@@ -4,21 +4,32 @@
     android:id="@+id/lyt_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="@dimen/spacing_xlarge"
-    android:layout_marginRight="@dimen/spacing_xlarge"
-    android:gravity="start|left"
+    android:layout_marginStart="@dimen/spacing_xlarge"
+    android:layout_marginLeft="@dimen/spacing_xlarge"
+    android:gravity="end|right"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/spacing_xsmall"
     android:paddingLeft="@dimen/spacing_middle"
+    android:paddingTop="1dp"
     android:paddingRight="@dimen/spacing_middle"
-    android:paddingTop="@dimen/spacing_xsmall">
+    android:paddingBottom="1dp">
+
+    <ImageView
+        android:id="@+id/group_image_message"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="5dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_group_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/spacing_small"
         android:minHeight="32dp"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardBackgroundColor="#EFFFDE"
         app:cardCornerRadius="5dp"
         app:cardElevation="1dp"
         app:cardUseCompatPadding="false">
@@ -28,15 +39,26 @@
             android:layout_height="match_parent"
             android:minWidth="180dp"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/spacing_medium"
             android:paddingLeft="@dimen/spacing_medium"
+            android:paddingTop="@dimen/spacing_medium"
             android:paddingRight="@dimen/spacing_medium"
-            android:paddingTop="@dimen/spacing_medium">
+            android:paddingBottom="@dimen/spacing_medium">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/spacing_medium"
+                android:layout_marginRight="@dimen/spacing_medium"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="right|end"
                 android:layout_marginLeft="@dimen/spacing_medium"
                 android:layout_marginRight="@dimen/spacing_medium"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -54,6 +76,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:text="June 2, 2020"
+                    android:textColor="@color/grey_40"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="@dimen/spacing_medium"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/text_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="02:30 AM"
                     android:textColor="@color/grey_40"
                     android:textSize="12sp" />
@@ -67,9 +102,5 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <View
-        android:layout_width="@dimen/spacing_mlarge"
-        android:layout_height="0dp" />
 
 </LinearLayout>

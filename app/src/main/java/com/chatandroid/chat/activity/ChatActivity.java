@@ -1,30 +1,32 @@
 package com.chatandroid.chat.activity;
 
-import android.content.Context;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatandroid.Authenticate;
 import com.chatandroid.R;
+import com.chatandroid.activity.ProfileEditActivity;
 import com.chatandroid.chat.adapter.MessageAdapter;
-import com.chatandroid.chat.model.Messages;
+import com.chatandroid.chat.model.Message;
 import com.chatandroid.chat.model.NotificationDataModel;
-import com.chatandroid.chat.model.NotificationModel;
 import com.chatandroid.databinding.ActivityChatTelegramBinding;
 import com.chatandroid.notification.APIService;
 import com.chatandroid.notification.Client;
@@ -34,12 +36,21 @@ import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Config;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,37 +64,39 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ChatActivity extends Authenticate
-{
+public class ChatActivity extends Authenticate {
     private String messageReceiverID, messageSenderID;
-    private ActionBar actionBar;
     private AppPreference preference;
+    private DatabaseReference usersRef;
 
-    private final List<Messages> messagesList = new ArrayList<>();
+    private final List<Message> messagesList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private MessageAdapter messageAdapter;
     private RecyclerView userMessagesList;
+    private CircularImageView image;
+    private ProgressDialog loadingBar;
 
     private String saveCurrentTime, saveCurrentDate;
     private ActivityChatTelegramBinding binding;
+    private String checker = "";
+    private String senderName = "";
 
-    public ChildEventListener seenListener;
-
-    private  boolean notify = false;
+    private boolean notify = false;
     private boolean mTyping = false;
     private Handler mTypingHandler = new Handler();
     private static final int TYPING_TIMER_LENGTH = 1000;
 
+    private Uri fileUri;
+
     String token = null;
 
-   APIService apiService;
+    APIService apiService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityChatTelegramBinding.inflate(getLayoutInflater());
-        View  view  = binding.getRoot();
+        View view = binding.getRoot();
         setContentView(view);
         primaryMenu(savedInstanceState);
 
@@ -92,52 +105,93 @@ public class ChatActivity extends Authenticate
         token = getIntent().getExtras().get("receiver_token").toString();
         preference = new AppPreference(ChatActivity.this);
 
-        IntializeControllers();
+        initializeControllers();
 
         apiService = Client.getClient(Config.NOTIFICATION_URI).create(APIService.class);
 
         binding.btnSend.setOnClickListener(view1 -> {
             notify = true;
-            SendMessage();
+            sendTextMessage();
         });
 
-        DisplayLastSeen();
+        binding.btnSendFile.setOnClickListener(view2 -> {
+            notify = true;
+            sendFile();
+        });
+
+        // current user
+        rootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        Message message = dataSnapshot.getValue(Message.class);
+                        messagesList.add(message);
+                        messageAdapter.notifyDataSetChanged();
+                        userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                        Message message = dataSnapshot.getValue(Message.class);
+                        messagesList.remove(message);
+                        messageAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+        retrieveUserInfo();
+
+        seenMessage();
+
+        myTypingState();
+        getTypingState();
+
+        displayLastSeen();
 
     }
 
     @Override
-    public  void onStop(){
-        super.onStop();
-    }
-
-    @Override
-    public void  onResume(){
+    public void onResume() {
         super.onResume();
         preference.setCurrentChattingUser(messageReceiverID);
     }
 
     @Override
-    public  void  onPause(){
+    public void onPause() {
         super.onPause();
         preference.setCurrentChattingUser("none");
     }
 
-    private void IntializeControllers()
-    {
+    private void initializeControllers() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setTitle(null);
+        getSupportActionBar().setTitle(null);
 
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
 
-        messageAdapter = new MessageAdapter(messagesList);
-        userMessagesList = (RecyclerView) binding.recyclerView;
+        loadingBar = new ProgressDialog(this);
+        messageAdapter = new MessageAdapter(ChatActivity.this, messagesList);
+        userMessagesList = binding.recyclerView;
+        image = binding.image;
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
+
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersRef.keepSynced(true);
 
         Calendar calendar = Calendar.getInstance();
 
@@ -147,20 +201,16 @@ public class ChatActivity extends Authenticate
         SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
         saveCurrentTime = currentTime.format(calendar.getTime());
 
-        (binding.lytBack).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        binding.image.setOnClickListener(v -> startProfileViewActivity(messageReceiverID));
 
-//        binding.textContent.addTextChangedListener(contentWatcher);
+        binding.lytBack.setOnClickListener(v -> onBackPressed());
+
     }
 
-    @Override
-    public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
-        hideKeyboard();
+    private void startProfileViewActivity(String messageReceiverID) {
+        Intent profileIntent = new Intent(ChatActivity.this, ProfileViewActivity.class);
+        profileIntent.putExtra("receiver_uid", messageReceiverID);
+        startActivity(profileIntent);
     }
 
     @Override
@@ -169,56 +219,37 @@ public class ChatActivity extends Authenticate
         return true;
     }
 
-    private void hideKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_more) {
+            Intent profileIntent = new Intent(ChatActivity.this, ProfileViewActivity.class);
+            profileIntent.putExtra("receiver_uid", messageReceiverID);
+            startActivity(profileIntent);
         }
+
+        return true;
     }
 
-    /*private TextWatcher contentWatcher = new TextWatcher() {
-        @Override
-        public void afterTextChanged(Editable etd) {
-            if (etd.toString().trim().length() == 0) {
-                binding.btnSend.setImageResource(R.drawable.ic_mic);
-            } else {
-                binding.btnSend.setImageResource(R.drawable.ic_send);
-            }
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-        }
-    };*/
-
-    private void DisplayLastSeen()
-    {
-        RootRef.child("Users").child(messageReceiverID)
+    private void displayLastSeen() {
+        rootRef.child("Users").child(messageReceiverID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
-                    {
+                    public void onDataChange(DataSnapshot dataSnapshot) {
                         binding.username.setText(Tools.getRefValue(dataSnapshot.child("username")));
 
-                        if (dataSnapshot.child("userState").hasChild("status"))
-                        {
+                        if (dataSnapshot.child("userState").hasChild("status")) {
                             String state = dataSnapshot.child("userState").child("status").getValue().toString();
-                            String date = dataSnapshot.child("userState").child("date").getValue().toString();
-                            String time = dataSnapshot.child("userState").child("time").getValue().toString();
 
                             binding.status.setText(state);
 
-                            if (state.equals("online"))
-                            {
-                                binding.status.setTextColor(getResources().getColor(R.color.green_50));
+                            if (dataSnapshot.child("image").exists()) {
+                                String userImage = dataSnapshot.child("image").getValue().toString();
+                                Picasso.get().load(userImage).placeholder(R.mipmap.ic_launcher_round).into(image);
                             }
-                            else if (state.equals("offline"))
-                            {
+
+                            if (state.equals("online")) {
+                                binding.status.setTextColor(getResources().getColor(R.color.green_50));
+                            } else if (state.equals("offline")) {
                                 binding.status.setTextColor(getResources().getColor(R.color.red_500));
                             }
                         }
@@ -231,127 +262,217 @@ public class ChatActivity extends Authenticate
                 });
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-
-       RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                    {
-                        Messages messages = dataSnapshot.getValue(Messages.class);
-                        messagesList.add(messages);
-                        messageAdapter.notifyDataSetChanged();
-                        userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                seenMessage();
-
-        myTypingState();
-        getTypingState();
-    }
-
-    private void SendMessage()
-    {
+    private void sendTextMessage() {
         String messageText = binding.textContent.getText().toString();
 
-        if (TextUtils.isEmpty(messageText))
-        {
-            Toast.makeText(this, "first write your message...", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+        if (TextUtils.isEmpty(messageText)) {
+            Toast.makeText(this, "Please write your message first...", Toast.LENGTH_SHORT).show();
+        } else {
             String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
             String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
 
-            DatabaseReference userMessageKeyRef = RootRef.child("Messages")
+            DatabaseReference userMessageKeyRef = rootRef.child("Messages")
                     .child(messageSenderID).child(messageReceiverID).push();
 
             String messagePushID = userMessageKeyRef.getKey();
+            String type = "text";
 
-            Map messageTextBody = new HashMap();
-            messageTextBody.put("message", messageText);
-            messageTextBody.put("type", "text");
-            messageTextBody.put("from", messageSenderID);
-            messageTextBody.put("to", messageReceiverID);
-            messageTextBody.put("messageID", messagePushID);
-            messageTextBody.put("time", saveCurrentTime);
-            messageTextBody.put("date", saveCurrentDate);
-            messageTextBody.put("seen", false);
-
-            Map messageBodyDetails = new HashMap();
-            messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
-            messageBodyDetails.put( messageReceiverRef + "/" + messagePushID, messageTextBody);
-
-            RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task)
-                {
-                    binding.textContent.setText("");
-
-                    if (task.isSuccessful())
-                    {
-                      final   DatabaseReference reference = RootRef.child("Friends").child(currentUserID).child(messageReceiverID);
-                      reference.addValueEventListener(new ValueEventListener() {
-                          @Override
-                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                              if(!dataSnapshot.exists()){
-                                  reference.child("id").setValue(messageReceiverID);
-                              }
-                          }
-
-                          @Override
-                          public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                          }
-                      });
-                    }
-                }
-            });
+            saveMessageToDB(messageSenderRef, messageReceiverRef, messageText, messagePushID, type);
+            binding.textContent.setText("");
 
             final String msg = messageText;
-            if(notify){
-                sendNotification("New message",msg);
+            if (notify) {
+                sendNotification(msg, senderName + " sent you a message");
                 notify = false;
             }
         }
     }
 
-    private  void sendNotification(String message, String username){
-        NotificationModel notification = new NotificationModel("New message", message);
-        NotificationDataModel data = new NotificationDataModel(currentUserID,R.mipmap.ic_launcher_round, username,message,messageReceiverID,token);
+    private void retrieveUserInfo() {
+        usersRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String firstname = Tools.getRefValue(dataSnapshot.child("firstname"));
+                String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
+
+                senderName = firstname + " " + lastname;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void saveMessageToDB(String messageSenderRef, String messageReceiverRef, String messageText, String messagePushID, String type) {
+        Map messageTextBody = new HashMap();
+        messageTextBody.put("message", messageText);
+        messageTextBody.put("type", type);
+        messageTextBody.put("from", messageSenderID);
+        messageTextBody.put("to", messageReceiverID);
+        messageTextBody.put("messageID", messagePushID);
+        messageTextBody.put("time", saveCurrentTime);
+        messageTextBody.put("date", saveCurrentDate);
+        messageTextBody.put("seen", false);
+
+        Map messageBodyDetails = new HashMap();
+        messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
+        messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageTextBody);
+
+        rootRef.updateChildren(messageBodyDetails);
+    }
+
+
+    private void sendFile() {
+        CharSequence[] options = new CharSequence[]{
+                "Images",
+                "PDF Files",
+                "MS Word Files"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+        builder.setTitle("Select file to send");
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    checker = "image";
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*");
+                    startActivityForResult(intent.createChooser(intent, "Select Image"), 1);
+                }
+
+                if (which == 1) {
+                    checker = "pdf";
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent.createChooser(intent, "Select PDF File"), 1);
+                }
+
+                if (which == 2) {
+                    checker = "docx";
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                    startActivityForResult(intent.createChooser(intent, "Select MS Word File"), 1);
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            loadingBar.setTitle("Send File");
+            loadingBar.setMessage("Sending your file...");
+            loadingBar.setCanceledOnTouchOutside(false);
+            loadingBar.show();
+
+            fileUri = data.getData();
+            if (checker.equals("image")) {
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Files");
+
+                String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
+                String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
+
+                DatabaseReference userMessageKeyRef = rootRef.child("Messages")
+                        .child(messageSenderID).child(messageReceiverID).push();
+
+                String messagePushID = userMessageKeyRef.getKey();
+
+                StorageReference filePath = storageReference.child(messagePushID + ".jpg");
+
+                filePath.putFile(fileUri).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadedUrl = uri.toString();
+
+                            saveMessageToDB(messageSenderRef, messageReceiverRef, downloadedUrl, messagePushID, checker);
+                            Toast.makeText(ChatActivity.this, "Image sent!", Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+
+                            if (notify) {
+                                sendNotification(senderName + " sent you a photo", "New message");
+                                notify = false;
+                            }
+                        });
+                    } else {
+                        String message = task.getException().toString();
+                        Toast.makeText(ChatActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else if (!checker.equals("image")) {
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Document Files");
+
+                String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
+                String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
+
+                DatabaseReference userMessageKeyRef = rootRef.child("Messages")
+                        .child(messageSenderID).child(messageReceiverID).push();
+
+                String messagePushID = userMessageKeyRef.getKey();
+
+                StorageReference filePath = storageReference.child(messagePushID + "." + checker);
+
+                filePath.putFile(fileUri).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadedUrl = uri.toString();
+
+                            saveMessageToDB(messageSenderRef, messageReceiverRef, downloadedUrl, messagePushID, checker);
+                            Toast.makeText(ChatActivity.this, "File sent!", Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+
+                            if (notify) {
+                                sendNotification(senderName + " sent you a file", "New message");
+                                notify = false;
+                            }
+                        });
+                    } else {
+                        String message = task.getException().toString();
+                        Toast.makeText(ChatActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnProgressListener(taskSnapshot -> {
+                    double p = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    loadingBar.setMessage((int) p + "% Uploaded...");
+                });
+
+            } else {
+                Toast.makeText(this, "Nothing Selected.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void sendNotification(String message, String username) {
+        NotificationDataModel data = new NotificationDataModel(currentUserID, R.mipmap.ic_launcher_round, username, message, messageReceiverID, token, "ChatActivity");
         Sender sender = new Sender(token, data);
         apiService.sendNotification(sender)
                 .enqueue(new Callback<MyResponse>() {
                     @Override
                     public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                        if(response.code() == 200){
-                            if(response.body().success == 1){
+                        if (response.code() == 200) {
+                            if (response.body().success == 1) {
                             }
                         }
                     }
+
                     @Override
                     public void onFailure(Call<MyResponse> call, Throwable t) {
                     }
@@ -360,39 +481,28 @@ public class ChatActivity extends Authenticate
 
     }
 
-    private void seenMessage(){
-
-        seenListener =  RootRef.child("Messages").child(messageReceiverID).child(messageSenderID)
+    private void seenMessage() {
+        // user at another device
+        rootRef.child("Messages").child(messageReceiverID).child(messageSenderID)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                    {
-                        Messages messages = dataSnapshot.getValue(Messages.class);
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        Message message = dataSnapshot.getValue(Message.class);
 
-                        if(messages.getTo().equals(currentUserID)){
-                                HashMap<String, Object> data = new HashMap<>();
-                                data.put("seen",true);
-                                dataSnapshot.getRef().updateChildren(data);
-                            }
+                        if (message.getTo().equals(currentUserID)) {
+                            HashMap<String, Object> data = new HashMap<>();
+                            data.put("seen", true);
+                            dataSnapshot.getRef().updateChildren(data);
+                            messageAdapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override
                     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                        Messages messages = dataSnapshot.getValue(Messages.class);
-
-                        if(messages.getTo().equals(currentUserID)){
-                            HashMap<String, Object> data = new HashMap<>();
-                            data.put("seen",true);
-                            dataSnapshot.getRef().updateChildren(data);
-                            messageAdapter.notifyDataSetChanged();
-                        }
-
                     }
 
                     @Override
                     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
                     }
 
                     @Override
@@ -408,7 +518,7 @@ public class ChatActivity extends Authenticate
 
     }
 
-    private void myTypingState(){
+    private void myTypingState() {
         binding.textContent.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -434,45 +544,35 @@ public class ChatActivity extends Authenticate
         });
     }
 
-    private Runnable onTypingTimeout = new Runnable() {
-        @Override
-        public void run() {
-            if (!mTyping) return;
+    private Runnable onTypingTimeout = () -> {
+        if (!mTyping) return;
 
-            mTyping = false;
+        mTyping = false;
 
-            updateTypingState("");
+        updateTypingState("");
 
-        }
     };
 
-    private void updateTypingState(String state){
+    private void updateTypingState(String state) {
 
-        HashMap <String, String> data = new HashMap<>();
-                        data.put("typingState",state);
+        HashMap<String, String> data = new HashMap<>();
+        data.put("typingState", state);
 
-        RootRef.child("Typing State").child(currentUserID).child(messageReceiverID)
-                .setValue(data)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
-
-                    }
-                });
+        rootRef.child("Typing State").child(currentUserID).child(messageReceiverID)
+                .setValue(data);
     }
 
-    private void getTypingState(){
-        RootRef.child("Typing State").child(messageReceiverID).child(currentUserID)
+    private void getTypingState() {
+        rootRef.child("Typing State").child(messageReceiverID).child(currentUserID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String state = Tools.getRefValue(dataSnapshot.child("typingState"));
-                        if(!state.equals("")){
+                        if (!state.equals("")) {
                             binding.status.setVisibility(View.GONE);
                             binding.typingStatus.setText(state);
                             binding.typingStatus.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             binding.status.setVisibility(View.VISIBLE);
                             binding.typingStatus.setVisibility(View.GONE);
                         }

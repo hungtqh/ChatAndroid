@@ -23,7 +23,7 @@
             android:id="@+id/image"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/photo_female_4"
+            android:src="@drawable/profile_image"
             app:civ_border="true"
             app:civ_border_color="#075E54"
             app:civ_border_width="0dp"
@@ -55,13 +55,14 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textColor="@color/grey_10" />
+
             <TextView
-                android:visibility="gone"
                 android:id="@+id/typing_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="@color/grey_10" />
+                android:textColor="@color/grey_10"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -85,8 +86,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="@dimen/spacing_medium"
             android:paddingTop="@dimen/spacing_medium"
+            android:paddingBottom="@dimen/spacing_medium"
             android:scrollbars="vertical"
             android:scrollingCache="true" />
 
@@ -108,7 +109,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/spacing_xxlarge"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="@dimen/spacing_xxlarge"
@@ -129,6 +130,7 @@
                 android:imeOptions="actionSearch" />
 
             <ImageView
+                android:id="@+id/btn_send_file"
                 android:layout_width="@dimen/spacing_xxlarge"
                 android:layout_height="@dimen/spacing_xxlarge"
                 android:background="?attr/selectableItemBackground"

@@ -1,5 +1,5 @@
 package com.chatandroid.utils;
 
 public class Config {
-    public static String NOTIFICATION_URI = "https://fcm.googleapis.com/";
+    public static final String NOTIFICATION_URI = "https://fcm.googleapis.com/";
 }

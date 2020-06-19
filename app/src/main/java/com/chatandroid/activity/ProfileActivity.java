@@ -3,12 +3,13 @@ package com.chatandroid.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
 import com.chatandroid.Authenticate;
 import com.chatandroid.R;
+import com.chatandroid.chat.activity.ImageViewerActivity;
+import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.databinding.ActivityProfileBinding;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.database.DataSnapshot;
@@ -20,9 +21,10 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends Authenticate {
-    private DatabaseReference UserRef;
+    private DatabaseReference userRef;
 
     private ActivityProfileBinding binding;
+    private String imageUrl;
 
 
     @Override
@@ -34,19 +36,17 @@ public class ProfileActivity extends Authenticate {
         primaryMenu(savedInstanceState);
         initToolbar();
 
-        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         if (mAuth.getCurrentUser() != null) {
-            RetrieveUserInfo();
+            retrieveUserInfo();
         }
-        binding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class);
-                overridePendingTransition(0, 0);
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+
+        binding.floatingActionButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class);
+//            overridePendingTransition(0, 0);
+            startActivity(intent);
+//            overridePendingTransition(0, 0);
         });
     }
 
@@ -57,14 +57,14 @@ public class ProfileActivity extends Authenticate {
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
     }
 
-    private void RetrieveUserInfo() {
-        UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+    private void retrieveUserInfo() {
+        userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
-                String userImage = Tools.getRefValue(dataSnapshot.child("image"));
+                imageUrl = Tools.getRefValue(dataSnapshot.child("image"));
                 String username = Tools.getRefValue(dataSnapshot.child("username"));
                 String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
@@ -80,8 +80,9 @@ public class ProfileActivity extends Authenticate {
 
                 CircularImageView userProfileImage = binding.image;
 
-                if (!userImage.isEmpty()) {
-                    Picasso.get().load(userImage).placeholder(R.drawable.photo_male_8).into(userProfileImage);
+                if (!imageUrl.isEmpty()) {
+                    Picasso.get().load(imageUrl).placeholder(R.drawable.profile_image).into(userProfileImage);
+                    userProfileImage.setOnClickListener(view -> startImageViewerActivity());
                 }
 
                 if (mAuth.getCurrentUser() != null) {
@@ -97,4 +98,9 @@ public class ProfileActivity extends Authenticate {
         });
     }
 
+    private void startImageViewerActivity() {
+        Intent intent = new Intent(ProfileActivity.this, ImageViewerActivity.class);
+        intent.putExtra("imageUrl", imageUrl);
+        startActivity(intent);
+    }
 }

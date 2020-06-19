@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chatandroid.R;
 import com.chatandroid.chat.activity.ChatActivity;
 import com.chatandroid.chat.adapter.ContactsViewHolder;
-import com.chatandroid.chat.model.Contacts;
-import com.chatandroid.chat.model.Messages;
+import com.chatandroid.chat.model.Contact;
+import com.chatandroid.chat.model.Message;
 import com.chatandroid.utils.Tools;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -27,6 +27,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -34,12 +37,13 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class ChatsFragment extends Fragment {
 
-    public DatabaseReference RootRef;
+    public DatabaseReference rootRef;
 
-    private View PrivateChatsView;
+    private View privateChatsView;
     private RecyclerView chatsList;
+    private CircleImageView image;
 
-    private DatabaseReference FriendsRef, UsersRef;
+    private DatabaseReference friendsRef, usersRef;
     private FirebaseAuth mAuth;
     private String currentUserID = "";
 
@@ -56,51 +60,63 @@ public class ChatsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        PrivateChatsView = inflater.inflate(R.layout.fragment_chats, container, false);
+        privateChatsView = inflater.inflate(R.layout.fragment_chats, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-        RootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
         currentUserID = mAuth.getCurrentUser().getUid();
-        FriendsRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(currentUserID);
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        chatsList = (RecyclerView) PrivateChatsView.findViewById(R.id.chats_list);
+        friendsRef = FirebaseDatabase.getInstance().getReference().child("Friends").child(currentUserID);
+        usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        chatsList = (RecyclerView) privateChatsView.findViewById(R.id.chats_list);
         chatsList.setHasFixedSize(true);
         chatsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        return PrivateChatsView;
+        return privateChatsView;
 
     }
 
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         FirebaseRecyclerOptions options =
-                new FirebaseRecyclerOptions.Builder<Contacts>()
-                        .setQuery(FriendsRef, Contacts.class)
+                new FirebaseRecyclerOptions.Builder<Contact>()
+                        .setQuery(friendsRef, Contact.class)
                         .build();
 
 
-        final FirebaseRecyclerAdapter<Contacts, ContactsViewHolder> adapter
-                = new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
+        final FirebaseRecyclerAdapter<Contact, ContactsViewHolder> adapter
+                = new FirebaseRecyclerAdapter<Contact, ContactsViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, int position, @NonNull Contacts model)
-            {
+            protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, int position, @NonNull Contact model) {
 
                 final String userID = getRef(position).getKey();
 
-                UsersRef.child(userID).addValueEventListener(new ValueEventListener() {
+                usersRef.child(userID).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
-                    {
-
-                        String userImage = Tools.getRefValue(dataSnapshot.child("image"));
+                    public void onDataChange(DataSnapshot dataSnapshot) {
                         String uid = Tools.getRefValue(dataSnapshot.child("uid"));
                         String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                         String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                         String username = Tools.getRefValue(dataSnapshot.child("username"));
                         String name = firtname + " " + lastname;
+
+                        image = holder.profileImage;
+
+                        if (dataSnapshot.child("image").exists()) {
+                            String userImage = Tools.getRefValue(dataSnapshot.child("image"));
+                            Picasso.get().load(userImage).placeholder(R.mipmap.ic_launcher_round).into(image);
+                        }
+
+                        if (dataSnapshot.child("userState").hasChild("status")) {
+                            String status = Tools.getRefValue(dataSnapshot.child("userState").child("status"));
+
+                            if (status.equals("online")) {
+                                holder.onlineGreen.setVisibility(View.VISIBLE);
+                            } else {
+                                holder.onlineGreen.setVisibility(View.INVISIBLE);
+                            }
+                        }
 
                         holder.uid.setText(uid);
                         holder.username.setText(username);
@@ -108,7 +124,7 @@ public class ChatsFragment extends Fragment {
                         holder.device_token.setText(Tools.getRefValue(dataSnapshot.child("device_token")));
 
                         if (mAuth.getCurrentUser() != null) {
-                            lastMessage(currentUserID,holder.username,username,holder.mCount,holder.mTime);
+                            lastMessage(currentUserID, holder.username, username, holder.mCount, holder.mTime);
                         }
                     }
 
@@ -118,22 +134,18 @@ public class ChatsFragment extends Fragment {
                     }
                 });
 
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent profileIntent = new Intent(getContext(), ChatActivity.class);
-                        profileIntent.putExtra("receiver_uid", holder.uid.getText().toString());
-                        profileIntent.putExtra("receiver_token", holder.device_token.getText().toString());
-                        startActivity(profileIntent);
-                    }
+                holder.itemView.setOnClickListener(v -> {
+                    Intent profileIntent = new Intent(getContext(), ChatActivity.class);
+                    profileIntent.putExtra("receiver_uid", holder.uid.getText().toString());
+                    profileIntent.putExtra("receiver_token", holder.device_token.getText().toString());
+                    startActivity(profileIntent);
                 });
 
             }
 
             @NonNull
             @Override
-            public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
-            {
+            public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.users_display_layout, viewGroup, false);
                 ContactsViewHolder viewHolder = new ContactsViewHolder(view);
                 return viewHolder;
@@ -144,28 +156,27 @@ public class ChatsFragment extends Fragment {
         adapter.startListening();
     }
 
-    private void lastMessage(String user, TextView lastMessageView, String username, TextView mCount, TextView mTime){
+    private void lastMessage(String user, TextView lastMessageView, String username, TextView mCount, TextView mTime) {
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
-        RootRef.child("Messages").child(currentUserID).child(user)
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Messages").child(currentUserID).child(user)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                    {
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         long mMessages = 0;
                         String time = "";
 
-                        if(dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             mMessages = 0;
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                if(snapshot.exists()){
-                                    Messages messages = dataSnapshot.getValue(Messages.class);
-                                    lastMessage = messages.getMessage();
-                                    if(messages.getFrom().equals(currentUserID) && messages.getTo().equals(user) ||
-                                            messages.getFrom().equals(user) && messages.getTo().equals(currentUserID)){
-                                        time = messages.getTime();
-                                        if(!messages.getSeen()){
+                                if (snapshot.exists()) {
+                                    Message message = dataSnapshot.getValue(Message.class);
+                                    lastMessage = message.getMessage();
+                                    if (message.getFrom().equals(currentUserID) && message.getTo().equals(user) ||
+                                            message.getFrom().equals(user) && message.getTo().equals(currentUserID)) {
+                                        time = message.getTime();
+                                        if (!message.getSeen()) {
                                             mMessages++;
                                         }
 
@@ -178,15 +189,13 @@ public class ChatsFragment extends Fragment {
                         mCount.setText(String.valueOf(mMessages));
                         mTime.setText(time);
 
-                        if(!lastMessage.equals("No message")){
+                        if (!lastMessage.equals("No message")) {
                             mCount.setVisibility(View.VISIBLE);
                             mTime.setVisibility(View.VISIBLE);
                             lastMessageView.setText(lastMessage);
-                        }else{
+                        } else {
                             lastMessageView.setText(username);
                         }
-
-
                     }
 
                     @Override
@@ -209,7 +218,5 @@ public class ChatsFragment extends Fragment {
 
                     }
                 });
-
     }
-
 }

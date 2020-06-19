@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,11 +42,11 @@ import java.util.Set;
  */
 public class GroupsFragment extends Fragment {
     private View groupFragmentView;
-    private ListView list_view;
+    private ListView listView;
     private ArrayAdapter<String> arrayAdapter;
-    private ArrayList<String> list_of_groups = new ArrayList<>();
+    private ArrayList<String> groupsList = new ArrayList<>();
 
-    private DatabaseReference GroupRef;
+    private DatabaseReference groupsRef;
 
 
     public GroupsFragment() {
@@ -58,59 +59,44 @@ public class GroupsFragment extends Fragment {
                              Bundle savedInstanceState) {
         groupFragmentView = inflater.inflate(R.layout.fragment_groups, container, false);
 
+        groupsRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
-        GroupRef = FirebaseDatabase.getInstance().getReference().child("Groups");
+        initializeFields();
 
+        retrieveAndDisplayGroups();
 
-        InitializeFields();
+        listView.setOnItemClickListener((adapterView, view, position, id) -> {
+            String currentGroupName = adapterView.getItemAtPosition(position).toString();
 
-        RetrieveAndDisplayGroups();
-
-
-        list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String currentGroupName = adapterView.getItemAtPosition(position).toString();
-
-                Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
-                groupChatIntent.putExtra("groupName", currentGroupName);
-                startActivity(groupChatIntent);
-            }
+            Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
+            groupChatIntent.putExtra("groupName", currentGroupName);
+            startActivity(groupChatIntent);
         });
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) groupFragmentView.findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RequestNewGroup();
-            }
-        });
+        FloatingActionButton floatingActionButton = groupFragmentView.findViewById(R.id.floatingActionButton);
+        floatingActionButton.setOnClickListener(v -> requestNewGroup());
 
-        list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
-            {
-                String currentGroupName = adapterView.getItemAtPosition(position).toString();
+        listView.setOnItemClickListener((adapterView, view, position, id) -> {
+            String currentGroupName = adapterView.getItemAtPosition(position).toString();
 
-                Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
-                groupChatIntent.putExtra("groupName" , currentGroupName);
-                startActivity(groupChatIntent);
-            }
+            Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
+            groupChatIntent.putExtra("groupName", currentGroupName);
+            startActivity(groupChatIntent);
         });
 
         return groupFragmentView;
     }
 
 
-    private void InitializeFields() {
-        list_view = (ListView) groupFragmentView.findViewById(R.id.list_view);
-        arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, list_of_groups);
-        list_view.setAdapter(arrayAdapter);
+    private void initializeFields() {
+        listView = groupFragmentView.findViewById(R.id.list_view);
+        arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, groupsList);
+        listView.setAdapter(arrayAdapter);
     }
 
 
-    private void RetrieveAndDisplayGroups() {
-        GroupRef.addValueEventListener(new ValueEventListener() {
+    private void retrieveAndDisplayGroups() {
+        groupsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Set<String> set = new HashSet<>();
@@ -120,8 +106,8 @@ public class GroupsFragment extends Fragment {
                     set.add(((DataSnapshot) iterator.next()).getKey());
                 }
 
-                list_of_groups.clear();
-                list_of_groups.addAll(set);
+                groupsList.clear();
+                groupsList.addAll(set);
                 arrayAdapter.notifyDataSetChanged();
             }
 
@@ -132,47 +118,36 @@ public class GroupsFragment extends Fragment {
         });
     }
 
-    private void RequestNewGroup() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert);
+    private void requestNewGroup() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Enter Group Name :");
 
         final EditText groupNameField = new EditText(getContext());
+        groupNameField.setGravity(Gravity.CENTER);
         groupNameField.setHint("e.g Guitar");
-        groupNameField.setTextColor(getResources().getColor(R.color.defaultWhite));
         builder.setView(groupNameField);
 
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String groupName = groupNameField.getText().toString();
+        builder.setPositiveButton("Create", (dialogInterface, i) -> {
+            String groupName = groupNameField.getText().toString();
 
-                if (TextUtils.isEmpty(groupName)) {
-                    Toast.makeText(getContext(), "Please write Group Name...", Toast.LENGTH_SHORT).show();
-                } else {
-                    CreateNewGroup(groupName);
-                }
+            if (TextUtils.isEmpty(groupName)) {
+                Toast.makeText(getContext(), "Please write Group Name...", Toast.LENGTH_SHORT).show();
+            } else {
+                createNewGroup(groupName);
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.cancel());
 
         builder.show();
     }
 
 
-    private void CreateNewGroup(final String groupName) {
-        GroupRef.child(groupName).setValue("")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getContext(), groupName + " group is Created Successfully...", Toast.LENGTH_SHORT).show();
-                        }
+    private void createNewGroup(final String groupName) {
+        groupsRef.child(groupName).setValue("")
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getContext(), groupName + " group is Created Successfully...", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -5,23 +5,28 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatandroid.R;
-import com.chatandroid.chat.model.Messages;
 import com.chatandroid.chat.activity.ProfileViewActivity;
+import com.chatandroid.chat.model.Message;
 import com.chatandroid.chat.model.User;
+import com.chatandroid.utils.Tools;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder> {
 
@@ -30,7 +35,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
     private String lastMessage = "No message";
 
     public FirebaseAuth mAuth;
-    public DatabaseReference RootRef;
+    public DatabaseReference rootRef;
 
     public FriendAdapter(Context mContext, List<User> mUsers) {
         this.mContext = mContext;
@@ -49,19 +54,23 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
         User user = mUser.get(position);
         holder.username.setText(user.getUsername());
         holder.name.setText(user.getName());
-        holder.statusOffline.setText(user.getStatus());
-        holder.statusOffline.setText(user.getStatus());
         holder.uid.setText(user.getUid());
         holder.device_token.setText(user.getDevice_token());
-        //lastMessage(user.getUid(),holder.username,user.getUsername(),holder.mCount,holder.mTime);
-        holder.cv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, ProfileViewActivity.class);
-                intent.putExtra("user_uid", holder.uid.getText().toString());
-                mContext.startActivity(intent);
-            }
+
+        Picasso.get().load(user.getImage()).placeholder(R.mipmap.ic_launcher_round).into(holder.image);
+
+        holder.cv.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, ProfileViewActivity.class);
+            intent.putExtra("receiver_uid", holder.uid.getText().toString());
+            mContext.startActivity(intent);
         });
+
+        String userStatus = user.getUserState().getStatus();
+        if (userStatus.equals("online")) {
+            holder.ivOnline.setVisibility(View.VISIBLE);
+        } else {
+            holder.ivOnline.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -73,8 +82,8 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
     private void lastMessage(String user, TextView lastMessageView, String username, TextView mCount, TextView mTime) {
         mAuth = FirebaseAuth.getInstance();
         String currentUserID = mAuth.getCurrentUser().getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
-        RootRef.child("Messages").child(currentUserID).child(user)
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Messages").child(currentUserID).child(user)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -85,12 +94,12 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
                             mMessages = 0;
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 if (snapshot.exists()) {
-                                    Messages messages = dataSnapshot.getValue(Messages.class);
-                                    lastMessage = messages.getMessage();
-                                    if (messages.getFrom().equals(currentUserID) && messages.getTo().equals(user) ||
-                                            messages.getFrom().equals(user) && messages.getTo().equals(currentUserID)) {
-                                        time = messages.getTime();
-                                        if (!messages.getSeen()) {
+                                    Message message = dataSnapshot.getValue(Message.class);
+                                    lastMessage = message.getMessage();
+                                    if (message.getFrom().equals(currentUserID) && message.getTo().equals(user) ||
+                                            message.getFrom().equals(user) && message.getTo().equals(currentUserID)) {
+                                        time = message.getTime();
+                                        if (!message.getSeen()) {
                                             mMessages++;
                                         }
 
@@ -141,18 +150,22 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
 
         public TextView device_token, name, username, statusOffline, statusOnline, uid, mTime, mCount;
         public View cv;
+        private CircleImageView image;
+        private ImageView ivOnline;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mTime = (TextView) itemView.findViewById(R.id.message_time);
-            mCount = (TextView) itemView.findViewById(R.id.messages_count);
-            name = (TextView) itemView.findViewById(R.id.name);
-            username = (TextView) itemView.findViewById(R.id.username);
-            statusOnline = (TextView) itemView.findViewById(R.id.status_online);
-            statusOffline = (TextView) itemView.findViewById(R.id.status_offline);
-            uid = (TextView) itemView.findViewById(R.id.uid);
-            device_token = (TextView) itemView.findViewById(R.id.device_token);
-            cv = (View) itemView.findViewById(R.id.lyt_parent);
+            mTime = itemView.findViewById(R.id.message_time);
+            mCount = itemView.findViewById(R.id.messages_count);
+            name = itemView.findViewById(R.id.name);
+            username = itemView.findViewById(R.id.username);
+            statusOnline = itemView.findViewById(R.id.status_online);
+            statusOffline = itemView.findViewById(R.id.status_offline);
+            uid = itemView.findViewById(R.id.uid);
+            device_token = itemView.findViewById(R.id.device_token);
+            cv = itemView.findViewById(R.id.lyt_parent);
+            image = itemView.findViewById(R.id.profile_image);
+            ivOnline = itemView.findViewById(R.id.online_dot);
         }
 
 
