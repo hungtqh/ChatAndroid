@@ -5,6 +5,7 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:fitsSystemWindows="true"
     tools:context=".activity.SettingActivity">
 
@@ -67,7 +68,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white"
             android:orientation="vertical"
             android:paddingTop="@dimen/spacing_large">
 
@@ -75,14 +75,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/spacing_large"
-                android:text="Settings"
+                android:text="@string/action_settings"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -93,6 +93,7 @@
 
 
                     <LinearLayout
+                        android:id="@+id/select_language_opt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
@@ -103,12 +104,11 @@
                         android:paddingLeft="@dimen/spacing_large"
                         android:paddingRight="@dimen/spacing_large">
 
-
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Select Language"
+                            android:text="@string/select_language"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                             android:textColor="@color/grey_90"
                             android:textStyle="bold" />
@@ -118,9 +118,10 @@
                             android:layout_height="wrap_content" />
 
                         <TextView
+                            android:id="@+id/language"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="English, US"
+                            android:text="English"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                             android:textColor="@color/colorPrimary" />
 
@@ -156,7 +157,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Dark Mode"
+                                android:text="@string/dark_mode"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                                 android:textColor="@color/grey_90"
                                 android:textStyle="bold" />
@@ -166,9 +167,9 @@
                                 android:layout_height="wrap_content" />
 
                             <androidx.appcompat.widget.SwitchCompat
+                                android:id="@+id/switch_display_mode"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:checked="true"
                                 app:thumbTint="@color/switch_color_primary" />
 
                             <View
@@ -180,7 +181,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Using dark mode is good for eyes health but the content will be harder to read"
+                            android:text="@string/dark_mode_detail"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                             android:textColor="@color/grey_40" />
 
@@ -208,7 +209,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/spacing_middle">
 
@@ -219,7 +220,7 @@
                         android:layout_marginLeft="@dimen/spacing_large"
                         android:layout_marginTop="@dimen/spacing_large"
                         android:layout_marginBottom="@dimen/spacing_middle"
-                        android:text="More"
+                        android:text="@string/more"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                         android:textColor="@color/grey_90"
                         android:textStyle="bold" />
@@ -238,7 +239,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ask a Question"
+                            android:text="@string/ask_a_question"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/grey_40" />
 
@@ -263,7 +264,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="F A Q"
+                            android:text="@string/faq"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/grey_40" />
 
@@ -288,7 +289,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Privacy Policy"
+                            android:text="@string/privacy_policy"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/grey_40" />
 

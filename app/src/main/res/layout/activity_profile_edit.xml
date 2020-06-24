@@ -21,7 +21,6 @@
         android:id="@+id/nested_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation"
         android:layout_below="@+id/toolbar_layout"
         android:clipToPadding="false"
         android:scrollbars="none"
@@ -90,7 +89,7 @@
                         android:id="@+id/username_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Nickname"
+                        android:hint="@string/nickname"
                         android:padding="0dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -142,7 +141,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:focusableInTouchMode="false"
-                        android:hint="Date Of Birth"
+                        android:hint="@string/date_of_birth"
                         android:padding="0dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -159,7 +158,8 @@
                         android:id="@+id/phonenumber"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:hint="Phone Number"
+                        android:inputType="number"
+                        android:hint="@string/phone_number"
                         android:padding="0dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -176,7 +176,7 @@
                         android:layout_marginLeft="5dp"
                         android:layout_marginTop="10dp"
                         android:layout_weight="1"
-                        android:text="Gender"
+                        android:text="@string/gender"
                         android:textColor="@color/app_bar"
                         android:textSize="17sp" />
 
@@ -196,7 +196,7 @@
                             android:layout_marginRight="20dp"
                             android:buttonTint="@color/app_bar"
                             android:checked="true"
-                            android:text="Male"
+                            android:text="@string/male"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                             android:textColor="@color/grey_80" />
 
@@ -205,7 +205,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/app_bar"
-                            android:text="Female"
+                            android:text="@string/female"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                             android:textColor="@color/grey_80" />
 
@@ -244,7 +244,7 @@
                             android:maxLines="1"
                             android:minHeight="@dimen/spacing_xmlarge"
                             android:singleLine="true"
-                            android:hint="Location"
+                            android:hint="@string/location"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                             android:textColor="@color/grey_80" />
 

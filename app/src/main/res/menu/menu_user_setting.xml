@@ -2,9 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/change_password"
         android:iconTint="@color/defaultWhite"
-        android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="Settings"
+        android:title="@string/change_password"
         app:showAsAction="never" />
 </menu>

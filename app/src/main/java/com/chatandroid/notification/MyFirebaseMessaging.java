@@ -105,12 +105,9 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         if (firebaseUser != null) {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
             FirebaseInstanceId.getInstance().getInstanceId()
-                    .addOnSuccessListener((Executor) this, new OnSuccessListener<InstanceIdResult>() {
-                        @Override
-                        public void onSuccess(InstanceIdResult instanceIdResult) {
-                            String updatedToken = instanceIdResult.getToken();
-                            reference.child("device_token").setValue(updatedToken);
-                        }
+                    .addOnSuccessListener((Executor) this, instanceIdResult -> {
+                        String updatedToken = instanceIdResult.getToken();
+                        reference.child("device_token").setValue(updatedToken);
                     });
         }
 

@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +60,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,8 +76,9 @@ public class ChatActivity extends Authenticate {
     private LinearLayoutManager linearLayoutManager;
     private MessageAdapter messageAdapter;
     private RecyclerView userMessagesList;
-    private CircularImageView image;
     private ProgressDialog loadingBar;
+
+    private EmojIconActions emojIcon;
 
     private String saveCurrentTime, saveCurrentDate;
     private ActivityChatTelegramBinding binding;
@@ -160,7 +164,6 @@ public class ChatActivity extends Authenticate {
         getTypingState();
 
         displayLastSeen();
-
     }
 
     @Override
@@ -185,7 +188,7 @@ public class ChatActivity extends Authenticate {
         loadingBar = new ProgressDialog(this);
         messageAdapter = new MessageAdapter(ChatActivity.this, messagesList);
         userMessagesList = binding.recyclerView;
-        image = binding.image;
+
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
@@ -205,6 +208,18 @@ public class ChatActivity extends Authenticate {
 
         binding.lytBack.setOnClickListener(v -> onBackPressed());
 
+        emojIcon = new EmojIconActions(this, binding.rootView, binding.textContent, binding.emojiBtn);
+        emojIcon.ShowEmojIcon();
+        emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
+            @Override
+            public void onKeyboardOpen() {
+                Log.e("Keyboard", "open");
+            }
+            @Override
+            public void onKeyboardClose() {
+                Log.e("Keyboard", "close");
+            }
+        });
     }
 
     private void startProfileViewActivity(String messageReceiverID) {
@@ -244,7 +259,7 @@ public class ChatActivity extends Authenticate {
 
                             if (dataSnapshot.child("image").exists()) {
                                 String userImage = dataSnapshot.child("image").getValue().toString();
-                                Picasso.get().load(userImage).placeholder(R.mipmap.ic_launcher_round).into(image);
+                                Picasso.get().load(userImage).placeholder(R.mipmap.ic_launcher_round).into(binding.image);
                             }
 
                             if (state.equals("online")) {
@@ -266,7 +281,7 @@ public class ChatActivity extends Authenticate {
         String messageText = binding.textContent.getText().toString();
 
         if (TextUtils.isEmpty(messageText)) {
-            Toast.makeText(this, "Please write your message first...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.please_write_msg, Toast.LENGTH_SHORT).show();
         } else {
             String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
             String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
@@ -282,7 +297,7 @@ public class ChatActivity extends Authenticate {
 
             final String msg = messageText;
             if (notify) {
-                sendNotification(msg, senderName + " sent you a message");
+                sendNotification(msg, senderName + getString(R.string.sent_you_a_message));
                 notify = false;
             }
         }
@@ -326,45 +341,42 @@ public class ChatActivity extends Authenticate {
 
     private void sendFile() {
         CharSequence[] options = new CharSequence[]{
-                "Images",
-                "PDF Files",
-                "MS Word Files"
+                getString(R.string.images),
+                getString(R.string.pdf_files),
+                getString(R.string.ms_word_files)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-        builder.setTitle("Select file to send");
+        builder.setTitle(R.string.select_file);
 
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    checker = "image";
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                checker = "image";
 
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("image/*");
-                    startActivityForResult(intent.createChooser(intent, "Select Image"), 1);
-                }
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent.createChooser(intent, getString(R.string.select_image)), 1);
+            }
 
-                if (which == 1) {
-                    checker = "pdf";
+            if (which == 1) {
+                checker = "pdf";
 
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("application/pdf");
-                    startActivityForResult(intent.createChooser(intent, "Select PDF File"), 1);
-                }
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("application/pdf");
+                startActivityForResult(intent.createChooser(intent, getString(R.string.select_pdf)), 1);
+            }
 
-                if (which == 2) {
-                    checker = "docx";
+            if (which == 2) {
+                checker = "docx";
 
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("*/*");
-                    String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                    startActivityForResult(intent.createChooser(intent, "Select MS Word File"), 1);
-                }
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                startActivityForResult(intent.createChooser(intent, getString(R.string.select_word)), 1);
             }
         });
 
@@ -377,8 +389,8 @@ public class ChatActivity extends Authenticate {
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            loadingBar.setTitle("Send File");
-            loadingBar.setMessage("Sending your file...");
+            loadingBar.setTitle(getString(R.string.send_file));
+            loadingBar.setMessage(getString(R.string.sending_your_file));
             loadingBar.setCanceledOnTouchOutside(false);
             loadingBar.show();
 
@@ -403,11 +415,11 @@ public class ChatActivity extends Authenticate {
                             String downloadedUrl = uri.toString();
 
                             saveMessageToDB(messageSenderRef, messageReceiverRef, downloadedUrl, messagePushID, checker);
-                            Toast.makeText(ChatActivity.this, "Image sent!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatActivity.this, R.string.image_sent, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
 
                             if (notify) {
-                                sendNotification(senderName + " sent you a photo", "New message");
+                                sendNotification(senderName + getString(R.string.sent_you_a_photo), getString(R.string.new_mess_notification));
                                 notify = false;
                             }
                         });
@@ -437,11 +449,11 @@ public class ChatActivity extends Authenticate {
                             String downloadedUrl = uri.toString();
 
                             saveMessageToDB(messageSenderRef, messageReceiverRef, downloadedUrl, messagePushID, checker);
-                            Toast.makeText(ChatActivity.this, "File sent!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatActivity.this, R.string.file_sent, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
 
                             if (notify) {
-                                sendNotification(senderName + " sent you a file", "New message");
+                                sendNotification(senderName + getString(R.string.sent_you_a_file), getString(R.string.new_mess_notification));
                                 notify = false;
                             }
                         });
@@ -451,11 +463,11 @@ public class ChatActivity extends Authenticate {
                     }
                 }).addOnProgressListener(taskSnapshot -> {
                     double p = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                    loadingBar.setMessage((int) p + "% Uploaded...");
+                    loadingBar.setMessage((int) p + getString(R.string.percent_upload));
                 });
 
             } else {
-                Toast.makeText(this, "Nothing Selected.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.nothing_selected, Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.chatandroid.chat.fragment;
 
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,22 +8,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.chatandroid.R;
-import com.chatandroid.chat.activity.FindFriendsActivity;
 import com.chatandroid.chat.activity.GroupChatActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -90,7 +86,7 @@ public class GroupsFragment extends Fragment {
 
     private void initializeFields() {
         listView = groupFragmentView.findViewById(R.id.list_view);
-        arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, groupsList);
+        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, groupsList);
         listView.setAdapter(arrayAdapter);
     }
 
@@ -120,26 +116,32 @@ public class GroupsFragment extends Fragment {
 
     private void requestNewGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Enter Group Name :");
+        builder.setTitle(R.string.create_group_chat);
 
         final EditText groupNameField = new EditText(getContext());
         groupNameField.setGravity(Gravity.CENTER);
-        groupNameField.setHint("e.g Guitar");
+        groupNameField.setHint(R.string.enter_group_name);
         builder.setView(groupNameField);
 
-        builder.setPositiveButton("Create", (dialogInterface, i) -> {
+        builder.setPositiveButton(R.string.create, (dialogInterface, i) -> {
+
+        });
+
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel());
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String groupName = groupNameField.getText().toString();
 
             if (TextUtils.isEmpty(groupName)) {
-                Toast.makeText(getContext(), "Please write Group Name...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.pls_enter_group_name, Toast.LENGTH_SHORT).show();
             } else {
                 createNewGroup(groupName);
+                dialog.dismiss();
             }
         });
-
-        builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.cancel());
-
-        builder.show();
     }
 
 
@@ -147,7 +149,7 @@ public class GroupsFragment extends Fragment {
         groupsRef.child(groupName).setValue("")
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(getContext(), groupName + " group is Created Successfully...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), groupName + getString(R.string.group_created), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

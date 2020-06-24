@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_more"
         android:orderInCategory="100"
-        android:title="View Profile"
+        android:title="@string/view_profile"
         app:showAsAction="never" />
 
 </menu>

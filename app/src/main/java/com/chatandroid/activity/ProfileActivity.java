@@ -20,6 +20,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
+import java.util.Locale;
+
 public class ProfileActivity extends Authenticate {
     private DatabaseReference userRef;
 
@@ -44,16 +46,14 @@ public class ProfileActivity extends Authenticate {
 
         binding.floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class);
-//            overridePendingTransition(0, 0);
             startActivity(intent);
-//            overridePendingTransition(0, 0);
         });
     }
 
     private void initToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Messaging App");
+        getSupportActionBar().setTitle(getString(R.string.menu_profile));
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
     }
 
@@ -75,6 +75,15 @@ public class ProfileActivity extends Authenticate {
                 binding.nickname.setText(username);
                 binding.location.setText(location);
                 binding.phone.setText(phone);
+
+                if (selectedLocale.equals("vi")) {
+                    if (gender.equals("Male")) {
+                        gender = "Nam";
+                    } else if (gender.equals("Female")) {
+                        gender = "Nữ";
+                    }
+                }
+
                 binding.gender.setText(gender);
                 binding.dateOfBirth.setText(dateOfBirth);
 

@@ -21,6 +21,7 @@ import com.chatandroid.chat.activity.ImageViewerActivity;
 import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.chat.model.GroupMessage;
 import com.chatandroid.chat.model.Message;
+import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,13 +32,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.MessageViewHolder> {
     private List<GroupMessage> groupMessagesList;
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private Context mContext;
+    private AppPreference preference;
 
     private final int CHAT_ME = 100;
     private final int CHAT_YOU = 200;
@@ -46,6 +50,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         this.groupMessagesList = groupMessagesList;
         this.mContext = mContext;
         mAuth = FirebaseAuth.getInstance();
+        preference = new AppPreference(mContext);
     }
 
     public class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -98,8 +103,47 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
             messageViewHolder.username.setText(message.getName());
             messageViewHolder.messageText.setText(message.getMessage());
-            messageViewHolder.messageTime.setText(message.getTime());
-            messageViewHolder.messageDate.setText(message.getDate());
+
+            String selectedLocale = preference.getAppLanguage();
+            String messageTime = message.getTime();
+            String messageDate = message.getDate();
+
+            if (selectedLocale.equals("vi")) {
+                messageTime = messageTime.replace("PM", "CH");
+                messageTime = messageTime.replace("AM", "SA");
+
+                messageDate = messageDate.replace("Jan", "Th1");
+                messageDate = messageDate.replace("Feb", "Th2");
+                messageDate = messageDate.replace("Mar", "Th3");
+                messageDate = messageDate.replace("Apr", "Th4");
+                messageDate = messageDate.replace("May", "Th5");
+                messageDate = messageDate.replace("Jun", "Th6");
+                messageDate = messageDate.replace("Jul", "Th7");
+                messageDate = messageDate.replace("Aug", "Th8");
+                messageDate = messageDate.replace("Sep", "Th9");
+                messageDate = messageDate.replace("Oct", "Th10");
+                messageDate = messageDate.replace("Nov", "Th11");
+                messageDate = messageDate.replace("Dec", "Th12");
+            } else {
+                messageTime = messageTime.replace("CH", "PM");
+                messageTime = messageTime.replace("SA", "AM");
+
+                messageDate = messageDate.replace("Th1", "Jan");
+                messageDate = messageDate.replace("Th2", "Feb");
+                messageDate = messageDate.replace("Th3", "Mar");
+                messageDate = messageDate.replace("Th4", "Apr");
+                messageDate = messageDate.replace("Th5", "May");
+                messageDate = messageDate.replace("Th6", "Jun");
+                messageDate = messageDate.replace("Jul", "Th7");
+                messageDate = messageDate.replace("Th8", "Aug");
+                messageDate = messageDate.replace("Th9", "Sep");
+                messageDate = messageDate.replace("Th10", "Oct");
+                messageDate = messageDate.replace("Th11", "Nov");
+                messageDate = messageDate.replace("Th12", "Dec");
+            }
+
+            messageViewHolder.messageTime.setText(messageTime);
+            messageViewHolder.messageDate.setText(messageDate);
         } else if (fromMessageType.equals("image")) {
             messageViewHolder.imageMessage.setVisibility(View.VISIBLE);
             messageViewHolder.cardView.setVisibility(View.GONE);
@@ -117,13 +161,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
             if (fromMessageType.equals("pdf") || fromMessageType.equals("docx")) {
                 CharSequence[] options = new CharSequence[]{
-                        "Download and view this document",
-                        "Cancel"
+                        mContext.getString(R.string.download_and_view_document),
+                        mContext.getString(R.string.cancel)
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                builder.setTitle("Select option");
+                builder.setTitle(R.string.select_option);
 
                 builder.setItems(options, (dialog, which) -> {
                     if (which == 0) {
@@ -134,14 +178,14 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
                 builder.show();
             } else if (fromMessageType.equals("image")) {
                 CharSequence[] options = new CharSequence[]{
-                        "View this image",
-                        "Download this image",
-                        "Cancel"
+                        mContext.getString(R.string.view_this_image),
+                        mContext.getString(R.string.download_this_image),
+                        mContext.getString(R.string.cancel)
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                builder.setTitle("Select option");
+                builder.setTitle(R.string.select_option);
 
                 builder.setItems(options, (dialog, which) -> {
                     if (which == 0) {
@@ -162,13 +206,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
             if (fromMessageType.equals("text")) {
                 CharSequence[] options = new CharSequence[]{
-                        "Copy text",
-                        "Cancel"
+                        mContext.getString(R.string.copy_text),
+                        mContext.getString(R.string.cancel)
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                builder.setTitle("Select option");
+                builder.setTitle(R.string.select_option);
 
                 builder.setItems(options, (dialog, which) -> {
                     if (which == 0) {

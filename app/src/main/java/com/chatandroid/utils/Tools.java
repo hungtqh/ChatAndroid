@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,7 +17,10 @@ import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 
+import com.chatandroid.R;
 import com.google.firebase.database.DataSnapshot;
+
+import java.util.Locale;
 
 public class Tools {
 
@@ -31,7 +37,7 @@ public class Tools {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("clipboard", data);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(context, "Text copied to clipboard", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.text_coppied, Toast.LENGTH_SHORT).show();
     }
 
     public static void changeMenuIconColor(Menu menu, @ColorInt int color) {

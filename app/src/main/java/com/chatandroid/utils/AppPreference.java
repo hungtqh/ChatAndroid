@@ -22,7 +22,7 @@ public class AppPreference {
 
     // All Shared Preferences Keys
     private static final String CURRENT_CHATTING_USER = "current_chatting_user";
-
+    private static final String LOCALE = "locale";
 
     // Constructor
     public AppPreference(Context context) {
@@ -38,7 +38,6 @@ public class AppPreference {
 
         editor.putString(CURRENT_CHATTING_USER, user);
 
-        // commit changes
         editor.commit();
     }
 
@@ -46,9 +45,14 @@ public class AppPreference {
         return pref.getString(CURRENT_CHATTING_USER, null);
     }
 
+    public void setAppLanguage(String locale) {
+        editor.putString(LOCALE, locale);
 
-    public void removeCurrentChattingUser() {
-        editor.remove(CURRENT_CHATTING_USER);
+        editor.commit();
+    }
+
+    public String getAppLanguage() {
+        return pref.getString(LOCALE, "vi");
     }
 
     public void destroy() {

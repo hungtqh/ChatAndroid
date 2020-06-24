@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,12 +40,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+
 public class GroupChatActivity extends Authenticate {
     private Toolbar mToolbar;
     private ImageView sendMessageButton;
     private ImageView sendFileButton;
     private EditText userMessageInput;
     private ActivityGroupChatBinding binding;
+
+    private EmojIconActions emojIcon;
 
     private RecyclerView userMessagesList;
     private LinearLayoutManager linearLayoutManager;
@@ -125,6 +130,20 @@ public class GroupChatActivity extends Authenticate {
 
             }
         });
+
+        emojIcon = new EmojIconActions(this, binding.rootView, binding.textContent, binding.emojiBtn);
+        emojIcon.ShowEmojIcon();
+        emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
+            @Override
+            public void onKeyboardOpen() {
+                Log.e("Keyboard", "open");
+            }
+
+            @Override
+            public void onKeyboardClose() {
+                Log.e("Keyboard", "close");
+            }
+        });
     }
 
     private void sendFile() {
@@ -146,7 +165,7 @@ public class GroupChatActivity extends Authenticate {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     intent.setType("image/*");
-                    startActivityForResult(intent.createChooser(intent, "Select Image"), 1);
+                    startActivityForResult(intent.createChooser(intent, getString(R.string.select_image)), 1);
                 }
 
                 if (which == 1) {
@@ -155,7 +174,7 @@ public class GroupChatActivity extends Authenticate {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     intent.setType("application/pdf");
-                    startActivityForResult(intent.createChooser(intent, "Select PDF File"), 1);
+                    startActivityForResult(intent.createChooser(intent, getString(R.string.select_pdf)), 1);
                 }
 
                 if (which == 2) {
@@ -166,7 +185,7 @@ public class GroupChatActivity extends Authenticate {
                     intent.setType("*/*");
                     String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
                     intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                    startActivityForResult(intent.createChooser(intent, "Select MS Word File"), 1);
+                    startActivityForResult(intent.createChooser(intent, getString(R.string.select_word)), 1);
                 }
             }
         });
@@ -219,7 +238,7 @@ public class GroupChatActivity extends Authenticate {
         String type = "text";
 
         if (TextUtils.isEmpty(message)) {
-            Toast.makeText(this, "Please write message first...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.please_write_msg, Toast.LENGTH_SHORT).show();
         } else {
             saveMessage(message, messageKey, type);
         }
@@ -256,8 +275,8 @@ public class GroupChatActivity extends Authenticate {
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            loadingBar.setTitle("Sending Image");
-            loadingBar.setMessage("Sending your image message...");
+            loadingBar.setTitle(getString(R.string.send_image));
+            loadingBar.setMessage(getString(R.string.sending_image));
             loadingBar.setCanceledOnTouchOutside(false);
             loadingBar.show();
 
@@ -276,7 +295,7 @@ public class GroupChatActivity extends Authenticate {
                             String downloadedUrl = uri.toString();
 
                             saveMessage(downloadedUrl, messageKey, checker);
-                            Toast.makeText(GroupChatActivity.this, "Image sent!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GroupChatActivity.this, R.string.image_sent, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
                         });
                     } else {
@@ -299,7 +318,7 @@ public class GroupChatActivity extends Authenticate {
                             String downloadedUrl = uri.toString();
 
                             saveMessage(downloadedUrl, messageKey, checker);
-                            Toast.makeText(GroupChatActivity.this, "File sent!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GroupChatActivity.this, R.string.file_sent, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
                         });
                     } else {
@@ -308,10 +327,10 @@ public class GroupChatActivity extends Authenticate {
                     }
                 }).addOnProgressListener(taskSnapshot -> {
                     double p = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                    loadingBar.setMessage((int) p + "% Uploaded...");
+                    loadingBar.setMessage((int) p + getString(R.string.percent_upload));
                 });
             } else {
-                Toast.makeText(this, "Nothing Selected.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.nothing_selected), Toast.LENGTH_SHORT).show();
             }
         }
     }

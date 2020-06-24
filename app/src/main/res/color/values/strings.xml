@@ -1,1 +1,178 @@
-<resources></resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter_email">Please enter email</string>
+    <string name="enter_password">Please enter password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="please_wait">Please wait....</string>
+    <string name="logged_in_successful">Logged in Successful</string>
+    <string name="error_message">\"Error : \"</string>
+    <string name="must_provide_email">You must provide email address</string>
+    <string name="account_recovery_msg">PTIT Chat | Account Recovery</string>
+    <string name="instruction_email_sent">Recovery instruction sent to your email inbox</string>
+    <string name="experiencing_issues">We are experiencing some issues. Try again later</string>
+
+    <string name="login">Login</string>
+    <string name="new_user">New user?\u0020</string>
+
+    <string name="app_name" translatable="false">PTIT Chat</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Menus -->
+    <string name="registration">Registration</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_chat">Chat</string>
+
+    <!-- Profiles -->
+    <string name="firstname">First Name</string>
+    <string name="lastname">Last Name</string>
+    <string name="gender">Gender</string>
+    <string name="email">Email</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+
+    <!-- Login -->
+    <string name="logout">Logout</string>
+    <string name="login_password">Password</string>
+
+    <!--Registration -->
+    <string name="registration_register">Register</string>
+
+    <!-- Reset Password-->
+    <string name="enter_otp">Enter OTP</string>
+    <string name="reset_email">Enter your Email</string>
+    <string name="reset_email_send">Send</string>
+    <string name="account_recovery">Account Recovery</string>
+
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save">Save</string>
+    <string name="dismiss">Dismiss</string>
+
+    <string name="action_send">Send</string>
+    <string name="user_action_typing">is typing</string>
+
+    <string name="location">Location</string>
+
+    <string name="notifications">Notification</string>
+
+    <string name="username">Username</string>
+
+    <string name="default_notification_channel_id" translatable="false">Default</string>
+
+    <string name="friends">Friends</string>
+    <string name="friend">Friend</string>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyBi6McvWPNR1NV-M6kVLRfH9uKPtUWcyJQ
+    </string>
+
+    <string name="UPDATE">UPDATE</string>
+    <string name="DISMISS">DISMISS</string>
+
+    <string name="change_password">Change Password</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="enter_old_password"><font size="15">Enter old password</font></string>
+    <string name="enter_new_password"><font size="15">Enter new password</font></string>
+    <string name="confirm_new_password"><font size="15">Confirm new password</font></string>
+    <string name="email_address">Email Address</string>
+    <string name="submit">Submit</string>
+    <string name="change_user_password">Change user password</string>
+    <string name="enter_all_fields">Enter all fields</string>
+    <string name="password_changed">Password changed</string>
+    <string name="password_not_match">Password not match</string>
+    <string name="wrong_password">Wrong password. Try again!</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="register">Register</string>
+    <string name="i_have_account">I have account!\u0020</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="please_verify_email">Please verify your email first</string>
+    <string name="select_birthday_date_picker">Select Your Birthday</string>
+    <string name="set_profile_image">Set profile image</string>
+    <string name="wait_setting_image">Please wait, your profile image is updating...</string>
+    <string name="date_picker_dialog" translatable="false">DatePickerDialog</string>
+    <string name="image_saved">Image saved successfully!</string>
+    <string name="enter_first_name">Please write your first name.</string>
+    <string name="enter_last_name">Please write your last name.</string>
+    <string name="enter_nickname">Please write your nickname.</string>
+    <string name="profile_updated">Profile updated successfully!</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="wait_creating_account">Please wait, while we wre creating new account for you...</string>
+    <string name="check_verification_email">Account created successfully. Please check your verification email to complete registration!</string>
+    <string name="please_write_msg">Please write your message first</string>
+    <string name="sent_you_a_message">\" sent you a message\"</string>
+    <string name="images">Images</string>
+    <string name="pdf_files">PDF Files</string>
+    <string name="ms_word_files">MS Word Files</string>
+    <string name="select_file">Select file to send</string>
+    <string name="select_image">Select Image</string>
+    <string name="select_pdf">Select PDF File</string>
+    <string name="select_word">Select MS Word File</string>
+    <string name="send_file">Send File</string>
+    <string name="sending_your_file">Sending your file...</string>
+    <string name="image_sent">Image sent!</string>
+    <string name="sent_you_a_photo">\" sent you a photo\"</string>
+    <string name="new_mess_notification">New message</string>
+    <string name="file_sent">File sent!</string>
+    <string name="sent_you_a_file">\" sent you a file\"</string>
+    <string name="percent_upload">% uploaded...</string>
+    <string name="nothing_selected">Nothing selected</string>
+    <string name="find_friend">Find Friend</string>
+    <string name="send_image">Send Image</string>
+    <string name="sending_image">Sending your image message...</string>
+    <string name="profile_view_title">Profile View</string>
+    <string name="want_to_cancel_request">Do you really want to cancel request?</string>
+    <string name="request_canceled">Request cancelled</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="accept_request">Accept Request</string>
+    <string name="want_to_unfriend">Do you really want to unfriend?</string>
+    <string name="unfriend_successfully">Unfriend successfully!</string>
+    <string name="request">Request</string>
+    <string name="cancel">Cancel</string>
+    <string name="request_accepted">Request Accepted</string>
+    <string name="requested">Requested</string>
+    <string name="sent_u_a_friend_request">\" sent you a friend request!\"</string>
+    <string name="friend_request">Friend Request</string>
+    <string name="request_sent">Request Sent!</string>
+    <string name="download_and_view_document">Download and view this document</string>
+    <string name="select_option">Select option</string>
+    <string name="view_this_image">View this image</string>
+    <string name="download_this_image">Download this image</string>
+    <string name="copy_text">Copy text</string>
+    <string name="delete_for_me">Delete for me</string>
+    <string name="delete_everyone">Delete for everyone</string>
+    <string name="delete_success">Deleted successfully!</string>
+    <string name="error_delete_image">Error occurred while deleting the message.</string>
+    <string name="message_input">Message</string>
+    <string name="nickname">Nickname</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="select_language">Select Language</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_detail">Using dark mode is good for eyes health but the content will be harder to read</string>
+    <string name="more">More</string>
+    <string name="ask_a_question">Help</string>
+    <string name="faq">F A Q</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="chats">Chats</string>
+    <string name="groups">Groups</string>
+    <string name="requests">Requests</string>
+    <string name="chatting">Chatting</string>
+    <string name="send_message">Send Message</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="view_profile">View Profile</string>
+    <string name="text_coppied">Text copied to clipboard</string>
+    <string name="tools">Tools</string>
+    <string name="create_group_chat">Create group chat</string>
+    <string name="enter_group_name">Enter group name</string>
+    <string name="create">Create</string>
+    <string name="pls_enter_group_name">Please write group name!</string>
+    <string name="group_created">" group is created successfully!"</string>
+    <string name="language_changed">Language changed!</string>
+    <string name="vietnamese" translatable="false">Tiếng Việt</string>
+    <string name="english" translatable="false">English</string>
+
+</resources>

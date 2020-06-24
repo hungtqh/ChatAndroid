@@ -4,30 +4,17 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.chatandroid.Authenticate;
+import com.chatandroid.R;
 import com.chatandroid.databinding.ActivityRegisterBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 
-public class RegisterActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    private DatabaseReference rootRef;
-
+public class RegisterActivity extends Authenticate {
     private ProgressDialog loadingBar;
 
     private ActivityRegisterBinding binding;
@@ -39,16 +26,9 @@ public class RegisterActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-
-        mAuth = FirebaseAuth.getInstance();
-        rootRef = FirebaseDatabase.getInstance().getReference();
-
-
         initializeFields();
 
-
         binding.login.setOnClickListener(view1 -> sendUserToLoginActivity());
-
 
         binding.register.setOnClickListener(view12 -> createNewAccount());
     }
@@ -59,13 +39,13 @@ public class RegisterActivity extends AppCompatActivity {
         String password = binding.password.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Please enter email...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_email, Toast.LENGTH_SHORT).show();
         }
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Please enter password...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_password, Toast.LENGTH_SHORT).show();
         } else {
-            loadingBar.setTitle("Creating New Account");
-            loadingBar.setMessage("Please wait, while we wre creating new account for you...");
+            loadingBar.setTitle(getString(R.string.create_new_account));
+            loadingBar.setMessage(getString(R.string.wait_creating_account));
             loadingBar.setCanceledOnTouchOutside(true);
             loadingBar.show();
 
@@ -81,12 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
                             rootRef.child("Users").child(currentUserID).child("device_token")
                                     .setValue(deviceToken);
 
-                            Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            user.sendEmailVerification();
+
+                            Toast.makeText(RegisterActivity.this, R.string.check_verification_email, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
                         } else {
                             String message = task.getException().getMessage();
                             Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
-                            Log.i("Kelly", message);
                             loadingBar.dismiss();
                         }
                     });

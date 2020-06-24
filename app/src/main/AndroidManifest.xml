@@ -38,7 +38,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activity.RegisterActivity" /> <!-- Settings -->
+        <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".chat.activity.FindFriendsActivity" />
         <activity android:name=".chat.activity.ProfileViewActivity" />
         <activity android:name=".chat.Chats" />

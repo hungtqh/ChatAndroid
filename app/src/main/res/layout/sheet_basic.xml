@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/spacing_middle"
         android:layout_marginBottom="@dimen/spacing_middle"
-        android:text="Account Recovery"
+        android:text="@string/account_recovery"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/grey_90" />
 
@@ -38,7 +38,7 @@
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Email Address"
+            android:hint="@string/email_address"
             android:padding="0dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -70,7 +70,7 @@
 
             <Button
                 android:textColor="@color/defaultWhite"
-                android:text="Submit"
+                android:text="@string/submit"
                 android:id="@+id/reset"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

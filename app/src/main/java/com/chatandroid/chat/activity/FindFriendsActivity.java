@@ -39,7 +39,7 @@ public class FindFriendsActivity extends Authenticate {
         setContentView(view);
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Find Friend");
+        getSupportActionBar().setTitle(R.string.find_friend);
 
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
 

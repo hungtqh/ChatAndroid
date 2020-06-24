@@ -115,9 +115,9 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
 
         datePickerDialog.setAccentColor(Color.parseColor("#0072BA"));
 
-        datePickerDialog.setTitle("Select Date From DatePickerDialog");
+        datePickerDialog.setTitle(getString(R.string.select_birthday_date_picker));
 
-        datePickerDialog.show(getSupportFragmentManager(), "DatePickerDialog");
+        datePickerDialog.show(getSupportFragmentManager(), getString(R.string.date_picker_dialog));
     }
 
 
@@ -149,30 +149,26 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
             if (resultCode == RESULT_OK) {
-                loadingBar.setTitle("Set Profile Image");
-                loadingBar.setMessage("Please wait, your profile image is updating...");
+                loadingBar.setTitle(getString(R.string.set_profile_image));
+                loadingBar.setMessage(getString(R.string.wait_setting_image));
                 loadingBar.setCanceledOnTouchOutside(false);
                 loadingBar.show();
 
                 StorageReference filePath = userProfileImagesRef.child(currentUserID + ".jpg");
                 filePath.putFile(imageUri).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(ProfileEditActivity.this, "Profile Image uploaded Successfully...", Toast.LENGTH_SHORT).show();
 
-                        filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String downloadedUrl = uri.toString();
+                        filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadedUrl = uri.toString();
 
-                                rootRef.child("Users").child(currentUserID).child("image")
-                                        .setValue(downloadedUrl)
-                                        .addOnCompleteListener(task1 -> {
-                                            if (task1.isSuccessful()) {
-                                                Toast.makeText(ProfileEditActivity.this, "Image saved Successfully...", Toast.LENGTH_SHORT).show();
-                                                loadingBar.dismiss();
-                                            }
-                                        });
-                            }
+                            rootRef.child("Users").child(currentUserID).child("image")
+                                    .setValue(downloadedUrl)
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(ProfileEditActivity.this, R.string.image_saved, Toast.LENGTH_SHORT).show();
+                                            loadingBar.dismiss();
+                                        }
+                                    });
                         });
                     } else {
                         String message = task.getException().toString();
@@ -188,7 +184,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Profile");
+        getSupportActionBar().setTitle(getString(R.string.menu_profile));
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
         loadingBar = new ProgressDialog(this);
     }
@@ -214,7 +210,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
 
                 binding.profileName.setText(name);
 
-                if (gender.equals("Male")) {
+                if (gender.equals("Male") || gender.equals("Nam")) {
                     binding.male.setChecked(true);
                 } else {
                     binding.female.setChecked(true);
@@ -270,13 +266,13 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         String dateOfBirth = binding.dateOfBirth.getText().toString();
 
         if (TextUtils.isEmpty(lastname)) {
-            Toast.makeText(this, "Please write your first name.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_first_name, Toast.LENGTH_SHORT).show();
         }
         if (TextUtils.isEmpty(firstname)) {
-            Toast.makeText(this, "Please write your lastname", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_last_name, Toast.LENGTH_SHORT).show();
         }
         if (TextUtils.isEmpty(username)) {
-            Toast.makeText(this, "Please write your username", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_nickname, Toast.LENGTH_SHORT).show();
         } else {
             HashMap<String, Object> profileMap = new HashMap<>();
             profileMap.put("uid", currentUserID);
@@ -290,7 +286,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
             rootRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(ProfileEditActivity.this, "Profile Updated Successfully...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProfileEditActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
                         } else {
                             String message = task.getException().getMessage();
                             Toast.makeText(ProfileEditActivity.this, message, Toast.LENGTH_SHORT).show();

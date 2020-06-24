@@ -1,10 +1,11 @@
 package com.chatandroid;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,7 +18,7 @@ import com.chatandroid.activity.LoginActivity;
 import com.chatandroid.activity.ProfileActivity;
 import com.chatandroid.activity.SettingActivity;
 import com.chatandroid.chat.Chats;
-import com.chatandroid.chat.activity.ChatActivity;
+import com.chatandroid.utils.AppPreference;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,12 +31,12 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class Authenticate extends AppCompatActivity {
 
@@ -48,45 +49,54 @@ public class Authenticate extends AppCompatActivity {
     protected Drawer result = null;
     private AccountHeader headerResult = null;
 
+    private Locale mLocale;
+    protected AppPreference preference;
+    protected String selectedLocale;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        currentUserID = mAuth.getCurrentUser().getUid();
+
+        if (mAuth.getCurrentUser() != null) {
+            currentUserID = mAuth.getCurrentUser().getUid();
+        }
         rootRef = FirebaseDatabase.getInstance().getReference();
+
+        preference = new AppPreference(this);
+        selectedLocale = preference.getAppLanguage();
+        setAppLanguage();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (currentUserID == null) {
-            sendUserToLoginActivity();
-        }
 
-        Button lmHumbug = findViewById(R.id.lmHumbug);
-        if (lmHumbug != null) {
-            lmHumbug.setOnClickListener((View.OnClickListener) v -> {
-                DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.material_drawer_layout);
-                mDrawerLayout.openDrawer(Gravity.LEFT);
-            });
+        if (mAuth.getCurrentUser() != null) {
+            Button lmHumbug = findViewById(R.id.lmHumbug);
+            if (lmHumbug != null) {
+                lmHumbug.setOnClickListener(v -> {
+                    DrawerLayout mDrawerLayout = findViewById(R.id.material_drawer_layout);
+                    mDrawerLayout.openDrawer(Gravity.LEFT);
+                });
+            }
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateUserStatus("online");
+        if (currentUserID != null) {
+            updateUserStatus("online");
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        updateUserStatus("offline");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        if (currentUserID != null) {
+            updateUserStatus("offline");
+        }
     }
 
     @Override
@@ -100,7 +110,7 @@ public class Authenticate extends AppCompatActivity {
     }
 
     protected void primaryMenu(Bundle instance) {
-        PrimaryDrawerItem chat = new PrimaryDrawerItem().withName("Chat").withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_chat).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_chat)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
+        PrimaryDrawerItem chat = new PrimaryDrawerItem().withName(R.string.menu_chat).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_chat).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_chat)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
 
         SecondaryDrawerItem account = new SecondaryDrawerItem().withName(R.string.menu_profile).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_profile).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withName(R.string.action_settings).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.action_settings).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_settings)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
@@ -123,7 +133,7 @@ public class Authenticate extends AppCompatActivity {
                 .withSavedInstance(instance)
                 .addDrawerItems(
                         chat,
-                        new SectionDrawerItem().withName("Tools").withSelectable(false),
+                        new SectionDrawerItem().withName(R.string.tools).withSelectable(false),
                         account,
                         settings,
                         logout
@@ -210,19 +220,6 @@ public class Authenticate extends AppCompatActivity {
 
     }
 
-    private void sendUserToLoginActivity() {
-        Intent loginIntent = new Intent(Authenticate.this, LoginActivity.class);
-        overridePendingTransition(0, 0);
-        startActivity(loginIntent);
-        overridePendingTransition(0, 0);
-
-    }
-
-    private void sendUserToSettingsActivity() {
-        Intent settingsIntent = new Intent(Authenticate.this, SettingActivity.class);
-        startActivity(settingsIntent);
-    }
-
     private void updateUserStatus(String state) {
         String saveCurrentTime, saveCurrentDate;
 
@@ -241,6 +238,17 @@ public class Authenticate extends AppCompatActivity {
 
         rootRef.child("Users").child(currentUserID).child("userState")
                 .updateChildren(onlineStateMap);
+    }
+
+    protected void setAppLanguage() {
+        mLocale = new Locale(selectedLocale);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = mLocale;
+        res.updateConfiguration(conf, dm);
+
+        preference.setAppLanguage(selectedLocale);
     }
 }
 

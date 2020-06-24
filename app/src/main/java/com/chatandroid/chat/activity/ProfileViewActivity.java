@@ -1,13 +1,10 @@
 package com.chatandroid.chat.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
@@ -21,8 +18,6 @@ import com.chatandroid.notification.MyResponse;
 import com.chatandroid.notification.Sender;
 import com.chatandroid.utils.Config;
 import com.chatandroid.utils.Tools;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -78,7 +73,7 @@ public class ProfileViewActivity extends Authenticate {
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Profile View");
+        getSupportActionBar().setTitle(R.string.profile_view_title);
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
     }
 
@@ -101,6 +96,15 @@ public class ProfileViewActivity extends Authenticate {
                     binding.username.setText(mAuth.getCurrentUser().getEmail());
                 }
                 binding.nickname.setText(username);
+
+                if (selectedLocale.equals("vi")) {
+                    if (gender.equals("Male")) {
+                        gender = "Nam";
+                    } else if (gender.equals("Female")) {
+                        gender = "Nữ";
+                    }
+                }
+
                 binding.gender.setText(gender);
                 binding.dateOfBirth.setText(dateOfBirth);
                 binding.location.setText(location);
@@ -143,35 +147,35 @@ public class ProfileViewActivity extends Authenticate {
                                 binding.cancelFriendship.setOnClickListener(view -> {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(ProfileViewActivity.this);
                                     builder.setTitle(R.string.app_name);
-                                    builder.setMessage("Do you really want to cancel request?");
+                                    builder.setMessage(R.string.want_to_cancel_request);
                                     builder.setIcon(R.mipmap.ic_launcher_round);
-                                    builder.setPositiveButton("Yes", (dialog, id) -> {
+                                    builder.setPositiveButton(R.string.yes, (dialog, id) -> {
                                         removeChatRequest();
-                                        Toast.makeText(ProfileViewActivity.this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ProfileViewActivity.this, R.string.request_canceled, Toast.LENGTH_SHORT).show();
                                         dialog.dismiss();
                                     });
-                                    builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+                                    builder.setNegativeButton(R.string.no, (dialog, id) -> dialog.dismiss());
                                     AlertDialog alert = builder.create();
                                     alert.show();
                                 });
                             } else { // need to accept, type receiver
                                 currentState = "request_received";
-                                binding.requestFriendship.setText("Accept Request");
-                                binding.cancelFriendship.setText("Cancel");
+                                binding.requestFriendship.setText(R.string.accept_request);
+                                binding.cancelFriendship.setText(R.string.cancel);
                                 binding.requestFriendship.setEnabled(true);
                                 binding.cancelFriendship.setEnabled(true);
                                 binding.requestFriendship.setOnClickListener(view -> acceptRequest());
                                 binding.cancelFriendship.setOnClickListener(view -> {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(ProfileViewActivity.this);
                                     builder.setTitle(R.string.app_name);
-                                    builder.setMessage("Do you really want to cancel request?");
+                                    builder.setMessage(R.string.want_to_cancel_request);
                                     builder.setIcon(R.mipmap.ic_launcher_round);
-                                    builder.setPositiveButton("Yes", (dialog, id) -> {
+                                    builder.setPositiveButton(R.string.yes, (dialog, id) -> {
                                         removeChatRequest();
-                                        Toast.makeText(ProfileViewActivity.this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ProfileViewActivity.this, R.string.request_canceled, Toast.LENGTH_SHORT).show();
                                         dialog.dismiss();
                                     });
-                                    builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+                                    builder.setNegativeButton(R.string.no, (dialog, id) -> dialog.dismiss());
                                     AlertDialog alert = builder.create();
                                     alert.show();
                                 });
@@ -183,10 +187,10 @@ public class ProfileViewActivity extends Authenticate {
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.hasChild(receiverUserID)) {
                                                 currentState = "friends";
-                                                binding.requestFriendship.setText("Send Message");
+                                                binding.requestFriendship.setText(R.string.send_message);
                                                 binding.requestFriendship.setEnabled(true);
                                                 binding.cancelFriendship.setEnabled(true);
-                                                binding.cancelFriendship.setText("Unfollow");
+                                                binding.cancelFriendship.setText(R.string.unfollow);
 
                                                 binding.requestFriendship.setOnClickListener(view -> {
                                                     startChatActivity(receiverUserID, token);
@@ -196,21 +200,21 @@ public class ProfileViewActivity extends Authenticate {
 
                                                     AlertDialog.Builder builder = new AlertDialog.Builder(ProfileViewActivity.this);
                                                     builder.setTitle(R.string.app_name);
-                                                    builder.setMessage("Do you really want to unfriend?");
+                                                    builder.setMessage(R.string.want_to_unfriend);
                                                     builder.setIcon(R.mipmap.ic_launcher_round);
-                                                    builder.setPositiveButton("Yes", (dialog, id) -> {
+                                                    builder.setPositiveButton(R.string.yes, (dialog, id) -> {
                                                         removeFriend();
                                                         removeChatRequest();
-                                                        Toast.makeText(ProfileViewActivity.this, "Unfriend successfully!", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(ProfileViewActivity.this, R.string.unfriend_successfully, Toast.LENGTH_SHORT).show();
                                                         dialog.dismiss();
                                                     });
-                                                    builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+                                                    builder.setNegativeButton(R.string.no, (dialog, id) -> dialog.dismiss());
                                                     AlertDialog alert = builder.create();
                                                     alert.show();
                                                 });
                                             } else {
-                                                binding.requestFriendship.setText("Request");
-                                                binding.cancelFriendship.setText("Cancel");
+                                                binding.requestFriendship.setText(R.string.request);
+                                                binding.cancelFriendship.setText(R.string.cancel);
                                                 binding.cancelFriendship.setEnabled(false);
                                                 binding.requestFriendship.setEnabled(true);
                                                 currentState = "new";
@@ -257,7 +261,7 @@ public class ProfileViewActivity extends Authenticate {
                                                 .removeValue()
                                                 .addOnCompleteListener(task11 -> {
                                                     if (task11.isSuccessful()) {
-                                                        Toast.makeText(ProfileViewActivity.this, "Request Accepted", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(ProfileViewActivity.this, R.string.request_accepted, Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
                                     }
@@ -277,9 +281,9 @@ public class ProfileViewActivity extends Authenticate {
                     if (task.isSuccessful()) {
                         binding.requestFriendship.setEnabled(true);
                         currentState = "new";
-                        binding.requestFriendship.setText("Request");
+                        binding.requestFriendship.setText(getString(R.string.request));
                         binding.cancelFriendship.setEnabled(false);
-                        binding.cancelFriendship.setText("Cancel");
+                        binding.cancelFriendship.setText(getString(R.string.cancel));
                     }
                 });
 
@@ -289,9 +293,9 @@ public class ProfileViewActivity extends Authenticate {
                     if (task.isSuccessful()) {
                         binding.requestFriendship.setEnabled(true);
                         currentState = "new";
-                        binding.requestFriendship.setText("Request");
+                        binding.requestFriendship.setText(getString(R.string.request));
                         binding.cancelFriendship.setEnabled(false);
-                        binding.cancelFriendship.setText("Cancel");
+                        binding.cancelFriendship.setText(getString(R.string.cancel));
                     }
                 });
     }
@@ -303,9 +307,9 @@ public class ProfileViewActivity extends Authenticate {
                     if (task.isSuccessful()) {
                         binding.requestFriendship.setEnabled(true);
                         currentState = "new";
-                        binding.requestFriendship.setText("Request");
+                        binding.requestFriendship.setText(getString(R.string.request));
                         binding.cancelFriendship.setEnabled(false);
-                        binding.cancelFriendship.setText("Cancel");
+                        binding.cancelFriendship.setText(getString(R.string.cancel));
                     }
                 });
 
@@ -315,9 +319,9 @@ public class ProfileViewActivity extends Authenticate {
                     if (task1.isSuccessful()) {
                         binding.requestFriendship.setEnabled(true);
                         currentState = "new";
-                        binding.requestFriendship.setText("Request");
+                        binding.requestFriendship.setText(getString(R.string.request));
                         binding.cancelFriendship.setEnabled(false);
-                        binding.cancelFriendship.setText("Cancel");
+                        binding.cancelFriendship.setText(getString(R.string.cancel));
                     }
                 });
     }
@@ -341,12 +345,12 @@ public class ProfileViewActivity extends Authenticate {
                                                 .addOnCompleteListener(task1 -> {
                                                     if (task1.isSuccessful()) {
                                                         currentState = "request_sent";
-                                                        binding.requestFriendship.setText("Requested");
+                                                        binding.requestFriendship.setText(R.string.requested);
                                                         binding.requestFriendship.setEnabled(false);
                                                         binding.cancelFriendship.setEnabled(true);
 
-                                                        sendNotification(senderName + " sent you a friend request!", "Friend request");
-                                                        Toast.makeText(ProfileViewActivity.this, "Request Sent!", Toast.LENGTH_SHORT).show();
+                                                        sendNotification(senderName + getString(R.string.sent_u_a_friend_request), getString(R.string.friend_request));
+                                                        Toast.makeText(ProfileViewActivity.this, R.string.request_sent, Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
                                     }

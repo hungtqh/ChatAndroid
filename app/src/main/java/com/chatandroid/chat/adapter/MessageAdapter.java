@@ -22,6 +22,7 @@ import com.chatandroid.chat.activity.ChatActivity;
 import com.chatandroid.chat.activity.ImageViewerActivity;
 import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.chat.model.Message;
+import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,6 +43,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private Context mContext;
+    private AppPreference preference;
 
     private final int CHAT_ME = 100;
     private final int CHAT_YOU = 200;
@@ -49,6 +51,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public MessageAdapter(Context mContext, List<Message> userMessageList) {
         this.mContext = mContext;
         this.userMessageList = userMessageList;
+        preference = new AppPreference(mContext);
     }
 
 
@@ -100,7 +103,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             messageViewHolder.imageMessage.setVisibility(View.GONE);
 
             messageViewHolder.messageText.setText(message.getMessage());
-            messageViewHolder.messageTime.setText(message.getTime());
+
+            String selectedLocale = preference.getAppLanguage();
+            String messageTime = message.getTime();
+
+            if (selectedLocale.equals("vi")) {
+                messageTime = messageTime.replace("PM", "CH");
+                messageTime = messageTime.replace("AM", "SA");
+            } else {
+                messageTime = messageTime.replace("CH", "PM");
+                messageTime = messageTime.replace("SA", "AM");
+            }
+
+            messageViewHolder.messageTime.setText(messageTime);
 
             if (message.getSeen()) {
                 if (messageViewHolder.workStatusDone != null && messageViewHolder.workStatus != null) {
@@ -134,15 +149,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 if (fromMessageType.equals("pdf") || fromMessageType.equals("docx")) {
                     CharSequence[] options = new CharSequence[]{
-                            "Delete for me",
-                            "Delete for everyone",
-                            "Download and view this document",
-                            "Cancel"
+                            mContext.getString(R.string.delete_for_me),
+                            mContext.getString(R.string.delete_everyone),
+                            mContext.getString(R.string.download_and_view_document),
+                            mContext.getString(R.string.cancel)
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle("Select option");
+                    builder.setTitle(R.string.select_option);
 
                     builder.setItems(options, (dialog, which) -> {
                         if (which == 0) {
@@ -161,16 +176,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     builder.show();
                 } else if (fromMessageType.equals("image")) {
                     CharSequence[] options = new CharSequence[]{
-                            "Delete for me",
-                            "Delete for everyone",
-                            "View this image",
-                            "Download this image",
-                            "Cancel"
+                            mContext.getString(R.string.delete_for_me),
+                            mContext.getString(R.string.delete_everyone),
+                            mContext.getString(R.string.view_this_image),
+                            mContext.getString(R.string.download_this_image),
+                            mContext.getString(R.string.cancel)
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle("Select option");
+                    builder.setTitle(R.string.select_option);
 
                     builder.setItems(options, (dialog, which) -> {
                         if (which == 0) {
@@ -199,15 +214,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 if (fromMessageType.equals("text")) {
                     CharSequence[] options = new CharSequence[]{
-                            "Copy text",
-                            "Delete for me",
-                            "Delete for everyone",
-                            "Cancel"
+                            mContext.getString(R.string.copy_text),
+                            mContext.getString(R.string.delete_for_me),
+                            mContext.getString(R.string.delete_everyone),
+                            mContext.getString(R.string.cancel)
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle("Select option");
+                    builder.setTitle(R.string.select_option);
 
                     builder.setItems(options, (dialog, which) -> {
                         if (which == 0) {
@@ -241,14 +256,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 if (fromMessageType.equals("pdf") || fromMessageType.equals("docx")) {
                     CharSequence[] options = new CharSequence[]{
-                            "Delete for me",
-                            "Download and view this document",
-                            "Cancel"
+                            mContext.getString(R.string.delete_for_me),
+                            mContext.getString(R.string.download_and_view_document),
+                            mContext.getString(R.string.cancel)
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle("Select option");
+                    builder.setTitle(R.string.select_option);
 
                     builder.setItems(options, (dialog, which) -> {
                         if (which == 0) {
@@ -264,15 +279,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     builder.show();
                 } else if (fromMessageType.equals("image")) {
                     CharSequence[] options = new CharSequence[]{
-                            "Delete for me",
-                            "View this image",
-                            "Download this image",
-                            "Cancel"
+                            mContext.getString(R.string.delete_for_me),
+                            mContext.getString(R.string.view_this_image),
+                            mContext.getString(R.string.download_this_image),
+                            mContext.getString(R.string.cancel)
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle("Select option");
+                    builder.setTitle(R.string.select_option);
 
                     builder.setItems(options, (dialog, which) -> {
                         if (which == 0) {
@@ -297,14 +312,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 if (fromMessageType.equals("text")) {
                     CharSequence[] options = new CharSequence[]{
-                            "Copy text",
-                            "Delete for me",
-                            "Cancel"
+                            mContext.getString(R.string.copy_text),
+                            mContext.getString(R.string.delete_for_me),
+                            mContext.getString(R.string.cancel)
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle("Select option");
+                    builder.setTitle(R.string.select_option);
 
                     builder.setItems(options, (dialog, which) -> {
                         if (which == 0) {
@@ -375,9 +390,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 .child(userMessageList.get(position).getMessageID())
                 .removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(mContext, "Deleted successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.delete_success, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext, "Error occurred while deleting the message.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.error_delete_image, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -390,9 +405,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 .child(userMessageList.get(position).getMessageID())
                 .removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(mContext, "Deleted successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.delete_success, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext, "Error occurred while deleting the message.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.error_delete_image, Toast.LENGTH_SHORT).show();
             }
         });
     }
