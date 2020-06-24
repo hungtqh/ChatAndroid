@@ -102,6 +102,9 @@ public class GroupChatActivity extends Authenticate {
             sendFile();
         });
 
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
+
         groupNameRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -148,13 +151,13 @@ public class GroupChatActivity extends Authenticate {
 
     private void sendFile() {
         CharSequence[] options = new CharSequence[]{
-                "Images",
-                "PDF Files",
-                "MS Word Files"
+                getString(R.string.images),
+                getString(R.string.pdf_files),
+                getString(R.string.ms_word_files)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
-        builder.setTitle("Select file to send");
+        builder.setTitle(R.string.select_file);
 
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override

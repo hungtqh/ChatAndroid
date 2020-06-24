@@ -44,6 +44,9 @@ public class ProfileActivity extends Authenticate {
             retrieveUserInfo();
         }
 
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
+
         binding.floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class);
             startActivity(intent);

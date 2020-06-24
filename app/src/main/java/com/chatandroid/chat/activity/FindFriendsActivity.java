@@ -50,6 +50,8 @@ public class FindFriendsActivity extends Authenticate {
 
         (binding.lytBack).setOnClickListener(v -> onBackPressed());
 
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
     }
 
     @Override

@@ -69,6 +69,9 @@ public class ProfileViewActivity extends Authenticate {
 
         retrieveCurrentUserName();
         retrieveUserInfo();
+
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
     }
 
     private void initToolbar() {

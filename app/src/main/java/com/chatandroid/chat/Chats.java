@@ -45,6 +45,9 @@ public class Chats extends Authenticate {
 
         initToolbar();
         initComponent();
+
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(viewPager, nightMode);
     }
 
     private void initToolbar() {
@@ -75,6 +78,8 @@ public class Chats extends Authenticate {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.change_password) {
+            //if (mAuth.getCurrentUser().getPhoneNumber())
+
             LayoutInflater factory = LayoutInflater.from(this);
             final View textEntryView = factory.inflate(R.layout.alert_change_password, null);
 

@@ -151,8 +151,8 @@
     <string name="phone_number">Phone Number</string>
     <string name="personal_information">Personal Information</string>
     <string name="select_language">Select Language</string>
-    <string name="dark_mode">Dark Mode</string>
-    <string name="dark_mode_detail">Using dark mode is good for eyes health but the content will be harder to read</string>
+    <string name="dark_mode">Night Mode</string>
+    <string name="dark_mode_detail">Using night mode is good for eyes health but the content will be harder to read</string>
     <string name="more">More</string>
     <string name="ask_a_question">Help</string>
     <string name="faq">F A Q</string>

@@ -1,6 +1,5 @@
 package com.chatandroid.chat.fragment;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,8 +18,6 @@ import androidx.fragment.app.Fragment;
 import com.chatandroid.R;
 import com.chatandroid.chat.activity.GroupChatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -86,7 +83,7 @@ public class GroupsFragment extends Fragment {
 
     private void initializeFields() {
         listView = groupFragmentView.findViewById(R.id.list_view);
-        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, groupsList);
+        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.row_group_name, groupsList);
         listView.setAdapter(arrayAdapter);
     }
 

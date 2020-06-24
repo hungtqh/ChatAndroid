@@ -140,7 +140,6 @@ public class ChatsFragment extends Fragment {
                     profileIntent.putExtra("receiver_token", holder.device_token.getText().toString());
                     startActivity(profileIntent);
                 });
-
             }
 
             @NonNull

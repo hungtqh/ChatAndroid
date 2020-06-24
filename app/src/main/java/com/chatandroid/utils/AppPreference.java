@@ -23,6 +23,7 @@ public class AppPreference {
     // All Shared Preferences Keys
     private static final String CURRENT_CHATTING_USER = "current_chatting_user";
     private static final String LOCALE = "locale";
+    private static final String NIGHT_MODE = "night_mode";
 
     // Constructor
     public AppPreference(Context context) {
@@ -53,6 +54,15 @@ public class AppPreference {
 
     public String getAppLanguage() {
         return pref.getString(LOCALE, "vi");
+    }
+
+    public void setNightMode(boolean nightMode) {
+        editor.putBoolean(NIGHT_MODE, nightMode);
+        editor.commit();
+    }
+
+    public boolean getNightMode() {
+        return pref.getBoolean("night_mode", false);
     }
 
     public void destroy() {

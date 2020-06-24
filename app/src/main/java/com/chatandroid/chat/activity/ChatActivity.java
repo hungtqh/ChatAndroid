@@ -118,6 +118,9 @@ public class ChatActivity extends Authenticate {
             sendTextMessage();
         });
 
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
+
         binding.btnSendFile.setOnClickListener(view2 -> {
             notify = true;
             sendFile();

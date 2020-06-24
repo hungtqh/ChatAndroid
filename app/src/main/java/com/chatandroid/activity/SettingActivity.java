@@ -3,9 +3,11 @@ package com.chatandroid.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import com.chatandroid.Authenticate;
@@ -40,7 +42,15 @@ public class SettingActivity extends Authenticate {
             checkedItem = 1;
         }
 
-        binding.switchDisplayMode.setOnClickListener(v12 -> toggleTheme());
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
+
+        binding.switchDisplayMode.setChecked(nightMode);
+
+        binding.switchDisplayMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            toggleNightMode(view, isChecked);
+            preference.setNightMode(isChecked);
+        });
 
         binding.selectLanguageOpt.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
@@ -88,16 +98,5 @@ public class SettingActivity extends Authenticate {
         Tools.setSystemBarColorInt(this, getResources().getColor(R.color.default_status_color));
 
         preference = new AppPreference(SettingActivity.this);
-    }
-
-    private void toggleTheme() {
-
-//        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//        } else {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//        }
-//
-//        refreshApp();
     }
 }

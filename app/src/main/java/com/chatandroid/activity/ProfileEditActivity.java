@@ -81,6 +81,8 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
 
         binding.location.setOnClickListener(v -> openAutocompleteActivity(REQUEST_CODE_LOCATION));
 
+        boolean nightMode = preference.getNightMode();
+        toggleNightMode(view, nightMode);
 
         binding.updateProfile.setOnClickListener(v -> updateProfile());
 

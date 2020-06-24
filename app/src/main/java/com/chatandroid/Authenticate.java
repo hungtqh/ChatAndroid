@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -43,7 +44,7 @@ public class Authenticate extends AppCompatActivity {
     public FirebaseAuth mAuth;
     public DatabaseReference rootRef;
     public String currentUserID;
-    public String mName = null;
+    public String mName;
     public String mEmail = null;
 
     protected Drawer result = null;
@@ -57,11 +58,13 @@ public class Authenticate extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         if (mAuth.getCurrentUser() != null) {
             currentUserID = mAuth.getCurrentUser().getUid();
+            mEmail = mAuth.getCurrentUser().getEmail();
+            mName = getString(R.string.app_name);
         }
-        rootRef = FirebaseDatabase.getInstance().getReference();
 
         preference = new AppPreference(this);
         selectedLocale = preference.getAppLanguage();
@@ -120,6 +123,7 @@ public class Authenticate extends AppCompatActivity {
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.app_bar)
+                .withTextColor(getColor(R.color.blue_grey_50))
                 .withCompactStyle(true)
                 .addProfiles(
                         profile
@@ -249,6 +253,15 @@ public class Authenticate extends AppCompatActivity {
         res.updateConfiguration(conf, dm);
 
         preference.setAppLanguage(selectedLocale);
+    }
+
+    protected void toggleNightMode(View view, boolean nightMode) {
+        if (nightMode) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            view.setBackgroundColor(getColor(R.color.grey_400));
+        } else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }
 

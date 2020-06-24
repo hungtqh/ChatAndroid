@@ -192,11 +192,6 @@
                         android:layout_height="1px"
                         android:background="@color/grey_10" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1px"
-                        android:background="@color/grey_10" />
-
                 </LinearLayout>
 
                 <View

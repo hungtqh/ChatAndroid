@@ -22,5 +22,6 @@ public class ImageViewerActivity extends AppCompatActivity {
         imageUrl = getIntent().getStringExtra("imageUrl");
 
         Picasso.get().load(imageUrl).into(imageView);
+
     }
 }
