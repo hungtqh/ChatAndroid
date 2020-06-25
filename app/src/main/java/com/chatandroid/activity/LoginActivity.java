@@ -50,6 +50,7 @@ public class LoginActivity extends Authenticate {
 
         binding.forgotPassword.setOnClickListener(v -> showBottomSheetDialog());
 
+        binding.phoneLogin.setOnClickListener(v112 -> sendUserToPhoneLoginActivity());
     }
 
     @Override
@@ -68,11 +69,8 @@ public class LoginActivity extends Authenticate {
         String email = binding.email.getText().toString();
         String password = binding.password.getText().toString();
 
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, R.string.enter_email, Toast.LENGTH_SHORT).show();
-        }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, R.string.enter_password, Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(this, R.string.enter_all_fields, Toast.LENGTH_SHORT).show();
         } else {
             loadingBar.setTitle(getString(R.string.sign_in));
             loadingBar.setMessage(getString(R.string.please_wait));
@@ -124,6 +122,11 @@ public class LoginActivity extends Authenticate {
         startActivity(registerIntent);
     }
 
+    private void sendUserToPhoneLoginActivity() {
+        Intent intent = new Intent(this, PhoneLoginActivity.class);
+        startActivity(intent);
+    }
+
     private void showBottomSheetDialog() {
         if (mBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             mBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -137,8 +140,9 @@ public class LoginActivity extends Authenticate {
             EditText emailAddress = view.findViewById(R.id.email);
             TextView results = view.findViewById(R.id.results);
             String email = emailAddress.getText().toString();
-            if (email.isEmpty()) {
-                Toast.makeText(getApplicationContext(), R.string.must_provide_email, Toast.LENGTH_SHORT).show();
+
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(getApplicationContext(), getString(R.string.must_provide_email), Toast.LENGTH_SHORT).show();
                 return;
             }
             mBottomSheetDialog.cancel();
@@ -150,13 +154,10 @@ public class LoginActivity extends Authenticate {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             loadingBar.cancel();
-                            Toast.makeText(getApplicationContext(), R.string.instruction_email_sent, Toast.LENGTH_SHORT).show();
-                        } else {
-                            loadingBar.cancel();
-                            Toast.makeText(getApplicationContext(), R.string.experiencing_issues, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.instruction_email_sent), Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(e -> {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.error_message) + e.getMessage(), Toast.LENGTH_SHORT).show();
                 loadingBar.cancel();
             });
 

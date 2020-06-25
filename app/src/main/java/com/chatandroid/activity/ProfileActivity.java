@@ -2,6 +2,7 @@ package com.chatandroid.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
@@ -68,15 +69,27 @@ public class ProfileActivity extends Authenticate {
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
                 imageUrl = Tools.getRefValue(dataSnapshot.child("image"));
-                String username = Tools.getRefValue(dataSnapshot.child("username"));
+                String nickName = Tools.getRefValue(dataSnapshot.child("username"));
                 String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
                 String gender = Tools.getRefValue(dataSnapshot.child("gender"));
                 String dateOfBirth = Tools.getRefValue(dataSnapshot.child("dateOfBirth"));
 
                 binding.profileName.setText(name);
-                binding.nickname.setText(username);
+                binding.nickname.setText(nickName);
                 binding.location.setText(location);
+
+                // for phone login check
+
+                if (mAuth.getCurrentUser() != null) {
+                    if (!TextUtils.isEmpty(mAuth.getCurrentUser().getPhoneNumber())) {
+                        phone = mAuth.getCurrentUser().getPhoneNumber();
+                        binding.username.setVisibility(View.GONE);
+                    } else {
+                        binding.username.setText(mAuth.getCurrentUser().getEmail());
+                    }
+                }
+
                 binding.phone.setText(phone);
 
                 if (selectedLocale.equals("vi")) {
@@ -96,11 +109,6 @@ public class ProfileActivity extends Authenticate {
                     Picasso.get().load(imageUrl).placeholder(R.drawable.profile_image).into(userProfileImage);
                     userProfileImage.setOnClickListener(view -> startImageViewerActivity());
                 }
-
-                if (mAuth.getCurrentUser() != null) {
-                    binding.username.setText(mAuth.getCurrentUser().getEmail());
-                }
-
             }
 
             @Override

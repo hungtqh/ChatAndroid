@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class ProfileEditActivity extends Authenticate implements DatePickerDialog.OnDateSetListener {
     private DatabaseReference usersRef;
@@ -110,7 +111,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         Day = calendar.get(Calendar.DAY_OF_MONTH);
 
         datePickerDialog = DatePickerDialog.newInstance(ProfileEditActivity.this, Year, Month, Day);
-
+        datePickerDialog.setLocale(new Locale(selectedLocale));
         datePickerDialog.setThemeDark(false);
 
         datePickerDialog.showYearPickerFirst(false);
@@ -199,7 +200,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                 String firtname = Tools.getRefValue(dataSnapshot.child("firstname"));
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
-                String username = Tools.getRefValue(dataSnapshot.child("username"));
+                String nickName = Tools.getRefValue(dataSnapshot.child("username"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
                 String phonenumber = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String gender = Tools.getRefValue(dataSnapshot.child("gender"));
@@ -227,7 +228,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                 }
 
                 if (binding.usernameEdit.getText().toString().isEmpty()) {
-                    binding.usernameEdit.setText(username);
+                    binding.usernameEdit.setText(nickName);
                 }
 
                 if (binding.firstname.getText().toString().isEmpty()) {
@@ -236,6 +237,16 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
 
                 if (binding.lastname.getText().toString().isEmpty()) {
                     binding.lastname.setText(lastname);
+                }
+
+                if (mAuth.getCurrentUser() != null) {
+                    if (!TextUtils.isEmpty(mAuth.getCurrentUser().getPhoneNumber())) {
+                        phonenumber = mAuth.getCurrentUser().getPhoneNumber();
+                        binding.phonenumber.setEnabled(false);
+                        binding.username.setVisibility(View.GONE);
+                    } else {
+                        binding.username.setText(mAuth.getCurrentUser().getEmail());
+                    }
                 }
 
                 if (binding.phonenumber.getText().toString().isEmpty()) {

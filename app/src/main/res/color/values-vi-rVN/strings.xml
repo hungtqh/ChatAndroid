@@ -9,7 +9,6 @@
     <string name="must_provide_email">Bạn phải cung cấp địa chỉ email</string>
     <string name="account_recovery_msg">PTIT Trò chuyện | Khôi phục tài khoản</string>
     <string name="instruction_email_sent">Hướng dẫn khôi phục đã được gửi đến địa chỉ email của bạn</string>
-    <string name="experiencing_issues">Chúng tôi đang gặp phải một số vấn đề kỹ thuật. Thử lại sau</string>
     <string name="login">Đăng nhập</string>
     <string name="action_settings">Cài đặt</string>
     <string name="registration">Đăng ký</string>
@@ -144,4 +143,17 @@
     <string name="pls_enter_group_name">Vui lòng nhập tên nhóm!</string>
     <string name="group_created">" đã được tạo thành công!"</string>
     <string name="language_changed">Ngôn ngữ đã thay đổi!</string>
+    <string name="phone">Số điện thoại</string>
+    <string name="or_login_using">"Hoặc đăng nhập bằng "</string>
+    <string name="send_verification_code">Gửi mã xác thực</string>
+    <string name="verify_code">Xác thực mã</string>
+    <string name="enter_phone_first">Vui lòng nhập số điện thoại!</string>
+    <string name="phone_verification">Xác thực bằng số điện thoại</string>
+    <string name="wait_verify_phone">Vui lòng chờ trong khi số điện thoại của bạn được xác thực...</string>
+    <string name="verify_code_first">Vui lòng nhập mã xác thực</string>
+    <string name="verification_code">Mã xác thực</string>
+    <string name="wait_verify_phone_code">Vui lòng chờ trong khi xác thực mã...</string>
+    <string name="invalid_phone">Số điện thoại không hợp lệ. Vui lòng nhập đúng số điện thoại!</string>
+    <string name="code_sent">Đã gửi mã. Vui lòng kiểm tra mã và xác thực!</string>
+    <string name="support_only_email">Tính năng này chỉ hỗ trợ khi đăng nhập bằng email!</string>
 </resources>

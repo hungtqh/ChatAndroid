@@ -9,7 +9,6 @@
     <string name="must_provide_email">You must provide email address</string>
     <string name="account_recovery_msg">PTIT Chat | Account Recovery</string>
     <string name="instruction_email_sent">Recovery instruction sent to your email inbox</string>
-    <string name="experiencing_issues">We are experiencing some issues. Try again later</string>
 
     <string name="login">Login</string>
     <string name="new_user">New user?\u0020</string>
@@ -174,5 +173,18 @@
     <string name="language_changed">Language changed!</string>
     <string name="vietnamese" translatable="false">Tiếng Việt</string>
     <string name="english" translatable="false">English</string>
+    <string name="phone">Phone</string>
+    <string name="or_login_using">Or login using\u0020</string>
+    <string name="send_verification_code">Send Verification Code</string>
+    <string name="verify_code">Verify Code</string>
+    <string name="enter_phone_first">Please enter your phone number!</string>
+    <string name="phone_verification">Phone Verification</string>
+    <string name="wait_verify_phone">Please wait while we are authenticating your phone...</string>
+    <string name="verify_code_first">Please write verification code!</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="wait_verify_phone_code">Please wait while we are verifying your verification code...</string>
+    <string name="invalid_phone">Invalid phone number. Please enter correct phone number!</string>
+    <string name="code_sent">Code sent. Please check your code and verify!</string>
+    <string name="support_only_email">This feature supports only email login!</string>
 
 </resources>

@@ -78,7 +78,10 @@ public class Chats extends Authenticate {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.change_password) {
-            //if (mAuth.getCurrentUser().getPhoneNumber())
+            if (!TextUtils.isEmpty(mAuth.getCurrentUser().getPhoneNumber())) {
+                Toast.makeText(this, R.string.support_only_email, Toast.LENGTH_SHORT).show();
+                return false;
+            }
 
             LayoutInflater factory = LayoutInflater.from(this);
             final View textEntryView = factory.inflate(R.layout.alert_change_password, null);

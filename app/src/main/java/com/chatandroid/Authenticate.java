@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -62,7 +63,14 @@ public class Authenticate extends AppCompatActivity {
 
         if (mAuth.getCurrentUser() != null) {
             currentUserID = mAuth.getCurrentUser().getUid();
-            mEmail = mAuth.getCurrentUser().getEmail();
+
+            String phoneNumber = mAuth.getCurrentUser().getPhoneNumber();
+            if (!TextUtils.isEmpty(phoneNumber)) {
+                mEmail = phoneNumber;
+            } else {
+                mEmail = mAuth.getCurrentUser().getEmail();
+            }
+
             mName = getString(R.string.app_name);
         }
 
