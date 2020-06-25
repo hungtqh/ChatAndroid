@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class PhoneLoginActivity extends Authenticate {
     private Button btnSendCode, btnVerifyCode;
     private EditText etPhoneLogin;
-    private TextView tvEmailLogin;
+    private TextView tvEmailLogin, tvPhoneCode;
     private Spinner spCountryCode;
     private ProgressDialog loadingBar;
 
@@ -55,6 +56,7 @@ public class PhoneLoginActivity extends Authenticate {
         btnVerifyCode = findViewById(R.id.verify_code);
         etPhoneLogin = findViewById(R.id.phone_login_input);
         tvEmailLogin = findViewById(R.id.email_login);
+        tvPhoneCode = findViewById(R.id.phone_code);
 
         spCountryCode = findViewById(R.id.country_code);
         ArrayAdapter<String> countryCodeAdapter = new ArrayAdapter<>(this,
@@ -138,12 +140,14 @@ public class PhoneLoginActivity extends Authenticate {
                 Toast.makeText(PhoneLoginActivity.this, R.string.code_sent, Toast.LENGTH_SHORT).show();
 
                 btnSendCode.setVisibility(View.GONE);
+                spCountryCode.setVisibility(View.GONE);
+                tvPhoneCode.setText(R.string.verification_code);
                 btnVerifyCode.setVisibility(View.VISIBLE);
                 etPhoneLogin.setText("");
+                etPhoneLogin.setGravity(Gravity.CENTER);
             }
         };
     }
-
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)

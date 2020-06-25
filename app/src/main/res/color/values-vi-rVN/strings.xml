@@ -5,7 +5,7 @@
     <string name="sign_in">Đăng nhập</string>
     <string name="please_wait">Xin hãy đợi...</string>
     <string name="logged_in_successful">Đăng nhập thành công</string>
-    <string name="error_message">Lỗi:</string>
+    <string name="error_message">Lỗi: </string>
     <string name="must_provide_email">Bạn phải cung cấp địa chỉ email</string>
     <string name="account_recovery_msg">PTIT Trò chuyện | Khôi phục tài khoản</string>
     <string name="instruction_email_sent">Hướng dẫn khôi phục đã được gửi đến địa chỉ email của bạn</string>
@@ -49,7 +49,7 @@
     <string name="email_address">Địa chỉ email</string>
     <string name="submit">Gửi</string>
     <string name="change_user_password">Thay đổi mật khẩu</string>
-    <string name="enter_all_fields">Vui lòng nhập đầy đủ các trường</string>
+    <string name="enter_all_fields">Vui lòng nhập đầy đủ các trường!</string>
     <string name="password_changed">Mật khẩu đã thay đổi</string>
     <string name="password_not_match">Mật khẩu không trùng khớp</string>
     <string name="wrong_password">Mật khẩu sai. Vui lòng thử lại sau!</string>

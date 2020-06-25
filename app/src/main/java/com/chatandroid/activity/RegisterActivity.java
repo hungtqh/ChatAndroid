@@ -38,11 +38,8 @@ public class RegisterActivity extends Authenticate {
         String email = binding.email.getText().toString();
         String password = binding.password.getText().toString();
 
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, R.string.enter_email, Toast.LENGTH_SHORT).show();
-        }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, R.string.enter_password, Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
+            Toast.makeText(this, R.string.enter_all_fields, Toast.LENGTH_SHORT).show();
         } else {
             loadingBar.setTitle(getString(R.string.create_new_account));
             loadingBar.setMessage(getString(R.string.wait_creating_account));
@@ -68,7 +65,7 @@ public class RegisterActivity extends Authenticate {
                             loadingBar.dismiss();
                         } else {
                             String message = task.getException().getMessage();
-                            Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, getString(R.string.error_message) + message, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
                         }
                     });

@@ -59,7 +59,7 @@ public class LoginActivity extends Authenticate {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null && currentUser.isEmailVerified()) {
+        if (currentUser != null && (currentUser.isEmailVerified() || !TextUtils.isEmpty(currentUser.getPhoneNumber()))) {
             sendUserToChatActivity();
         }
     }
