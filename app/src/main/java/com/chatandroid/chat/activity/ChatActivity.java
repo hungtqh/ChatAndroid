@@ -218,6 +218,7 @@ public class ChatActivity extends Authenticate {
             public void onKeyboardOpen() {
                 Log.e("Keyboard", "open");
             }
+
             @Override
             public void onKeyboardClose() {
                 Log.e("Keyboard", "close");
@@ -361,7 +362,6 @@ public class ChatActivity extends Authenticate {
                 intent.setType("image/*");
                 startActivityForResult(intent.createChooser(intent, getString(R.string.select_image)), 1);
             }
-
             if (which == 1) {
                 checker = "pdf";
 
@@ -370,7 +370,6 @@ public class ChatActivity extends Authenticate {
                 intent.setType("application/pdf");
                 startActivityForResult(intent.createChooser(intent, getString(R.string.select_pdf)), 1);
             }
-
             if (which == 2) {
                 checker = "docx";
 
@@ -398,6 +397,7 @@ public class ChatActivity extends Authenticate {
             loadingBar.show();
 
             fileUri = data.getData();
+
             if (checker.equals("image")) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Files");
 
@@ -432,7 +432,7 @@ public class ChatActivity extends Authenticate {
                     }
                 });
 
-            } else if (!checker.equals("image")) {
+            } else if (checker.equals("pdf") || checker.equals("docx")) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Document Files");
 
                 String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
@@ -471,6 +471,7 @@ public class ChatActivity extends Authenticate {
 
             } else {
                 Toast.makeText(this, R.string.nothing_selected, Toast.LENGTH_SHORT).show();
+                loadingBar.dismiss();
             }
         }
     }

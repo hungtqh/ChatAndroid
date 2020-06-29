@@ -7,8 +7,6 @@ public class Client {
 
     private static Retrofit retrofit = null;
 
-    private static final String BASE_URL = "https://jsonplaceholder.typicode.com";
-
     public static Retrofit getClient(String url) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()

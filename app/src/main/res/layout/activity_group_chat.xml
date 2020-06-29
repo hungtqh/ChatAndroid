@@ -57,6 +57,13 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/bg_gradient_soft"
+            android:rotation="180" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
@@ -66,13 +73,6 @@
             android:paddingBottom="@dimen/spacing_medium"
             android:scrollbars="vertical"
             android:scrollingCache="true" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/bg_gradient_soft"
-            android:rotation="180" />
 
     </RelativeLayout>
 

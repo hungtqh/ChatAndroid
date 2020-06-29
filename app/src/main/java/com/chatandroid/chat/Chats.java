@@ -71,7 +71,6 @@ public class Chats extends Authenticate {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_user_setting, menu);
-        Tools.changeMenuIconColor(menu, getResources().getColor(R.color.defaultWhite));
         return true;
     }
 

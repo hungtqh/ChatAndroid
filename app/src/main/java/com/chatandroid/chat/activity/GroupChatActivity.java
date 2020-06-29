@@ -284,6 +284,7 @@ public class GroupChatActivity extends Authenticate {
             loadingBar.show();
 
             fileUri = data.getData();
+
             if (checker.equals("image")) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Group Files");
 
@@ -307,7 +308,7 @@ public class GroupChatActivity extends Authenticate {
                     }
                 });
 
-            } else if (!checker.equals("image")) {
+            } else if (checker.equals("pdf") || checker.equals("docx")) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Group Document Files");
 
                 String messageKey = groupNameRef.push().getKey();
@@ -334,6 +335,7 @@ public class GroupChatActivity extends Authenticate {
                 });
             } else {
                 Toast.makeText(this, getString(R.string.nothing_selected), Toast.LENGTH_SHORT).show();
+                loadingBar.dismiss();
             }
         }
     }

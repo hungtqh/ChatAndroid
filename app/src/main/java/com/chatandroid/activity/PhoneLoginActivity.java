@@ -3,6 +3,7 @@ package com.chatandroid.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -13,15 +14,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.Chats;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
@@ -30,12 +26,14 @@ import java.util.concurrent.TimeUnit;
 public class PhoneLoginActivity extends Authenticate {
     private Button btnSendCode, btnVerifyCode;
     private EditText etPhoneLogin;
-    private TextView tvEmailLogin, tvPhoneCode;
+    private TextView tvEmailLogin, tvPhoneCode, tvResend, tvSendWait;
     private Spinner spCountryCode;
     private ProgressDialog loadingBar;
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks;
     private String mVerificationId;
+    String countryCode;
+    String phoneNumber;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
 
     @Override
@@ -48,6 +46,10 @@ public class PhoneLoginActivity extends Authenticate {
         tvEmailLogin.setOnClickListener(v -> sendUserToEmailLoginActivity());
         btnSendCode.setOnClickListener(v1 -> sendVerifyCode());
         btnVerifyCode.setOnClickListener(v2 -> verifyCode());
+        tvResend.setOnClickListener(v12 -> {
+            resendCode();
+            setResendFields();
+        });
         onCallBacks();
     }
 
@@ -57,6 +59,8 @@ public class PhoneLoginActivity extends Authenticate {
         etPhoneLogin = findViewById(R.id.phone_login_input);
         tvEmailLogin = findViewById(R.id.email_login);
         tvPhoneCode = findViewById(R.id.phone_code);
+        tvSendWait = findViewById(R.id.send_code_wait);
+        tvResend = findViewById(R.id.resend_code);
 
         spCountryCode = findViewById(R.id.country_code);
         ArrayAdapter<String> countryCodeAdapter = new ArrayAdapter<>(this,
@@ -73,8 +77,8 @@ public class PhoneLoginActivity extends Authenticate {
     }
 
     private void sendVerifyCode() {
-        String countryCode = spCountryCode.getSelectedItem().toString();
-        String phoneNumber = etPhoneLogin.getText().toString();
+        countryCode = spCountryCode.getSelectedItem().toString();
+        phoneNumber = etPhoneLogin.getText().toString();
 
         if (phoneNumber.startsWith("0")) {
             phoneNumber = phoneNumber.substring(1);
@@ -95,6 +99,18 @@ public class PhoneLoginActivity extends Authenticate {
                     PhoneLoginActivity.this,               // Activity (for callback binding)
                     callbacks);        // OnVerificationStateChangedCallbacks
         }
+    }
+
+    private void resendCode() {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                countryCode + phoneNumber,        // Phone number to verify
+                60,                 // Timeout duration
+                TimeUnit.SECONDS,   // Unit of timeout
+                PhoneLoginActivity.this,               // Activity (for callback binding)
+                callbacks, // OnVerificationStateChangedCallbacks
+                mResendToken);
+
+        Toast.makeText(this, R.string.resent_code, Toast.LENGTH_SHORT).show();
     }
 
     private void verifyCode() {
@@ -130,6 +146,7 @@ public class PhoneLoginActivity extends Authenticate {
                 btnVerifyCode.setVisibility(View.GONE);
             }
 
+            @Override
             public void onCodeSent(String verificationId,
                                    PhoneAuthProvider.ForceResendingToken token) {
                 // Save verification ID and resending token so we can use them later
@@ -145,23 +162,39 @@ public class PhoneLoginActivity extends Authenticate {
                 btnVerifyCode.setVisibility(View.VISIBLE);
                 etPhoneLogin.setText("");
                 etPhoneLogin.setGravity(Gravity.CENTER);
+
+                setResendFields();
             }
         };
     }
 
+    private void setResendFields() {
+        tvResend.setVisibility(View.GONE);
+        tvSendWait.setVisibility(View.VISIBLE);
+        new CountDownTimer(30000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                tvSendWait.setText(getString(R.string.send_code_again_after) +
+                        millisUntilFinished / 1000 + " " + getString(R.string.second));
+            }
+
+            public void onFinish() {
+                tvSendWait.setText(R.string.resend_code);
+                tvResend.setVisibility(View.VISIBLE);
+            }
+
+        }.start();
+    }
+
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            loadingBar.dismiss();
-                            Toast.makeText(PhoneLoginActivity.this, R.string.logged_in_successful, Toast.LENGTH_SHORT).show();
-                            sendUserToChatActivity();
-                        } else {
-                            String message = task.getException().toString();
-                            Toast.makeText(PhoneLoginActivity.this, R.string.error_message + message, Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        loadingBar.dismiss();
+                        Toast.makeText(PhoneLoginActivity.this, R.string.logged_in_successful, Toast.LENGTH_SHORT).show();
+                        sendUserToChatActivity();
+                    } else {
+                        String message = task.getException().toString();
+                        Toast.makeText(PhoneLoginActivity.this, R.string.error_message + message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

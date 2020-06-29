@@ -18,6 +18,7 @@
     <color name="defaultDark">#1A1919</color>
     <color name="subTitles">#BBBBBB</color>
 
+    <!--Material color list from https://material.io/guidelines/style/color.html-->
     <color name="overlay_dark_10">#1A000000</color>
     <color name="overlay_dark_20">#33000000</color>
     <color name="overlay_dark_30">#4D000000</color>
@@ -48,9 +49,6 @@
     <color name="grey_90">#263238</color>
     <color name="grey_95">#1a1a1a</color>
     <color name="grey_100_">#0d0d0d</color>
-
-
-    <!--Material color list from https://material.io/guidelines/style/color.html-->
 
     <color name="red_50">#FFEBEE</color>
     <color name="red_100">#FFCDD2</color>
@@ -328,22 +326,4 @@
     <color name="grey_800">#424242</color>
     <color name="grey_900">#212121</color>
     <color name="grey_1000">#1a1a1a</color>
-
-    <!--for random color generator -->
-    <array name="mdcolor_random">
-        <item type="color">#e91e63</item>
-        <item type="color">#9c27b0</item>
-        <item type="color">#673ab7</item>
-        <item type="color">#E53935</item>
-        <item type="color">#5677fc</item>
-        <item type="color">#689F38</item>
-        <item type="color">#03a9f4</item>
-        <item type="color">#00bcd4</item>
-        <item type="color">#009688</item>
-        <item type="color">#259b24</item>
-        <item type="color">#ff5722</item>
-        <item type="color">#795548</item>
-        <item type="color">#607d8b</item>
-        <item type="color">#ff9800</item>
-    </array>
 </resources>

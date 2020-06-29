@@ -12,7 +12,7 @@ public class AppPreference {
     SharedPreferences.Editor editor;
 
     // Context
-    Context _context;
+    Context context;
 
     // Shared pref mode
     int PRIVATE_MODE = 0;
@@ -27,8 +27,8 @@ public class AppPreference {
 
     // Constructor
     public AppPreference(Context context) {
-        this._context = context;
-        pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        this.context = context;
+        pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
 
@@ -70,6 +70,4 @@ public class AppPreference {
         editor.clear();
         editor.commit();
     }
-
-
 }

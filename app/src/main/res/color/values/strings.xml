@@ -4,7 +4,7 @@
     <string name="enter_password">Please enter password</string>
     <string name="sign_in">Sign In</string>
     <string name="please_wait">Please wait....</string>
-    <string name="logged_in_successful">Logged in Successful</string>
+    <string name="logged_in_successful">Logged in successfully</string>
     <string name="error_message">Error:\u0020</string>
     <string name="must_provide_email">You must provide email address</string>
     <string name="account_recovery_msg">PTIT Chat | Account Recovery</string>
@@ -186,5 +186,10 @@
     <string name="code_sent">Code sent. Please check your code and verify!</string>
     <string name="support_only_email">This feature supports only email login!</string>
     <string name="verification_code">Verification Code</string>
+    <string name="send_code_again_after">Send code again after\u0020</string>
+    <string name="resend">Resend</string>
+    <string name="resend_code">Resend code?\\u0020</string>
+    <string name="second">s</string>
+    <string name="resent_code">Resent code!</string>
 
 </resources>
