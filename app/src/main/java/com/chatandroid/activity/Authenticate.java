@@ -1,4 +1,4 @@
-package com.chatandroid;
+package com.chatandroid.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,9 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.chatandroid.activity.LoginActivity;
-import com.chatandroid.activity.ProfileActivity;
-import com.chatandroid.activity.SettingActivity;
+import com.chatandroid.R;
 import com.chatandroid.chat.Chats;
 import com.chatandroid.utils.AppPreference;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,7 +44,7 @@ public class Authenticate extends AppCompatActivity {
     public DatabaseReference rootRef;
     public String currentUserID;
     public String mName;
-    public String mEmail = null;
+    public String mEmail;
 
     protected Drawer result = null;
     private AccountHeader headerResult = null;
@@ -110,24 +108,56 @@ public class Authenticate extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        //add the values which need to be saved from the drawer to the bundle
-        if (result != null) {
-            outState = result.saveInstanceState(outState);
-        }
-
-        super.onSaveInstanceState(outState);
-    }
-
     protected void primaryMenu(Bundle instance) {
-        PrimaryDrawerItem chat = new PrimaryDrawerItem().withName(R.string.menu_chat).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_chat).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_chat)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
+        PrimaryDrawerItem chat = new PrimaryDrawerItem().
+                withName(R.string.menu_chat).
+                withTextColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedTextColor(getResources().getColor(R.color.defaultDark)).
+                withIdentifier(R.string.menu_chat).
+                withSelectable(true).
+                withIcon(ContextCompat.getDrawable(this, R.drawable.ic_chat)).
+                withIconColor(getResources().getColor(R.color.defaultDark)).
+                withIconTintingEnabled(true).
+                withSelectedIconColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedColor(getResources().getColor(R.color.defaultWhite));
 
-        SecondaryDrawerItem account = new SecondaryDrawerItem().withName(R.string.menu_profile).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.menu_profile).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
-        SecondaryDrawerItem settings = new SecondaryDrawerItem().withName(R.string.action_settings).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.action_settings).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_settings)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
-        SecondaryDrawerItem logout = new SecondaryDrawerItem().withName(R.string.logout).withTextColor(getResources().getColor(R.color.defaultDark)).withSelectedTextColor(getResources().getColor(R.color.defaultDark)).withIdentifier(R.string.logout).withSelectable(true).withIcon(ContextCompat.getDrawable(this, R.drawable.ic_lock_outline_black_24dp)).withIconColor(getResources().getColor(R.color.defaultDark)).withIconTintingEnabled(true).withSelectedIconColor(getResources().getColor(R.color.defaultDark)).withSelectedColor(getResources().getColor(R.color.defaultWhite));
+        SecondaryDrawerItem account = new SecondaryDrawerItem().
+                withName(R.string.menu_profile).
+                withTextColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedTextColor(getResources().getColor(R.color.defaultDark)).
+                withIdentifier(R.string.menu_profile).
+                withSelectable(true).
+                withIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_outline_black_24dp)).
+                withIconColor(getResources().getColor(R.color.defaultDark)).
+                withIconTintingEnabled(true).
+                withSelectedIconColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedColor(getResources().getColor(R.color.defaultWhite));
+
+        SecondaryDrawerItem settings = new SecondaryDrawerItem().
+                withName(R.string.action_settings).
+                withTextColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedTextColor(getResources().getColor(R.color.defaultDark)).
+                withIdentifier(R.string.action_settings).
+                withSelectable(true).
+                withIcon(ContextCompat.getDrawable(this, R.drawable.ic_settings)).
+                withIconColor(getResources().getColor(R.color.defaultDark)).
+                withIconTintingEnabled(true).
+                withSelectedIconColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedColor(getResources().getColor(R.color.defaultWhite));
+
+        SecondaryDrawerItem logout = new SecondaryDrawerItem().withName(R.string.logout).
+                withTextColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedTextColor(getResources().getColor(R.color.defaultDark)).
+                withIdentifier(R.string.logout).
+                withSelectable(true).
+                withIcon(ContextCompat.getDrawable(this, R.drawable.ic_lock_outline_black_24dp)).
+                withIconColor(getResources().getColor(R.color.defaultDark)).
+                withIconTintingEnabled(true).
+                withSelectedIconColor(getResources().getColor(R.color.defaultDark)).
+                withSelectedColor(getResources().getColor(R.color.defaultWhite));
 
         final IProfile profile = new ProfileDrawerItem().withName(mName).withEmail(mEmail).withIcon(R.mipmap.ic_launcher);
+
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.app_bar)
@@ -180,18 +210,14 @@ public class Authenticate extends AppCompatActivity {
 
                     if (drawerItem.getIdentifier() == R.string.menu_profile) {
                         Intent intent = new Intent(Authenticate.this, ProfileActivity.class);
-                        overridePendingTransition(0, 0);
                         startActivity(intent);
-                        overridePendingTransition(0, 0);
                     }
 
                     if (drawerItem.getIdentifier() == R.string.logout) {
                         mAuth.signOut();
                         Intent intent = new Intent(Authenticate.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        overridePendingTransition(0, 0);
                         startActivity(intent);
-                        overridePendingTransition(0, 0);
                         finish();
                     }
 
@@ -230,6 +256,16 @@ public class Authenticate extends AppCompatActivity {
                 })
                 .build();
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //add the values which need to be saved from the drawer to the bundle
+        if (result != null) {
+            outState = result.saveInstanceState(outState);
+        }
+
+        super.onSaveInstanceState(outState);
     }
 
     private void updateUserStatus(String state) {

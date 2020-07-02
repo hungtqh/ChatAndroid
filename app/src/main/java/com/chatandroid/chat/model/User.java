@@ -4,6 +4,7 @@ public class User {
 
     private String username;
     private String uid;
+    private String email;
     private String firstname;
     private String lastname;
     private String name;
@@ -15,7 +16,7 @@ public class User {
 
     private UserState userState;
 
-    public User(String username, String uid, String firstname, String lastname, String gender, String image, String device_token, String location, String phonenumber, UserState userState) {
+    public User(String username, String email, String uid, String firstname, String lastname, String gender, String image, String device_token, String location, String phonenumber, UserState userState) {
         this.username = username;
         this.uid = uid;
         this.firstname = firstname;
@@ -26,6 +27,7 @@ public class User {
         this.location = location;
         this.phonenumber = phonenumber;
         this.userState = userState;
+        this.email = email;
     }
 
     public User() {
@@ -37,6 +39,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUid() {

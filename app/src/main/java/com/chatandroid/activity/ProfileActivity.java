@@ -7,10 +7,8 @@ import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.activity.ImageViewerActivity;
-import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.databinding.ActivityProfileBinding;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.database.DataSnapshot;
@@ -20,8 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
-
-import java.util.Locale;
 
 public class ProfileActivity extends Authenticate {
     private DatabaseReference userRef;
@@ -73,20 +69,19 @@ public class ProfileActivity extends Authenticate {
                 String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
                 String gender = Tools.getRefValue(dataSnapshot.child("gender"));
+                String email = Tools.getRefValue(dataSnapshot.child("email"));
                 String dateOfBirth = Tools.getRefValue(dataSnapshot.child("dateOfBirth"));
 
                 binding.profileName.setText(name);
                 binding.nickname.setText(nickName);
                 binding.location.setText(location);
-
-                // for phone login check
+                binding.email.setText(email);
 
                 if (mAuth.getCurrentUser() != null) {
                     if (!TextUtils.isEmpty(mAuth.getCurrentUser().getPhoneNumber())) {
                         phone = mAuth.getCurrentUser().getPhoneNumber();
-                        binding.username.setVisibility(View.GONE);
                     } else {
-                        binding.username.setText(mAuth.getCurrentUser().getEmail());
+                        binding.email.setText(mAuth.getCurrentUser().getEmail());
                     }
                 }
 

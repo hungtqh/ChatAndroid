@@ -117,17 +117,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
             messageViewHolder.messageTime.setText(messageTime);
 
-            if (message.getSeen()) {
-                if (messageViewHolder.workStatusDone != null && messageViewHolder.workStatus != null) {
-                    messageViewHolder.workStatusDone.setVisibility(View.VISIBLE);
-                    messageViewHolder.workStatus.setVisibility(View.INVISIBLE);
-                }
-
-            } else {
-                if (messageViewHolder.workStatusDone != null && messageViewHolder.workStatus != null) {
-                    messageViewHolder.workStatus.setVisibility(View.VISIBLE);
-                    messageViewHolder.workStatusDone.setVisibility(View.INVISIBLE);
-                }
+            if (messageViewHolder.workStatus != null) {
+                messageViewHolder.workStatus.setVisibility(View.VISIBLE);
             }
         } else if (fromMessageType.equals("image")) {
             messageViewHolder.imageMessage.setVisibility(View.VISIBLE);

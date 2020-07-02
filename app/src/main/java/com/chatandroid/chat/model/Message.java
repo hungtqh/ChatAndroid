@@ -5,13 +5,13 @@ import java.util.Objects;
 public class Message {
 
     private String from, message, type, to, messageID, time, date, name;
-    private Boolean seen;
+    private boolean seen;
 
     public Message() {
 
     }
 
-    public Message(String from, String message, String type, String to, String messageID, String time, String date, String name, Boolean seen) {
+    public Message(String from, String message, String type, String to, String messageID, String time, String date, String name, boolean seen) {
         this.from = from;
         this.message = message;
         this.type = type;
@@ -27,7 +27,7 @@ public class Message {
         return seen;
     }
 
-    public void setSeen(Boolean seen) {
+    public void setSeen(boolean seen) {
         this.seen = seen;
     }
 

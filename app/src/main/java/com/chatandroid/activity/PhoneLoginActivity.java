@@ -14,7 +14,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.Chats;
 import com.google.firebase.FirebaseException;
@@ -109,8 +108,6 @@ public class PhoneLoginActivity extends Authenticate {
                 PhoneLoginActivity.this,               // Activity (for callback binding)
                 callbacks, // OnVerificationStateChangedCallbacks
                 mResendToken);
-
-        Toast.makeText(this, R.string.resent_code, Toast.LENGTH_SHORT).show();
     }
 
     private void verifyCode() {

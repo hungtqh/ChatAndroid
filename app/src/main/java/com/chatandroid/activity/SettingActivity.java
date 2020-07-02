@@ -8,7 +8,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.databinding.ActivitySettingBinding;
 import com.chatandroid.utils.AppPreference;

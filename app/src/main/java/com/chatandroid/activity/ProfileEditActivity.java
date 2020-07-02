@@ -6,22 +6,16 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
-import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.databinding.ActivityProfileEditBinding;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -35,7 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -201,6 +194,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String name = firtname + " " + lastname;
                 String nickName = Tools.getRefValue(dataSnapshot.child("username"));
+                String email = Tools.getRefValue(dataSnapshot.child("email"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
                 String phonenumber = Tools.getRefValue(dataSnapshot.child("phonenumber"));
                 String gender = Tools.getRefValue(dataSnapshot.child("gender"));
@@ -223,8 +217,8 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                     binding.dateOfBirth.setText(dateOfBirth);
                 }
 
-                if (mAuth.getCurrentUser() != null) {
-                    binding.username.setText(mAuth.getCurrentUser().getEmail());
+                if (binding.email.getText().toString().isEmpty()) {
+                    binding.email.setText(email);
                 }
 
                 if (binding.usernameEdit.getText().toString().isEmpty()) {
@@ -243,9 +237,9 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                     if (!TextUtils.isEmpty(mAuth.getCurrentUser().getPhoneNumber())) {
                         phonenumber = mAuth.getCurrentUser().getPhoneNumber();
                         binding.phonenumber.setEnabled(false);
-                        binding.username.setVisibility(View.GONE);
                     } else {
-                        binding.username.setText(mAuth.getCurrentUser().getEmail());
+                        binding.email.setText(mAuth.getCurrentUser().getEmail());
+                        binding.email.setEnabled(false);
                     }
                 }
 
@@ -273,19 +267,19 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         String username = binding.usernameEdit.getText().toString();
         String location = binding.location.getText().toString();
         String phoneNumber = binding.phonenumber.getText().toString();
-
+        String email = binding.email.getText().toString();
         int checkedGender = binding.gender.getCheckedRadioButtonId();
         String gender = (checkedGender == R.id.male) ? "Male" : "Female";
         String dateOfBirth = binding.dateOfBirth.getText().toString();
 
-        if (TextUtils.isEmpty(lastname)) {
-            Toast.makeText(this, R.string.enter_first_name, Toast.LENGTH_SHORT).show();
-        }
-        if (TextUtils.isEmpty(firstname)) {
-            Toast.makeText(this, R.string.enter_last_name, Toast.LENGTH_SHORT).show();
-        }
-        if (TextUtils.isEmpty(username)) {
-            Toast.makeText(this, R.string.enter_nickname, Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(lastname) ||
+                TextUtils.isEmpty(firstname) ||
+                TextUtils.isEmpty(username) ||
+                TextUtils.isEmpty(location) ||
+                TextUtils.isEmpty(phoneNumber) ||
+                TextUtils.isEmpty(email) ||
+                TextUtils.isEmpty(dateOfBirth)) {
+            Toast.makeText(this, R.string.enter_all_fields, Toast.LENGTH_SHORT).show();
         } else {
             HashMap<String, Object> profileMap = new HashMap<>();
             profileMap.put("uid", currentUserID);
@@ -295,6 +289,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
             profileMap.put("gender", gender);
             profileMap.put("dateOfBirth", dateOfBirth);
             profileMap.put("location", location);
+            profileMap.put("email", email);
             profileMap.put("phonenumber", phoneNumber);
             rootRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(task -> {
@@ -305,9 +300,8 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
                             Toast.makeText(ProfileEditActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
                     });
+            onBackPressed();
         }
-
-        onBackPressed();
     }
 
     private void openAutocompleteActivity(int request_code) {

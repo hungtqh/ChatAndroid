@@ -191,5 +191,15 @@
     <string name="resend_code">Resend code?\\u0020</string>
     <string name="second">s</string>
     <string name="resent_code">Resent code!</string>
+    <string name="friend_request_msg">Sent you a friend request.</string>
+    <string name="image">Image</string>
+    <string name="file">File</string>
+    <string name="search">Search</string>
+    <string name="enter_email_or_phone_number"><font size="12">Enter email or phone number</font></string>
+    <string name="enter_mail_phone">Enter email or phone number!</string>
+    <string name="no_result_found">No result found. Try again!</string>
+    <string name="cancel_request">Cancel request</string>
+    <string name="update_info_first">Please update your personal info first!</string>
+    <string name="search_result">Search result</string>
 
 </resources>

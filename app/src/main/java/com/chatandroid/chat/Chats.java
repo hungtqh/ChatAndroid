@@ -10,11 +10,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.chatandroid.Authenticate;
+import com.chatandroid.activity.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.adapter.ChatsFragmentsAdapter;
 import com.chatandroid.chat.fragment.ChatsFragment;

@@ -108,7 +108,7 @@ public class RequestsFragment extends Fragment {
                                                 String requestUserName = firtname + " " + lastname;
 
                                                 holder.userName.setText(requestUserName);
-                                                holder.userStatus.setText("Wants to connect with you.");
+                                                holder.userStatus.setText(R.string.friend_request_msg);
 
                                                 if (dataSnapshot.child("image").exists()) {
                                                     String userImage = Tools.getRefValue(dataSnapshot.child("image"));
@@ -118,12 +118,12 @@ public class RequestsFragment extends Fragment {
                                                 holder.itemView.setOnClickListener(view -> {
                                                     CharSequence options12[] = new CharSequence[]
                                                             {
-                                                                    "Accept",
-                                                                    "Cancel"
+                                                                    getString(R.string.accept_request),
+                                                                    getString(R.string.cancel)
                                                             };
 
                                                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                                    builder.setTitle(requestUserName + "  Friend Request");
+                                                    builder.setTitle(requestUserName + " - " + getString(R.string.friend_request));
 
                                                     builder.setItems(options12, (dialogInterface, i) -> {
                                                         if (i == 0) {
@@ -141,7 +141,7 @@ public class RequestsFragment extends Fragment {
                                                                                                     .removeValue()
                                                                                                     .addOnCompleteListener(task11 -> {
                                                                                                         if (task11.isSuccessful()) {
-                                                                                                            Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT).show();
+                                                                                                            Toast.makeText(getContext(), getString(R.string.request_accepted), Toast.LENGTH_SHORT).show();
                                                                                                         }
                                                                                                     });
                                                                                         }
@@ -160,7 +160,7 @@ public class RequestsFragment extends Fragment {
                                                                                     .removeValue()
                                                                                     .addOnCompleteListener(task12 -> {
                                                                                         if (task12.isSuccessful()) {
-                                                                                            Toast.makeText(getContext(), "Request Cancelled", Toast.LENGTH_SHORT).show();
+                                                                                            Toast.makeText(getContext(), getString(R.string.request_canceled), Toast.LENGTH_SHORT).show();
                                                                                         }
                                                                                     });
                                                                         }
@@ -187,7 +187,7 @@ public class RequestsFragment extends Fragment {
                                                 String requestUserName = firtname + " " + lastname;
 
                                                 holder.userName.setText(requestUserName);
-                                                holder.userStatus.setText("Request sent");
+                                                holder.userStatus.setText(getString(R.string.request_sent));
 
                                                 if (dataSnapshot.child("image").exists()) {
                                                     String userImage = Tools.getRefValue(dataSnapshot.child("image"));
@@ -197,11 +197,11 @@ public class RequestsFragment extends Fragment {
                                                 holder.itemView.setOnClickListener(view -> {
                                                     CharSequence options1[] = new CharSequence[]
                                                             {
-                                                                    "Cancel Request"
+                                                                    getString(R.string.cancel_request)
                                                             };
 
                                                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                                    builder.setTitle("Sent Request");
+                                                    builder.setTitle(getString(R.string.friend_request));
 
                                                     builder.setItems(options1, (dialogInterface, i) -> {
                                                         if (i == 0) {
@@ -213,7 +213,7 @@ public class RequestsFragment extends Fragment {
                                                                                     .removeValue()
                                                                                     .addOnCompleteListener(task13 -> {
                                                                                         if (task13.isSuccessful()) {
-                                                                                            Toast.makeText(getContext(), "You have cancelled the request.", Toast.LENGTH_SHORT).show();
+                                                                                            Toast.makeText(getContext(), getString(R.string.request_canceled), Toast.LENGTH_SHORT).show();
                                                                                         }
                                                                                     });
                                                                         }

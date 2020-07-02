@@ -124,7 +124,7 @@ public class ChatsFragment extends Fragment {
                         holder.device_token.setText(Tools.getRefValue(dataSnapshot.child("device_token")));
 
                         if (mAuth.getCurrentUser() != null) {
-                            lastMessage(currentUserID, holder.username, username, holder.mCount, holder.mTime);
+                            lastMessage(userID, holder.username, username, holder.mCount, holder.mTime);
                         }
                     }
 
@@ -163,37 +163,37 @@ public class ChatsFragment extends Fragment {
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        long mMessages = 0;
                         String time = "";
 
                         if (dataSnapshot.exists()) {
-                            mMessages = 0;
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 if (snapshot.exists()) {
                                     Message message = dataSnapshot.getValue(Message.class);
                                     lastMessage = message.getMessage();
-                                    if (message.getFrom().equals(currentUserID) && message.getTo().equals(user) ||
-                                            message.getFrom().equals(user) && message.getTo().equals(currentUserID)) {
-                                        time = message.getTime();
-                                        if (!message.getSeen()) {
-                                            mMessages++;
-                                        }
+                                    if (message.getType().equals("image")) {
+                                        lastMessage = getString(R.string.image);
+                                    } else if (message.getType().equals("pdf") || message.getType().equals("docx")) {
+                                        lastMessage = getString(R.string.file);
+                                    } else if (message.getMessage().length() > 20){
+                                        lastMessage = lastMessage.substring(0, 20);
+                                    }
 
+                                    if (message.getFrom().equals(user) && message.getTo().equals(currentUserID)) {
+                                        time = message.getTime();
                                     }
                                 }
                             }
 
                         }
 
-                        mCount.setText(String.valueOf(mMessages));
                         mTime.setText(time);
 
                         if (!lastMessage.equals("No message")) {
-                            mCount.setVisibility(View.VISIBLE);
                             mTime.setVisibility(View.VISIBLE);
                             lastMessageView.setText(lastMessage);
                         } else {
                             lastMessageView.setText(username);
+                            mTime.setVisibility(View.GONE);
                         }
                     }
 

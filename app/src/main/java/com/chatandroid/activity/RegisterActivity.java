@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
-import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.databinding.ActivityRegisterBinding;
 import com.google.firebase.auth.FirebaseUser;

@@ -1,14 +1,16 @@
 package com.chatandroid.chat.activity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatandroid.Authenticate;
+import com.chatandroid.activity.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.adapter.FriendAdapter;
 import com.chatandroid.chat.model.User;
@@ -48,16 +50,27 @@ public class FindFriendsActivity extends Authenticate {
         findFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
         mUsers = new ArrayList<>();
 
-        (binding.lytBack).setOnClickListener(v -> onBackPressed());
+        binding.lytBack.setOnClickListener(v -> onBackPressed());
+        binding.searchFriend.setOnClickListener(v1 -> {
+            String searchInput = binding.searchField.getText().toString();
 
+            if (TextUtils.isEmpty(searchInput)) {
+                Toast.makeText(this, R.string.enter_mail_phone, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (searchInput.startsWith("0")) {
+                searchInput = "+84" + searchInput.substring(1);
+            }
+
+            findFriend(searchInput.trim());
+        });
         boolean nightMode = preference.getNightMode();
         toggleNightMode(view, nightMode);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
+    private void findFriend(String searchInput) {
+        binding.searchResult.setVisibility(View.VISIBLE);
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -67,7 +80,8 @@ public class FindFriendsActivity extends Authenticate {
                     User user = snapshot.getValue(User.class);
                     if (dataSnapshot.exists()) {
                         if (user.getUid() != null) {
-                            if (!user.getUid().equals(currentUserID)) {
+                            if (!user.getUid().equals(currentUserID) &&
+                                    (user.getPhonenumber().equals(searchInput) || user.getEmail().equals(searchInput))) {
                                 mUsers.add(user);
                             }
                         }
@@ -85,5 +99,4 @@ public class FindFriendsActivity extends Authenticate {
             }
         });
     }
-
 }

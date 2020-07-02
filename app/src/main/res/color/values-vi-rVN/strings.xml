@@ -161,4 +161,14 @@
     <string name="resend_code">"Gửi lại mã? "</string>
     <string name="second">giây</string>
     <string name="resent_code">Đã gửi lại mã!</string>
+    <string name="friend_request_msg">Đã gửi cho bạn yêu cầu kết bạn.</string>
+    <string name="image">Hình ảnh</string>
+    <string name="file">Tệp</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="enter_email_or_phone_number"><font size="12">Nhập email hoặc số điện thoại</font></string>
+    <string name="enter_mail_phone">Vui lòng nhập email hoặc số điện thoại!</string>
+    <string name="no_result_found">Không tìm thấy kết quả nào. Vui lòng thử lại!</string>
+    <string name="cancel_request">Hủy yêu cầu</string>
+    <string name="update_info_first">Vui lòng cập nhật thông tin cá nhân trước!</string>
+    <string name="search_result">Kết quả tìm kiếm</string>
 </resources>

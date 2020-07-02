@@ -2,14 +2,16 @@ package com.chatandroid.chat.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import com.chatandroid.Authenticate;
+import com.chatandroid.activity.Authenticate;
 import com.chatandroid.R;
+import com.chatandroid.activity.ProfileEditActivity;
 import com.chatandroid.chat.model.NotificationDataModel;
 import com.chatandroid.databinding.ActivityProfileViewBinding;
 import com.chatandroid.notification.APIService;
@@ -88,6 +90,7 @@ public class ProfileViewActivity extends Authenticate {
                 String lastname = Tools.getRefValue(dataSnapshot.child("lastname"));
                 String location = Tools.getRefValue(dataSnapshot.child("location"));
                 String phone = Tools.getRefValue(dataSnapshot.child("phonenumber"));
+                String email = Tools.getRefValue(dataSnapshot.child("email"));
                 String gender = Tools.getRefValue(dataSnapshot.child("gender"));
                 String dateOfBirth = Tools.getRefValue(dataSnapshot.child("dateOfBirth"));
                 String name = firtname + " " + lastname;
@@ -95,10 +98,8 @@ public class ProfileViewActivity extends Authenticate {
                 token = Tools.getRefValue(dataSnapshot.child("device_token"));
 
                 binding.profileName.setText(name);
-                if (mAuth.getCurrentUser() != null) {
-                    binding.username.setText(mAuth.getCurrentUser().getEmail());
-                }
                 binding.nickname.setText(username);
+                binding.email.setText(email);
 
                 if (selectedLocale.equals("vi")) {
                     if (gender.equals("Male")) {
@@ -143,8 +144,8 @@ public class ProfileViewActivity extends Authenticate {
 
                             if (request_type.equals("sent")) {
                                 currentState = "request_sent";
-                                binding.requestFriendship.setText("Requested");
-                                binding.cancelFriendship.setText("Cancel");
+                                binding.requestFriendship.setText(getString(R.string.requested));
+                                binding.cancelFriendship.setText(getString(R.string.cancel));
                                 binding.requestFriendship.setEnabled(false);
                                 binding.cancelFriendship.setEnabled(true);
                                 binding.cancelFriendship.setOnClickListener(view -> {
@@ -210,6 +211,8 @@ public class ProfileViewActivity extends Authenticate {
                                                         removeChatRequest();
                                                         Toast.makeText(ProfileViewActivity.this, R.string.unfriend_successfully, Toast.LENGTH_SHORT).show();
                                                         dialog.dismiss();
+
+                                                        binding.requestFriendship.setOnClickListener(v12 -> sendChatRequest());
                                                     });
                                                     builder.setNegativeButton(R.string.no, (dialog, id) -> dialog.dismiss());
                                                     AlertDialog alert = builder.create();
@@ -222,6 +225,11 @@ public class ProfileViewActivity extends Authenticate {
                                                 binding.requestFriendship.setEnabled(true);
                                                 currentState = "new";
                                                 binding.requestFriendship.setOnClickListener(view -> {
+                                                    if (TextUtils.isEmpty(senderName.trim())) {
+                                                        Toast.makeText(ProfileViewActivity.this, R.string.update_info_first, Toast.LENGTH_SHORT).show();
+                                                        sendUserToProfileEditActivity();
+                                                        return;
+                                                    }
                                                     sendChatRequest();
                                                 });
                                             }
@@ -240,6 +248,11 @@ public class ProfileViewActivity extends Authenticate {
 
                     }
                 });
+    }
+
+    private void sendUserToProfileEditActivity() {
+        Intent intent = new Intent(ProfileViewActivity.this, ProfileEditActivity.class);
+        startActivity(intent);
     }
 
     private void startChatActivity(String receiverUserID, String token) {

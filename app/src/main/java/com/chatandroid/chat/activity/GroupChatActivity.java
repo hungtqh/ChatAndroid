@@ -2,7 +2,6 @@ package com.chatandroid.chat.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatandroid.Authenticate;
+import com.chatandroid.activity.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.adapter.GroupMessageAdapter;
 import com.chatandroid.chat.model.GroupMessage;
@@ -159,37 +158,34 @@ public class GroupChatActivity extends Authenticate {
         AlertDialog.Builder builder = new AlertDialog.Builder(GroupChatActivity.this);
         builder.setTitle(R.string.select_file);
 
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    checker = "image";
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                checker = "image";
 
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("image/*");
-                    startActivityForResult(intent.createChooser(intent, getString(R.string.select_image)), 1);
-                }
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent.createChooser(intent, getString(R.string.select_image)), 1);
+            }
 
-                if (which == 1) {
-                    checker = "pdf";
+            if (which == 1) {
+                checker = "pdf";
 
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("application/pdf");
-                    startActivityForResult(intent.createChooser(intent, getString(R.string.select_pdf)), 1);
-                }
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("application/pdf");
+                startActivityForResult(intent.createChooser(intent, getString(R.string.select_pdf)), 1);
+            }
 
-                if (which == 2) {
-                    checker = "docx";
+            if (which == 2) {
+                checker = "docx";
 
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("*/*");
-                    String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                    startActivityForResult(intent.createChooser(intent, getString(R.string.select_word)), 1);
-                }
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                String[] mimetypes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"};
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                startActivityForResult(intent.createChooser(intent, getString(R.string.select_word)), 1);
             }
         });
 

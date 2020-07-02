@@ -1,15 +1,10 @@
 package com.chatandroid.notification;
 
 import com.chatandroid.chat.model.NotificationDataModel;
-import com.chatandroid.chat.model.NotificationModel;
 import com.google.gson.annotations.SerializedName;
 
 
 public class Sender {
-
-    @SerializedName("notification")
-    private NotificationModel notification;
-
     @SerializedName("data")
     private NotificationDataModel data;
 

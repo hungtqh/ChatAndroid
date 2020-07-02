@@ -2,7 +2,6 @@ package com.chatandroid.chat.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,9 +21,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatandroid.Authenticate;
+import com.chatandroid.activity.Authenticate;
 import com.chatandroid.R;
-import com.chatandroid.activity.ProfileEditActivity;
 import com.chatandroid.chat.adapter.MessageAdapter;
 import com.chatandroid.chat.model.Message;
 import com.chatandroid.chat.model.NotificationDataModel;
@@ -36,9 +34,6 @@ import com.chatandroid.notification.Sender;
 import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Config;
 import com.chatandroid.utils.Tools;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,11 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.UploadTask;
-import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -61,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
-import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -160,8 +150,6 @@ public class ChatActivity extends Authenticate {
                 });
 
         retrieveUserInfo();
-
-        seenMessage();
 
         myTypingState();
         getTypingState();
@@ -493,43 +481,6 @@ public class ChatActivity extends Authenticate {
                     public void onFailure(Call<MyResponse> call, Throwable t) {
                     }
 
-                });
-
-    }
-
-    private void seenMessage() {
-        // user at another device
-        rootRef.child("Messages").child(messageReceiverID).child(messageSenderID)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        Message message = dataSnapshot.getValue(Message.class);
-
-                        if (message.getTo().equals(currentUserID)) {
-                            HashMap<String, Object> data = new HashMap<>();
-                            data.put("seen", true);
-                            dataSnapshot.getRef().updateChildren(data);
-                            messageAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
                 });
 
     }

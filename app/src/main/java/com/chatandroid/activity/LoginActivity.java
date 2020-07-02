@@ -2,16 +2,13 @@ package com.chatandroid.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chatandroid.Authenticate;
 import com.chatandroid.R;
 import com.chatandroid.chat.Chats;
 import com.chatandroid.databinding.ActivityLoginBinding;
