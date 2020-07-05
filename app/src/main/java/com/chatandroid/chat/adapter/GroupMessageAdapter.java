@@ -1,6 +1,5 @@
 package com.chatandroid.chat.adapter;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,17 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatandroid.R;
-import com.chatandroid.chat.activity.ImageViewerActivity;
+import com.chatandroid.activity.ImageViewerActivity;
 import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.chat.model.GroupMessage;
-import com.chatandroid.chat.model.Message;
 import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,11 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.MessageViewHolder> {
+public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.GroupMessageViewHolder> {
     private List<GroupMessage> groupMessagesList;
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
@@ -53,13 +48,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         preference = new AppPreference(mContext);
     }
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder {
+    public class GroupMessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText, messageTime, messageDate, username;
         CircularImageView profileImageYou;
         CardView cardView;
         ImageView imageMessage;
 
-        public MessageViewHolder(@NonNull View itemView) {
+        public GroupMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.username);
             messageText = itemView.findViewById(R.id.text_content);
@@ -74,35 +69,35 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
 
     @NonNull
     @Override
-    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GroupMessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mAuth = FirebaseAuth.getInstance();
 
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         if (viewType == CHAT_ME) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_chat_me, parent, false);
-            return new MessageViewHolder(v);
+            return new GroupMessageViewHolder(v);
         } else {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_chat_you, parent, false);
-            return new MessageViewHolder(v);
+            return new GroupMessageViewHolder(v);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MessageViewHolder messageViewHolder, int i) {
+    public void onBindViewHolder(@NonNull final GroupMessageViewHolder groupMessageViewHolder, int i) {
         GroupMessage message = groupMessagesList.get(i);
         String fromMessageType = message.getType();
 
         if (getItemViewType(i) == CHAT_YOU) {
-            retrieveUserInfo(message.getFrom(), messageViewHolder);
+            retrieveUserInfo(message.getFrom(), groupMessageViewHolder);
         }
 
         if (fromMessageType.equals("text")) {
-            messageViewHolder.imageMessage.setVisibility(View.GONE);
-            messageViewHolder.cardView.setVisibility(View.VISIBLE);
+            groupMessageViewHolder.imageMessage.setVisibility(View.GONE);
+            groupMessageViewHolder.cardView.setVisibility(View.VISIBLE);
 
-            messageViewHolder.username.setText(message.getName());
-            messageViewHolder.messageText.setText(message.getMessage());
+            groupMessageViewHolder.username.setText(message.getName());
+            groupMessageViewHolder.messageText.setText(message.getMessage());
 
             String selectedLocale = preference.getAppLanguage();
             String messageTime = message.getTime();
@@ -142,22 +137,22 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
                 messageDate = messageDate.replace("Th12", "Dec");
             }
 
-            messageViewHolder.messageTime.setText(messageTime);
-            messageViewHolder.messageDate.setText(messageDate);
+            groupMessageViewHolder.messageTime.setText(messageTime);
+            groupMessageViewHolder.messageDate.setText(messageDate);
         } else if (fromMessageType.equals("image")) {
-            messageViewHolder.imageMessage.setVisibility(View.VISIBLE);
-            messageViewHolder.cardView.setVisibility(View.GONE);
+            groupMessageViewHolder.imageMessage.setVisibility(View.VISIBLE);
+            groupMessageViewHolder.cardView.setVisibility(View.GONE);
 
-            Picasso.get().load(message.getMessage()).into(messageViewHolder.imageMessage);
+            Picasso.get().load(message.getMessage()).into(groupMessageViewHolder.imageMessage);
         } else {
-            messageViewHolder.imageMessage.setVisibility(View.VISIBLE);
-            messageViewHolder.cardView.setVisibility(View.GONE);
+            groupMessageViewHolder.imageMessage.setVisibility(View.VISIBLE);
+            groupMessageViewHolder.cardView.setVisibility(View.GONE);
 
-            messageViewHolder.imageMessage.setImageResource(R.drawable.file);
+            groupMessageViewHolder.imageMessage.setImageResource(R.drawable.file);
         }
 
         // options with pdf and docx file
-        messageViewHolder.itemView.setOnClickListener(v -> {
+        groupMessageViewHolder.itemView.setOnClickListener(v -> {
 
             if (fromMessageType.equals("pdf") || fromMessageType.equals("docx")) {
                 CharSequence[] options = new CharSequence[]{
@@ -202,7 +197,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         });
 
         // options with text message
-        messageViewHolder.itemView.setOnLongClickListener(v -> {
+        groupMessageViewHolder.itemView.setOnLongClickListener(v -> {
 
             if (fromMessageType.equals("text")) {
                 CharSequence[] options = new CharSequence[]{
@@ -238,19 +233,19 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         return this.groupMessagesList.get(position).getFrom().equals(mAuth.getCurrentUser().getUid()) ? CHAT_ME : CHAT_YOU;
     }
 
-    private void retrieveUserInfo(String userId, MessageViewHolder messageViewHolder) {
+    private void retrieveUserInfo(String userId, GroupMessageViewHolder groupMessageViewHolder) {
         userRef.child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String userImage = Tools.getRefValue(dataSnapshot.child("image"));
 
-                CircularImageView userProfileImage = messageViewHolder.profileImageYou;
+                CircularImageView userProfileImage = groupMessageViewHolder.profileImageYou;
 
                 if (!userImage.isEmpty()) {
                     Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(userProfileImage);
                 }
 
-                messageViewHolder.profileImageYou.setOnClickListener(v -> {
+                groupMessageViewHolder.profileImageYou.setOnClickListener(v -> {
                     Intent intent = new Intent(mContext, ProfileViewActivity.class);
                     intent.putExtra("receiver_uid", userId);
                     mContext.startActivity(intent);

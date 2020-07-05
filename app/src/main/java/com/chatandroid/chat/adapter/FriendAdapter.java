@@ -21,7 +21,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder> {
+public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 
     private Context mContext;
     private List<User> mUser;
@@ -35,13 +35,13 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
 
     @NonNull
     @Override
-    public FriendAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.users_display_layout, parent, false);
-        return new FriendAdapter.ViewHolder(view);
+        return new FriendViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FriendAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
         User user = mUser.get(position);
         holder.username.setText(user.getUsername());
         holder.name.setText(user.getName());
@@ -69,17 +69,15 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
         return mUser.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class FriendViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView device_token, name, username, statusOffline, statusOnline, uid, mTime, mCount;
+        public TextView device_token, name, username, statusOffline, statusOnline, uid;
         public View cv;
         private CircleImageView image;
         private ImageView ivOnline;
 
-        public ViewHolder(@NonNull View itemView) {
+        public FriendViewHolder(@NonNull View itemView) {
             super(itemView);
-            mTime = itemView.findViewById(R.id.message_time);
-            mCount = itemView.findViewById(R.id.messages_count);
             name = itemView.findViewById(R.id.name);
             username = itemView.findViewById(R.id.username);
             statusOnline = itemView.findViewById(R.id.status_online);

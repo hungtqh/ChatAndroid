@@ -14,7 +14,7 @@
     <string name="new_user">New user?\u0020</string>
 
     <string name="app_name" translatable="false">PTIT Chat</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Setting</string>
 
     <!-- Menus -->
     <string name="registration">Registration</string>
@@ -201,5 +201,8 @@
     <string name="cancel_request">Cancel request</string>
     <string name="update_info_first">Please update your personal info first!</string>
     <string name="search_result">Search result</string>
+    <string name="chat_notifications">Chat notifications</string>
+    <string name="group_already_exists">Group already exists. Choose a difference group name!</string>
+    <string name="you">You:\u0020</string>
 
 </resources>

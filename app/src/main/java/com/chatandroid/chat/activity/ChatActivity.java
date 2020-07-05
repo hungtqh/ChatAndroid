@@ -21,7 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatandroid.activity.Authenticate;
+import com.chatandroid.activity.Authentication;
 import com.chatandroid.R;
 import com.chatandroid.chat.adapter.MessageAdapter;
 import com.chatandroid.chat.model.Message;
@@ -57,7 +57,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ChatActivity extends Authenticate {
+public class ChatActivity extends Authentication {
     private String messageReceiverID, messageSenderID;
     private AppPreference preference;
     private DatabaseReference usersRef;

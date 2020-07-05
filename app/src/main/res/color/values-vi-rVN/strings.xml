@@ -171,4 +171,7 @@
     <string name="cancel_request">Hủy yêu cầu</string>
     <string name="update_info_first">Vui lòng cập nhật thông tin cá nhân trước!</string>
     <string name="search_result">Kết quả tìm kiếm</string>
+    <string name="chat_notifications">Thông báo trò chuyện</string>
+    <string name="group_already_exists">Nhóm đã tồn tại. Vui lòng chọn tên khác!</string>
+    <string name="you">"Bạn: "</string>
 </resources>

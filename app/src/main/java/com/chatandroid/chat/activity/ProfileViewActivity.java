@@ -9,8 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import com.chatandroid.activity.Authenticate;
 import com.chatandroid.R;
+import com.chatandroid.activity.Authentication;
+import com.chatandroid.activity.ImageViewerActivity;
 import com.chatandroid.activity.ProfileEditActivity;
 import com.chatandroid.chat.model.NotificationDataModel;
 import com.chatandroid.databinding.ActivityProfileViewBinding;
@@ -29,18 +30,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfileViewActivity extends Authenticate {
+public class ProfileViewActivity extends Authentication {
 
     private ActivityProfileViewBinding binding;
     private CircularImageView image;
     private String receiverUserID, senderUserID, currentState;
-    private DatabaseReference userRef, chatRequestRef, contactsRef, notificationRef;
+    private DatabaseReference userRef, chatRequestRef, contactsRef;
     private Toolbar toolbar;
     private APIService apiService;
     private String token;
@@ -63,7 +62,6 @@ public class ProfileViewActivity extends Authenticate {
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
         chatRequestRef = FirebaseDatabase.getInstance().getReference().child("Friend Requests");
         contactsRef = FirebaseDatabase.getInstance().getReference().child("Friends");
-        notificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
         image = binding.image;
 
         receiverUserID = getIntent().getExtras().get("receiver_uid").toString();
@@ -208,7 +206,6 @@ public class ProfileViewActivity extends Authenticate {
                                                     builder.setIcon(R.mipmap.ic_launcher_round);
                                                     builder.setPositiveButton(R.string.yes, (dialog, id) -> {
                                                         removeFriend();
-                                                        removeChatRequest();
                                                         Toast.makeText(ProfileViewActivity.this, R.string.unfriend_successfully, Toast.LENGTH_SHORT).show();
                                                         dialog.dismiss();
 
@@ -352,23 +349,13 @@ public class ProfileViewActivity extends Authenticate {
                                 .child("request_type").setValue("received")
                                 .addOnCompleteListener(task12 -> {
                                     if (task12.isSuccessful()) {
-                                        HashMap<String, String> chatNotificationMap = new HashMap<>();
-                                        chatNotificationMap.put("from", senderUserID);
-                                        chatNotificationMap.put("type", "request");
+                                        currentState = "request_sent";
+                                        binding.requestFriendship.setText(R.string.requested);
+                                        binding.requestFriendship.setEnabled(false);
+                                        binding.cancelFriendship.setEnabled(true);
 
-                                        notificationRef.child(receiverUserID).push()
-                                                .setValue(chatNotificationMap)
-                                                .addOnCompleteListener(task1 -> {
-                                                    if (task1.isSuccessful()) {
-                                                        currentState = "request_sent";
-                                                        binding.requestFriendship.setText(R.string.requested);
-                                                        binding.requestFriendship.setEnabled(false);
-                                                        binding.cancelFriendship.setEnabled(true);
-
-                                                        sendNotification(senderName + getString(R.string.sent_u_a_friend_request), getString(R.string.friend_request));
-                                                        Toast.makeText(ProfileViewActivity.this, R.string.request_sent, Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                        sendNotification(senderName + getString(R.string.sent_u_a_friend_request), getString(R.string.friend_request));
+                                        Toast.makeText(ProfileViewActivity.this, R.string.request_sent, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }

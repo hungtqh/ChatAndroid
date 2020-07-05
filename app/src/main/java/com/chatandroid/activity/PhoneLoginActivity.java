@@ -22,7 +22,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
 
-public class PhoneLoginActivity extends Authenticate {
+public class PhoneLoginActivity extends Authentication {
     private Button btnSendCode, btnVerifyCode;
     private EditText etPhoneLogin;
     private TextView tvEmailLogin, tvPhoneCode, tvResend, tvSendWait;

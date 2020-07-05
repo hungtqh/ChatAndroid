@@ -17,7 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatandroid.activity.Authenticate;
+import com.chatandroid.activity.Authentication;
 import com.chatandroid.R;
 import com.chatandroid.chat.adapter.GroupMessageAdapter;
 import com.chatandroid.chat.model.GroupMessage;
@@ -41,7 +41,7 @@ import java.util.List;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 
-public class GroupChatActivity extends Authenticate {
+public class GroupChatActivity extends Authentication {
     private Toolbar mToolbar;
     private ImageView sendMessageButton;
     private ImageView sendFileButton;

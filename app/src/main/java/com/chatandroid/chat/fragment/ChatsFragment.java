@@ -170,12 +170,17 @@ public class ChatsFragment extends Fragment {
                                 if (snapshot.exists()) {
                                     Message message = dataSnapshot.getValue(Message.class);
                                     lastMessage = message.getMessage();
+
                                     if (message.getType().equals("image")) {
                                         lastMessage = getString(R.string.image);
                                     } else if (message.getType().equals("pdf") || message.getType().equals("docx")) {
                                         lastMessage = getString(R.string.file);
                                     } else if (message.getMessage().length() > 20){
                                         lastMessage = lastMessage.substring(0, 20);
+                                    }
+
+                                    if (message.getFrom().equals(currentUserID)) {
+                                        lastMessage = getString(R.string.you) + lastMessage;
                                     }
 
                                     if (message.getFrom().equals(user) && message.getTo().equals(currentUserID)) {

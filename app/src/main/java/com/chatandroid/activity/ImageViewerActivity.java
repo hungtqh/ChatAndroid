@@ -1,4 +1,4 @@
-package com.chatandroid.chat.activity;
+package com.chatandroid.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 

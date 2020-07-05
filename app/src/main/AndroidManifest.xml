@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.PhoneLoginActivity" />
-        <activity android:name=".chat.activity.ImageViewerActivity" />
+        <activity android:name=".activity.ImageViewerActivity" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

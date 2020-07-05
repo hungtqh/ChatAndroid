@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 
-public class RegisterActivity extends Authenticate {
+public class RegisterActivity extends Authentication {
     private ProgressDialog loadingBar;
 
     private ActivityRegisterBinding binding;

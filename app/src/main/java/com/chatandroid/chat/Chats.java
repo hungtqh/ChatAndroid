@@ -13,9 +13,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.chatandroid.activity.Authenticate;
+import com.chatandroid.activity.Authentication;
 import com.chatandroid.R;
-import com.chatandroid.chat.adapter.ChatsFragmentsAdapter;
+import com.chatandroid.chat.adapter.FragmentsAdapter;
 import com.chatandroid.chat.fragment.ChatsFragment;
 import com.chatandroid.chat.fragment.FriendsFragment;
 import com.chatandroid.chat.fragment.GroupsFragment;
@@ -28,7 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
-public class Chats extends Authenticate {
+public class Chats extends Authentication {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -138,7 +138,7 @@ public class Chats extends Authenticate {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ChatsFragmentsAdapter adapter = new ChatsFragmentsAdapter(getSupportFragmentManager());
+        FragmentsAdapter adapter = new FragmentsAdapter(getSupportFragmentManager());
         adapter.addFragment(new ChatsFragment(), getString(R.string.chats));
         adapter.addFragment(new GroupsFragment(), getString(R.string.groups));
         adapter.addFragment(new FriendsFragment(), getString(R.string.friends));

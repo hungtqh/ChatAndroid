@@ -10,7 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chatandroid.activity.Authenticate;
+import com.chatandroid.activity.Authentication;
 import com.chatandroid.R;
 import com.chatandroid.chat.adapter.FriendAdapter;
 import com.chatandroid.chat.model.User;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FindFriendsActivity extends Authenticate {
+public class FindFriendsActivity extends Authentication {
     private RecyclerView findFriendsRecyclerList;
     private DatabaseReference usersRef;
     private ActivityFindFriendsBinding binding;

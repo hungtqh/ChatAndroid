@@ -67,7 +67,9 @@ public class GroupsFragment extends Fragment {
         });
 
         FloatingActionButton floatingActionButton = groupFragmentView.findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(v -> requestNewGroup());
+        floatingActionButton.setOnClickListener(v -> {
+            requestNewGroup();
+        });
 
         listView.setOnItemClickListener((adapterView, view, position, id) -> {
             String currentGroupName = adapterView.getItemAtPosition(position).toString();
@@ -135,6 +137,13 @@ public class GroupsFragment extends Fragment {
             if (TextUtils.isEmpty(groupName)) {
                 Toast.makeText(getContext(), R.string.pls_enter_group_name, Toast.LENGTH_SHORT).show();
             } else {
+                groupName = groupName.trim();
+                groupName = groupName.replaceAll("[^a-zA-Z0-9]", "");
+                if (groupsList.contains(groupName)) {
+                    Toast.makeText(getContext(), R.string.group_already_exists, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 createNewGroup(groupName);
                 dialog.dismiss();
             }
@@ -143,6 +152,8 @@ public class GroupsFragment extends Fragment {
 
 
     private void createNewGroup(final String groupName) {
+
+
         groupsRef.child(groupName).setValue("")
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

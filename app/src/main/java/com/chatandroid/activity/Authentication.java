@@ -38,7 +38,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class Authenticate extends AppCompatActivity {
+public class Authentication extends AppCompatActivity {
 
     public FirebaseAuth mAuth;
     public DatabaseReference rootRef;
@@ -199,23 +199,23 @@ public class Authenticate extends AppCompatActivity {
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
 
                     if (drawerItem.getIdentifier() == R.string.menu_chat) {
-                        Intent intent = new Intent(Authenticate.this, Chats.class);
+                        Intent intent = new Intent(Authentication.this, Chats.class);
                         startActivity(intent);
                     }
 
                     if (drawerItem.getIdentifier() == R.string.action_settings) {
-                        Intent intent = new Intent(Authenticate.this, SettingActivity.class);
+                        Intent intent = new Intent(Authentication.this, SettingActivity.class);
                         startActivity(intent);
                     }
 
                     if (drawerItem.getIdentifier() == R.string.menu_profile) {
-                        Intent intent = new Intent(Authenticate.this, ProfileActivity.class);
+                        Intent intent = new Intent(Authentication.this, ProfileActivity.class);
                         startActivity(intent);
                     }
 
                     if (drawerItem.getIdentifier() == R.string.logout) {
                         mAuth.signOut();
-                        Intent intent = new Intent(Authenticate.this, LoginActivity.class);
+                        Intent intent = new Intent(Authentication.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();

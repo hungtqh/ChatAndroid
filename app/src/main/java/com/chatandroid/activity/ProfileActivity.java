@@ -8,7 +8,6 @@ import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 
 import com.chatandroid.R;
-import com.chatandroid.chat.activity.ImageViewerActivity;
 import com.chatandroid.databinding.ActivityProfileBinding;
 import com.chatandroid.utils.Tools;
 import com.google.firebase.database.DataSnapshot;
@@ -19,7 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
-public class ProfileActivity extends Authenticate {
+public class ProfileActivity extends Authentication {
     private DatabaseReference userRef;
 
     private ActivityProfileBinding binding;

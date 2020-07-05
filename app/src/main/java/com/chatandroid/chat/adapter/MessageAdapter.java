@@ -3,7 +3,6 @@ package com.chatandroid.chat.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -18,14 +17,11 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chatandroid.R;
-import com.chatandroid.chat.activity.ChatActivity;
-import com.chatandroid.chat.activity.ImageViewerActivity;
+import com.chatandroid.activity.ImageViewerActivity;
 import com.chatandroid.chat.activity.ProfileViewActivity;
 import com.chatandroid.chat.model.Message;
 import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Tools;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.chatandroid.R;
 import com.chatandroid.databinding.ActivityProfileEditBinding;
+import com.chatandroid.utils.Config;
 import com.chatandroid.utils.Tools;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
@@ -41,7 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class ProfileEditActivity extends Authenticate implements DatePickerDialog.OnDateSetListener {
+public class ProfileEditActivity extends Authentication implements DatePickerDialog.OnDateSetListener {
     private DatabaseReference usersRef;
 
     private ActivityProfileEditBinding binding;
@@ -70,7 +71,7 @@ public class ProfileEditActivity extends Authenticate implements DatePickerDialo
         retrieveUserInfo();
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
+            Places.initialize(getApplicationContext(), Config.GOOGLE_MAP_KEY);
         }
 
         binding.location.setOnClickListener(v -> openAutocompleteActivity(REQUEST_CODE_LOCATION));

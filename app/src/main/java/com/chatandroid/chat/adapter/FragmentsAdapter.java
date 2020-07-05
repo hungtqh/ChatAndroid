@@ -7,12 +7,12 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatsFragmentsAdapter extends FragmentPagerAdapter {
+public class FragmentsAdapter extends FragmentPagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    public ChatsFragmentsAdapter(FragmentManager manager) {
+    public FragmentsAdapter(FragmentManager manager) {
         super(manager);
     }
 

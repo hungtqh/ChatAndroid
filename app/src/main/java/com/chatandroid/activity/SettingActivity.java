@@ -14,7 +14,7 @@ import com.chatandroid.utils.AppPreference;
 import com.chatandroid.utils.Tools;
 
 
-public class SettingActivity extends Authenticate {
+public class SettingActivity extends Authentication {
     private Toolbar toolbar;
     private ActivitySettingBinding binding;
 

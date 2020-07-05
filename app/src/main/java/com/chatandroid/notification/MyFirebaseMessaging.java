@@ -33,15 +33,15 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        String sent = remoteMessage.getData().get("sent");
-        String user = remoteMessage.getData().get("user");
+        String sent = remoteMessage.getData().get("sent"); // receiver
+        String user = remoteMessage.getData().get("user"); // sender
         String intent = remoteMessage.getData().get("intent");
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         AppPreference preference = new AppPreference(MyFirebaseMessaging.this);
-        if (preference.getCurrentChattingUser() == null || !preference.getCurrentChattingUser().equals(user)) {
+        if (preference.getCurrentChattingUser() == null || !preference.getCurrentChattingUser().equals(user)) { // sender
             if (firebaseUser != null) {
-                if (firebaseUser.getUid() != null && sent.equals(firebaseUser.getUid())) {
+                if (firebaseUser.getUid() != null && sent.equals(firebaseUser.getUid())) { // receiver
                     sendNotification(remoteMessage, intent);
                 }
             }
@@ -50,13 +50,12 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     private void sendNotification(RemoteMessage remoteMessage, String intentName) {
         String channelId = getString(R.string.default_notification_channel_id);
-        String user = remoteMessage.getData().get("user");
+        String user = remoteMessage.getData().get("user"); // sender
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
-        String device = remoteMessage.getData().get("device");
+        String device = remoteMessage.getData().get("device"); // receiver
 
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
+        int j = Integer.parseInt(user.replaceAll("[\\D]", "")); // replace sender ID  to all digits
         Intent intent = new Intent();
 
         if (intentName.equals("ChatActivity")) {
@@ -79,17 +78,18 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent);
         NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        int i = 0;
-        if (j > 0) {
+        int i = 0; // notification id
+        if (j > 0) { // assign id with sender id
             i = j;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "Chat notifications",
+                    getString(R.string.chat_notifications),
                     NotificationManager.IMPORTANCE_HIGH);
             noti.createNotificationChannel(channel);
         }
+
         noti.notify(i, builder.build());
 
     }
@@ -100,6 +100,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         updateToken();
     }
 
+    // update token if receiver logged in at another device
     private void updateToken() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
