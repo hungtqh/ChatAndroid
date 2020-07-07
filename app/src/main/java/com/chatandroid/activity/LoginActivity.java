@@ -135,7 +135,6 @@ public class LoginActivity extends Authentication {
         (view.findViewById(R.id.reset)).setOnClickListener(v -> {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             EditText emailAddress = view.findViewById(R.id.email);
-            TextView results = view.findViewById(R.id.results);
             String email = emailAddress.getText().toString();
 
             if (TextUtils.isEmpty(email)) {

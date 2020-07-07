@@ -13,13 +13,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.chatandroid.activity.Authentication;
 import com.chatandroid.R;
+import com.chatandroid.activity.Authentication;
 import com.chatandroid.chat.adapter.FragmentsAdapter;
-import com.chatandroid.chat.fragment.ChatsFragment;
-import com.chatandroid.chat.fragment.FriendsFragment;
-import com.chatandroid.chat.fragment.GroupsFragment;
-import com.chatandroid.chat.fragment.RequestsFragment;
 import com.chatandroid.utils.Tools;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.AuthCredential;
@@ -32,6 +28,7 @@ public class Chats extends Authentication {
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    private FragmentsAdapter adapter;
     private DatabaseReference userRef;
 
     @Override
@@ -61,7 +58,8 @@ public class Chats extends Authentication {
         tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
-        setupViewPager(viewPager);
+        adapter = new FragmentsAdapter(this, getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
     }
@@ -135,14 +133,5 @@ public class Chats extends Authentication {
         }
 
         return true;
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        FragmentsAdapter adapter = new FragmentsAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ChatsFragment(), getString(R.string.chats));
-        adapter.addFragment(new GroupsFragment(), getString(R.string.groups));
-        adapter.addFragment(new FriendsFragment(), getString(R.string.friends));
-        adapter.addFragment(new RequestsFragment(), getString(R.string.requests));
-        viewPager.setAdapter(adapter);
     }
 }
